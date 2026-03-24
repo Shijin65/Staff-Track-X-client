@@ -1,0 +1,262 @@
+'use client';
+
+import React from "react";
+import NextImage from "next/image";
+import {
+  Box,
+  Typography,
+  Button,
+  Link,
+  CircularProgress,
+  TextField,
+  InputAdornment,
+  Checkbox,
+  FormControlLabel,
+  Divider,
+  Slide,
+} from "@mui/material";
+import { useAuthContext } from "@/context/auth-provider";
+import { useLoader } from "@/lib/store";
+import { PasswordField } from "../ui/password-input";
+import {
+  EmailOutlined,
+  LockOutlined,
+} from "@mui/icons-material";
+
+const LoginUser: React.FC = () => {
+  const { loading, setLoading } = useLoader();
+  const { login } = useAuthContext();
+  const [showForm, setShowForm] = React.useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    const form = e.currentTarget;
+    try {
+      const email = (form.elements.namedItem("user_email") as HTMLInputElement).value;
+      const password = (form.elements.namedItem("user_password") as HTMLInputElement).value;
+      await login({ email, password });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const FormContent = (
+    <Box
+      sx={{
+        width: "100%",
+        bgcolor: { xs: "white", md: "transparent" },
+        borderTopLeftRadius: { xs: "30px", md: 0 },
+        borderTopRightRadius: { xs: "30px", md: 0 },
+        p: { xs: 4, md: 0 },
+        boxShadow: { xs: "0 -10px 40px rgba(0,0,0,0.05)", md: "none" },
+      }}
+    >
+      <Box sx={{ mb: 4, textAlign: { xs: "center", md: "left" } }}>
+        <Typography variant="h4" fontWeight={800} color="primary" sx={{ mb: 1 }}>
+          Welcome back
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Enter your credentials to continue
+        </Typography>
+      </Box>
+
+      <form onSubmit={handleSubmit}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+          <Box>
+            <Typography variant="body2" fontWeight={600} sx={{ mb: 1, ml: 0.5 }}>
+              Email
+            </Typography>
+            <TextField
+              fullWidth
+              required
+              name="user_email"
+              placeholder="kristin.watson@example.com"
+              type="email"
+              variant="outlined"
+              size="medium"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "16px",
+                  bgcolor: "rgba(0,0,0,0.02)",
+                },
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <EmailOutlined sx={{ fontSize: 20, color: "text.secondary" }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
+
+          <Box>
+            <Typography variant="body2" fontWeight={600} sx={{ mb: 1, ml: 0.5 }}>
+              Password
+            </Typography>
+            <PasswordField
+              fullWidth
+              name="user_password"
+              placeholder="**********"
+              required
+              size="medium"
+              autoComplete="current-password"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "16px",
+                  bgcolor: "rgba(0,0,0,0.02)",
+                },
+              }}
+              startAdornment={
+                <InputAdornment position="start">
+                  <LockOutlined sx={{ color: "text.secondary", fontSize: 20 }} />
+                </InputAdornment>
+              }
+            />
+          </Box>
+
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: -1 }}>
+            <FormControlLabel
+              control={<Checkbox size="small" sx={{ color: "primary.main" }} />}
+              label={<Typography variant="caption" color="text.secondary">Remember me</Typography>}
+            />
+            <Link href="#" variant="caption" underline="hover" color="primary" fontWeight={600}>
+              Forgot password?
+            </Link>
+          </Box>
+
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            fullWidth
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={18} color="inherit" /> : undefined}
+            sx={{
+              py: 1.8,
+              borderRadius: "16px",
+              fontWeight: 700,
+              fontSize: "1rem",
+              boxShadow: "0 8px 16px rgba(37, 99, 235, 0.25)",
+              textTransform: "none",
+            }}
+          >
+            {loading ? "Signing in..." : "Sign in"}
+          </Button>
+        </Box>
+      </form>
+
+      <Box sx={{ mt: 5 }}>
+        <Divider>
+          <Typography variant="caption" color="text.secondary">Or sign in with</Typography>
+        </Divider>
+        <Box sx={{ display: "flex", justifyContent: "center", gap: 3, mt: 3 }}>
+          <Typography variant="caption" color="text.secondary">Other ways for login not available yet</Typography>
+          {/* <IconButton sx={{ border: "1px solid", borderColor: "divider", p: 1.5 }}>
+            <Facebook sx={{ color: "#1877F2" }} />
+          </IconButton>
+          <IconButton sx={{ border: "1px solid", borderColor: "divider", p: 1.5 }}>
+            <Twitter sx={{ color: "#1DA1F2" }} />
+          </IconButton>
+          <IconButton sx={{ border: "1px solid", borderColor: "divider", p: 1.5 }}>
+            <Google sx={{ color: "#EA4335" }} />
+          </IconButton>
+          <IconButton sx={{ border: "1px solid", borderColor: "divider", p: 1.5 }}>
+            <Apple sx={{ color: "#000000" }} />
+          </IconButton> */}
+        </Box>
+      </Box>
+
+      <Typography variant="body2" sx={{ textAlign: "center", mt: 5, color: "text.secondary" }}>
+        Unable to access your account?{" "}
+        <Link href="#" underline="hover" color="primary" fontWeight={700}>
+          Contact Support
+        </Link>
+      </Typography>
+    </Box>
+  );
+
+  return (
+    <Box sx={{ width: "100%", position: "relative" }}>
+      {/* Animated CFX Logo and Name for Mobile */}
+      <Box
+        sx={{
+          display: { xs: "flex", md: "none" },
+          flexDirection: "column",
+          alignItems: "center",
+          position: "fixed",
+          left: "50%",
+          transform: "translateX(-50%)",
+          top: showForm ? "3vh" : "38vh",
+          transition: "top 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          zIndex: 20,
+          gap: 1,
+        }}
+      >
+        <NextImage src="/cfx_logo.png" alt="Logo" width={140} height={40} priority style={{ objectFit: "contain" }} />
+        <Typography
+          variant="h6"
+          sx={{
+            color: "rgba(255, 255, 255, 0.8)",
+            fontWeight: 700,
+            fontSize: "1.2rem",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+          }}
+        >
+          StaffTrack<span style={{ fontStyle: "italic", fontWeight: 800, fontSize: "1.5rem" }}>X</span>
+        </Typography>
+      </Box>
+
+      {/* 1. Mobile Entry Button */}
+      <Box
+        sx={{
+          display: { xs: showForm ? "none" : "flex", md: "none" },
+          flexDirection: "column",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          height: "100vh",
+          pb: 10,
+          width: "100%",
+        }}
+      >
+        <Button
+          variant="contained"
+          onClick={() => setShowForm(true)}
+          sx={{
+            bgcolor: "white",
+            color: "primary.main",
+            fontWeight: 800,
+            px: 10,
+            py: 2.2,
+            borderRadius: "32px",
+            fontSize: "1.1rem",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+            "&:hover": { bgcolor: "#f5f5f5" },
+            textTransform: "none",
+          }}
+        >
+          Login
+        </Button>
+      </Box>
+
+      {/* 2. Login Form Container */}
+      <Box sx={{ display: { xs: showForm ? "block" : "none", md: "block" }, width: "100%" }}>
+        {/* On mobile, we use Slide. On desktop, we render directly */}
+        <Box sx={{ display: { xs: "block", md: "none" } }}>
+          <Slide direction="up" in={showForm} mountOnEnter unmountOnExit>
+            {FormContent}
+          </Slide>
+        </Box>
+        <Box sx={{ display: { xs: "none", md: "block" } }}>
+          {FormContent}
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+export default LoginUser;
