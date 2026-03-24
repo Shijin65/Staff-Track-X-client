@@ -1,32 +1,35 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import {
   AppBar,
   Toolbar,
   Box,
   IconButton,
-  Drawer,
-  List,
-  ListItemButton,
-  ListItemText,
   Divider,
   Typography,
   Menu,
   MenuItem,
   ListItemIcon,
   useTheme,
+  Avatar,
+  Button
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import LogoutIcon from "@mui/icons-material/Logout";
+import {
+  SettingsOutlined,
+  BrightnessMediumOutlined,
+  InfoOutlined,
+  GridViewOutlined,
+  WorkOutline,
+  ShoppingCartOutlined,
+  MonitorOutlined,
+  LogoutOutlined,
+  ChevronRight,
+  DomainOutlined
+} from "@mui/icons-material";
 import { useAuthContext } from "@/context/auth-provider";
 
-const navLinks = ["Home", "About", "Market", "Services"];
-
 const Header = () => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const auth = useAuthContext();
   const theme = useTheme();
@@ -40,132 +43,148 @@ const Header = () => {
   };
 
   return (
-    <>
-      <AppBar
-        position="sticky"
-        elevation={0}
-        sx={{
-          background: "rgba(255,255,255,0.85)",
-          backdropFilter: "blur(12px)",
-          borderBottom: `1px solid ${theme.palette.divider}`,
-          color: theme.palette.text.primary,
-        }}
-      >
-        <Toolbar sx={{ maxWidth: 1200, width: "100%", mx: "auto", px: { xs: 2, sm: 3 } }}>
-          {/* User Account Icon */}
-          <IconButton
-            onClick={handleUserMenuOpen}
-            color="inherit"
-            aria-label="Account menu"
-            sx={{ mr: 1 }}
-          >
-            <AccountCircleIcon />
-          </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleUserMenuClose}
-            transformOrigin={{ horizontal: "left", vertical: "top" }}
-            anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
-            PaperProps={{ sx: { mt: 1, minWidth: 150 } }}
-          >
-            <MenuItem onClick={handleLogout} sx={{ color: "error.main" }}>
-              <ListItemIcon sx={{ color: "error.main", minWidth: 32 }}>
-                <LogoutIcon fontSize="small" />
-              </ListItemIcon>
-              Logout
-            </MenuItem>
-          </Menu>
+    <AppBar
+      position="sticky"
+      elevation={0}
+      sx={{
+        background: "white",
+        borderBottom: `1px solid ${theme.palette.divider}`,
+        color: theme.palette.text.primary,
+        zIndex: theme.zIndex.drawer + 1
+      }}
+    >
+      <Toolbar sx={{ width: "100%", justifyContent: "flex-end", px: { xs: 2, sm: 3 }, minHeight: '64px' }}>
+        {/* User Account Icon */}
+        <IconButton
+          onClick={handleUserMenuOpen}
+          sx={{ padding: 0 }}
+        >
+          <Avatar alt="User profile" src="/default-avatar.png" sx={{ width: 40, height: 40 }} />
+        </IconButton>
 
-          {/* Desktop Nav */}
-          <Box
-            sx={{
-              flexGrow: 1,
-              display: { xs: "none", md: "flex" },
-              justifyContent: "center",
-              alignItems: "center",
-              gap: 4,
-            }}
-          >
-            {navLinks.slice(0, 2).map((link) => (
-              <Typography
-                key={link}
-                component="a"
-                href="#"
-                sx={{
-                  fontWeight: 500,
-                  fontSize: "0.95rem",
-                  color: "inherit",
-                  textDecoration: "none",
-                  "&:hover": { color: "primary.main" },
-                  transition: "color 0.2s",
-                }}
-              >
-                {link}
-              </Typography>
-            ))}
-
-            {/* Logo center */}
-            <Image src="/next.svg" alt="Logo" width={45} height={45} />
-
-            {navLinks.slice(2).map((link) => (
-              <Typography
-                key={link}
-                component="a"
-                href="#"
-                sx={{
-                  fontWeight: 500,
-                  fontSize: "0.95rem",
-                  color: "inherit",
-                  textDecoration: "none",
-                  "&:hover": { color: "primary.main" },
-                  transition: "color 0.2s",
-                }}
-              >
-                {link}
-              </Typography>
-            ))}
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleUserMenuClose}
+          transformOrigin={{ horizontal: "right", vertical: "top" }}
+          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+          PaperProps={{
+            sx: {
+              mt: 1.5,
+              width: 340,
+              borderRadius: "12px",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+              border: `1px solid ${theme.palette.divider}`,
+              overflow: "hidden"
+            }
+          }}
+          MenuListProps={{
+            sx: { py: 0 }
+          }}
+        >
+          {/* Accounts Section */}
+          <Box sx={{ p: 2, pb: 1.5 }}>
+            <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ mb: 1.5, display: "block" }}>
+              Accounts
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", "&:hover": { opacity: 0.8 } }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                <Avatar alt="Shijin Puthur" src="/default-avatar.png" sx={{ width: 44, height: 44 }} />
+                <Box>
+                  <Typography variant="subtitle2" fontWeight={700} sx={{ fontSize: "1rem" }}>
+                    Shijin Puthur
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.8rem" }}>
+                    shijinputhur480@gmail.com
+                  </Typography>
+                </Box>
+              </Box>
+              <ChevronRight fontSize="small" sx={{ color: "text.secondary" }} />
+            </Box>
           </Box>
+          <Divider />
 
-          {/* Mobile: spacer */}
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }} />
-
-          {/* Right: Hamburger */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-            <IconButton
-              color="inherit"
-              aria-label="Open menu"
-              onClick={() => setDrawerOpen(true)}
-              sx={{ display: { md: "none" } }}
+          {/* Teams Section */}
+          <Box sx={{ p: 2 }}>
+            <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ mb: 1.5, display: "block" }}>
+              Teams
+            </Typography>
+            <Button
+              variant="outlined"
+              fullWidth
+              startIcon={<DomainOutlined />}
+              sx={{
+                color: "text.primary",
+                borderColor: "divider",
+                py: 0.8,
+                borderRadius: "8px",
+                textTransform: "none",
+                fontWeight: 600,
+                fontSize: "0.95rem",
+                "&:hover": { borderColor: "text.secondary", bgcolor: "transparent" }
+              }}
             >
-              <MenuIcon />
-            </IconButton>
+              Create team
+            </Button>
           </Box>
-        </Toolbar>
-      </AppBar>
+          <Divider />
 
-      {/* Mobile Drawer */}
-      <Drawer
-        anchor="right"
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        PaperProps={{ sx: { width: 260 } }}
-      >
-        <Box sx={{ p: 2 }}>
-          <Typography variant="h6" fontWeight={600}>
-            Menu
-          </Typography>
-        </Box>
-        <Divider />
-        <List>
-          {navLinks.map((link) => (
-            <ListItemButton key={link} onClick={() => setDrawerOpen(false)}>
-              <ListItemText primary={link} />
-            </ListItemButton>
-          ))}
-        </List>
-      </Drawer>
-    </>
+          {/* Settings Section */}
+          <Box sx={{ py: 1 }}>
+            <MenuItem sx={{ py: 1.2, px: 2 }}>
+              <ListItemIcon><SettingsOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Settings</Typography>
+            </MenuItem>
+            <MenuItem sx={{ py: 1.2, px: 2 }}>
+              <ListItemIcon><BrightnessMediumOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Theme</Typography>
+              <ChevronRight fontSize="small" sx={{ color: "text.secondary" }} />
+            </MenuItem>
+            <MenuItem sx={{ py: 1.2, px: 2 }}>
+              <ListItemIcon><InfoOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Help and resources</Typography>
+              <ChevronRight fontSize="small" sx={{ color: "text.secondary" }} />
+            </MenuItem>
+            <MenuItem sx={{ py: 1.2, px: 2 }}>
+              <ListItemIcon><GridViewOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500, display: "flex", alignItems: "center", gap: 1 }}>
+                Advanced tools
+                <Box component="span" sx={{ bgcolor: "rgba(0,0,0,0.06)", color: "text.primary", px: 0.8, py: 0.2, borderRadius: "6px", fontSize: "0.65rem", fontWeight: 700 }}>
+                  Beta
+                </Box>
+              </Typography>
+              <ChevronRight fontSize="small" sx={{ color: "text.secondary" }} />
+            </MenuItem>
+            <MenuItem sx={{ py: 1.2, px: 2 }}>
+              <ListItemIcon><WorkOutline fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Plans and pricing</Typography>
+            </MenuItem>
+            <MenuItem sx={{ py: 1.2, px: 2 }}>
+              <ListItemIcon><ShoppingCartOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Purchase history</Typography>
+            </MenuItem>
+          </Box>
+          <Divider />
+
+          {/* Apps Section */}
+          <Box sx={{ py: 1 }}>
+            <MenuItem sx={{ py: 1.2, px: 2 }}>
+              <ListItemIcon><MonitorOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Get the Canva Apps</Typography>
+            </MenuItem>
+          </Box>
+          <Divider />
+
+          {/* Logout */}
+          <Box sx={{ py: 1 }}>
+            <MenuItem onClick={handleLogout} sx={{ py: 1.2, px: 2 }}>
+              <ListItemIcon><LogoutOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Log out</Typography>
+            </MenuItem>
+          </Box>
+        </Menu>
+      </Toolbar>
+    </AppBar>
   );
 };
 

@@ -211,7 +211,6 @@ const LoginUser: React.FC = () => {
         </Typography>
       </Box>
 
-      {/* 1. Mobile Entry Button */}
       <Box
         sx={{
           display: { xs: showForm ? "none" : "flex", md: "none" },
@@ -243,9 +242,7 @@ const LoginUser: React.FC = () => {
         </Button>
       </Box>
 
-      {/* 2. Login Form Container */}
       <Box sx={{ display: { xs: showForm ? "block" : "none", md: "block" }, width: "100%" }}>
-        {/* On mobile, we use Slide. On desktop, we render directly */}
         <Box sx={{ display: { xs: "block", md: "none" } }}>
           <Slide direction="up" in={showForm} mountOnEnter unmountOnExit>
             {FormContent}
