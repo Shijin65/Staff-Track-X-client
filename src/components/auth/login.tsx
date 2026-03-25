@@ -76,10 +76,10 @@ const LoginUser: React.FC = () => {
               placeholder="kristin.watson@example.com"
               type="email"
               variant="outlined"
-              size="medium"
+              size="small"
               sx={{
                 "& .MuiOutlinedInput-root": {
-                  borderRadius: "16px",
+                  borderRadius: "12px",
                   bgcolor: "rgba(0,0,0,0.02)",
                 },
               }}
@@ -102,11 +102,11 @@ const LoginUser: React.FC = () => {
               name="user_password"
               placeholder="**********"
               required
-              size="medium"
+              size="small"
               autoComplete="current-password"
               sx={{
                 "& .MuiOutlinedInput-root": {
-                  borderRadius: "16px",
+                  borderRadius: "12px",
                   bgcolor: "rgba(0,0,0,0.02)",
                 },
               }}
@@ -131,13 +131,13 @@ const LoginUser: React.FC = () => {
           <Button
             type="submit"
             variant="contained"
-            size="large"
             fullWidth
+            size="small"
             disabled={loading}
             startIcon={loading ? <CircularProgress size={18} color="inherit" /> : undefined}
             sx={{
-              py: 1.8,
-              borderRadius: "16px",
+              py: 1,
+              borderRadius: "12px",
               fontWeight: 700,
               fontSize: "1rem",
               boxShadow: "0 8px 16px rgba(37, 99, 235, 0.25)",

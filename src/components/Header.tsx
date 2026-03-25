@@ -13,25 +13,20 @@ import {
   ListItemIcon,
   useTheme,
   Avatar,
-  Button
 } from "@mui/material";
 import {
   SettingsOutlined,
-  BrightnessMediumOutlined,
   InfoOutlined,
-  GridViewOutlined,
-  WorkOutline,
   ShoppingCartOutlined,
-  MonitorOutlined,
   LogoutOutlined,
   ChevronRight,
-  DomainOutlined
 } from "@mui/icons-material";
 import { useAuthContext } from "@/context/auth-provider";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const auth = useAuthContext();
+  const user = auth?.user?.user;
   const theme = useTheme();
 
   const handleUserMenuOpen = (e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget);
@@ -59,7 +54,7 @@ const Header = () => {
           onClick={handleUserMenuOpen}
           sx={{ padding: 0 }}
         >
-          <Avatar alt="User profile" src="/default-avatar.png" sx={{ width: 40, height: 40 }} />
+          <Avatar alt={user?.firstName || ""} src="/default-avatar.png" sx={{ width: 40, height: 40 }} />
         </IconButton>
 
         <Menu
@@ -71,7 +66,7 @@ const Header = () => {
           PaperProps={{
             sx: {
               mt: 1.5,
-              width: 340,
+              width: { xs: 280, sm: 340 },
               borderRadius: "12px",
               boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
               border: `1px solid ${theme.palette.divider}`,
@@ -91,7 +86,7 @@ const Header = () => {
               <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                 <Avatar alt="Shijin Puthur" src="/default-avatar.png" sx={{ width: 44, height: 44 }} />
                 <Box>
-                  <Typography variant="subtitle2" fontWeight={700} sx={{ fontSize: "1rem" }}>
+                  <Typography variant="subtitle2" fontWeight={700} sx={{ fontSize: { xs: "0.8rem", sm: "1rem" } }}>
                     Shijin Puthur
                   </Typography>
                   <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.8rem" }}>
@@ -104,41 +99,11 @@ const Header = () => {
           </Box>
           <Divider />
 
-          {/* Teams Section */}
-          <Box sx={{ p: 2 }}>
-            <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ mb: 1.5, display: "block" }}>
-              Teams
-            </Typography>
-            <Button
-              variant="outlined"
-              fullWidth
-              startIcon={<DomainOutlined />}
-              sx={{
-                color: "text.primary",
-                borderColor: "divider",
-                py: 0.8,
-                borderRadius: "8px",
-                textTransform: "none",
-                fontWeight: 600,
-                fontSize: "0.95rem",
-                "&:hover": { borderColor: "text.secondary", bgcolor: "transparent" }
-              }}
-            >
-              Create team
-            </Button>
-          </Box>
-          <Divider />
-
           {/* Settings Section */}
           <Box sx={{ py: 1 }}>
             <MenuItem sx={{ py: 1.2, px: 2 }}>
-              <ListItemIcon><SettingsOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
-              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Settings</Typography>
-            </MenuItem>
-            <MenuItem sx={{ py: 1.2, px: 2 }}>
-              <ListItemIcon><BrightnessMediumOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
-              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Theme</Typography>
-              <ChevronRight fontSize="small" sx={{ color: "text.secondary" }} />
+              <ListItemIcon><ShoppingCartOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Events history</Typography>
             </MenuItem>
             <MenuItem sx={{ py: 1.2, px: 2 }}>
               <ListItemIcon><InfoOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
@@ -146,31 +111,8 @@ const Header = () => {
               <ChevronRight fontSize="small" sx={{ color: "text.secondary" }} />
             </MenuItem>
             <MenuItem sx={{ py: 1.2, px: 2 }}>
-              <ListItemIcon><GridViewOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
-              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500, display: "flex", alignItems: "center", gap: 1 }}>
-                Advanced tools
-                <Box component="span" sx={{ bgcolor: "rgba(0,0,0,0.06)", color: "text.primary", px: 0.8, py: 0.2, borderRadius: "6px", fontSize: "0.65rem", fontWeight: 700 }}>
-                  Beta
-                </Box>
-              </Typography>
-              <ChevronRight fontSize="small" sx={{ color: "text.secondary" }} />
-            </MenuItem>
-            <MenuItem sx={{ py: 1.2, px: 2 }}>
-              <ListItemIcon><WorkOutline fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
-              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Plans and pricing</Typography>
-            </MenuItem>
-            <MenuItem sx={{ py: 1.2, px: 2 }}>
-              <ListItemIcon><ShoppingCartOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
-              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Purchase history</Typography>
-            </MenuItem>
-          </Box>
-          <Divider />
-
-          {/* Apps Section */}
-          <Box sx={{ py: 1 }}>
-            <MenuItem sx={{ py: 1.2, px: 2 }}>
-              <ListItemIcon><MonitorOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
-              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Get the Canva Apps</Typography>
+              <ListItemIcon><SettingsOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Settings</Typography>
             </MenuItem>
           </Box>
           <Divider />
@@ -189,3 +131,32 @@ const Header = () => {
 };
 
 export default Header;
+
+{/* <MenuItem sx={{ py: 1.2, px: 2 }}>
+              <ListItemIcon><BrightnessMediumOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Theme</Typography>
+              <ChevronRight fontSize="small" sx={{ color: "text.secondary" }} />
+            </MenuItem> 
+             <MenuItem sx={{ py: 1.2, px: 2 }}>
+              <ListItemIcon><GridViewOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500, display: "flex", alignItems: "center", gap: 1 }}>
+                Advanced tools
+                <Box component="span" sx={{ bgcolor: "rgba(0,0,0,0.06)", color: "text.primary", px: 0.8, py: 0.2, borderRadius: "6px", fontSize: "0.65rem", fontWeight: 700 }}>
+                  Beta
+                </Box>
+              </Typography>
+              <ChevronRight fontSize="small" sx={{ color: "text.secondary" }} />
+            </MenuItem> 
+            <MenuItem sx={{ py: 1.2, px: 2 }}>
+              <ListItemIcon><WorkOutline fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Plans and pricing</Typography>
+            </MenuItem>
+            
+            Apps Section
+  < Box sx = {{ py: 1 }}>
+    <MenuItem sx={{ py: 1.2, px: 2 }}>
+      <ListItemIcon><MonitorOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+      <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Get the Canva Apps</Typography>
+    </MenuItem>
+          </Box >
+  <Divider /> */}

@@ -2,17 +2,8 @@
 
 import React from "react";
 import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import PeopleIcon from "@mui/icons-material/People";
-import SettingsIcon from "@mui/icons-material/Settings";
-import EventIcon from "@mui/icons-material/Event";
+import { navItems } from "@/lib/utils/constance";
 
-const menuItems = [
-  { text: "Dashboard", icon: <DashboardIcon /> },
-  { text: "Events", icon: <EventIcon /> },
-  { text: "Staff", icon: <PeopleIcon /> },
-  { text: "Settings", icon: <SettingsIcon /> },
-];
 
 export const Sidebar = () => {
   return (
@@ -20,7 +11,7 @@ export const Sidebar = () => {
       sx={{
         width: 260,
         flexShrink: 0,
-        display: { xs: "none", md: "block" }, // Hide on mobile
+        display: { xs: "none", md: "block" },
         borderRight: "1px solid",
         borderColor: "divider",
         bgcolor: "background.paper",
@@ -29,14 +20,31 @@ export const Sidebar = () => {
         top: 0,
       }}
     >
-      <Box sx={{ p: 3, display: "flex", alignItems: "center", gap: 2 }}>
-        <Typography variant="h5" fontWeight={800} color="primary" sx={{ letterSpacing: 1 }}>
-          StaffTrack<span style={{ fontStyle: "italic", fontSize: "1.6rem" }}>X</span>
+      <Box sx={{ p: 3, pb: 4, display: "flex", alignItems: "center", gap: 1.5 }}>
+        <Box
+          sx={{
+            width: 42,
+            height: 42,
+            borderRadius: "12px",
+            background: "linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "white",
+            fontWeight: 900,
+            fontSize: "1.4rem",
+            boxShadow: "0 8px 16px rgba(25, 118, 210, 0.25)",
+          }}
+        >
+          S
+        </Box>
+        <Typography variant="h6" fontWeight={800} sx={{ letterSpacing: 0.5, color: "text.primary" }}>
+          StaffTrack<Box component="span" sx={{ color: "#1976d2", fontStyle: "italic", fontSize: "1.4rem", ml: 0.2 }}>X</Box>
         </Typography>
       </Box>
       <List sx={{ px: 2 }}>
-        {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
+        {navItems.map((item) => (
+          <ListItem key={item.label} disablePadding sx={{ mb: 1 }}>
             <ListItemButton
               sx={{
 
@@ -53,9 +61,9 @@ export const Sidebar = () => {
               <ListItemIcon sx={{ minWidth: 40, color: "text.secondary" }}>
                 {item.icon}
               </ListItemIcon>
-              <ListItemText 
-                primary={item.text} 
-                primaryTypographyProps={{ fontWeight: 600, fontSize: "0.95rem" }} 
+              <ListItemText
+                primary={item.label}
+                primaryTypographyProps={{ fontWeight: 600, fontSize: "0.95rem" }}
               />
             </ListItemButton>
           </ListItem>

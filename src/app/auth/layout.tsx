@@ -12,12 +12,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         display: "flex",
         flexDirection: { xs: "column", md: "row" },
         minHeight: "100vh",
-        bgcolor: "background.default",
         position: "relative",
         overflow: "hidden",
       }}
     >
-      {/* Decorative Header / Background Background (Fixed/Absolute on mobile, Side panel on desktop) */}
       <Box
         sx={{
           display: { xs: "block", md: "flex" },
@@ -30,10 +28,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           width: { xs: "100%", md: "50%" },
           zIndex: 0,
           overflow: "hidden",
-          order: { xs: 1, md: 2 }, // Last on desktop
+          order: { xs: 1, md: 2 },
         }}
       >
-        {/* Mobile Background Image (Controlled via CSS) */}
         <Box sx={{ display: { xs: "block", md: "none" }, position: "absolute", inset: 0 }}>
           <Image
             src="/blue_modern_abstract_background.svg"
@@ -44,7 +41,6 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           />
         </Box>
 
-        {/* Desktop Background Image (Controlled via CSS) */}
         <Box sx={{ display: { xs: "none", md: "block" }, position: "absolute", inset: 0 }}>
           <Image
             src="/management_background.svg"
@@ -55,18 +51,16 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           />
         </Box>
 
-        {/* Gradient overlays based on screen size */}
         <Box
           sx={{
             position: "absolute",
             inset: 0,
             background: {
               xs: "linear-gradient(180deg, rgba(37, 99, 235, 0.1) 0%, rgba(37, 99, 235, 0.2) 100%)",
-              md: "linear-gradient(225deg, rgba(0,0,0,0.5) 0%, transparent 100%)", // Slant gradient towards the right side
+              md: "linear-gradient(225deg, rgba(0,0,0,0.5) 0%, transparent 100%)",
             },
           }}
         />
-        {/* Desktop Specific Content Panel */}
         <Box
           sx={{
             display: { xs: "none", md: "flex" },
@@ -91,18 +85,17 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </Box>
       </Box>
 
-      {/* Login form content area (layered on top) */}
       <Box
         sx={{
           flex: 1,
           display: "flex",
-          alignItems: { xs: "flex-end", md: "center" }, // Bottom align on mobile
+          alignItems: { xs: "flex-end", md: "center" },
           justifyContent: "center",
           zIndex: 5,
           position: "relative",
           minHeight: "100vh",
           p: { xs: 0, md: 6 },
-          order: { xs: 2, md: 1 }, // First on desktop
+          order: { xs: 2, md: 1 },
         }}
       >
         <Box sx={{ width: "100%", maxWidth: 440, p: { xs: 0, md: 0 } }}>

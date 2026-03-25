@@ -3,13 +3,15 @@
 .root {
   background-color: #F8FAFC;
 }
+
 /* globals.css */
-input:-webkit-autofill ~ label,
-input:-webkit-autofill:hover ~ label,
-input:-webkit-autofill:focus ~ label {
+input:-webkit-autofill~label,
+input:-webkit-autofill:hover~label,
+input:-webkit-autofill:focus~label {
   transform: translate(14px, -9px) scale(0.75) !important;
   color: rgba(0, 0, 0, 0.6) !important;
 }
+
 @keyframes spinSlow {
   to {
     transform: rotate(360deg);
