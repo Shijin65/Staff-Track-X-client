@@ -54,7 +54,7 @@ const Header = () => {
           onClick={handleUserMenuOpen}
           sx={{ padding: 0 }}
         >
-          <Avatar alt={user?.firstName || ""} src="/default-avatar.png" sx={{ width: 40, height: 40 }} />
+          <Avatar alt={user?.firstName || ""} src="/default-avatar.jpg" sx={{ width: 40, height: 40 }} />
         </IconButton>
 
         <Menu
@@ -84,13 +84,13 @@ const Header = () => {
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", "&:hover": { opacity: 0.8 } }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                <Avatar alt="Shijin Puthur" src="/default-avatar.png" sx={{ width: 44, height: 44 }} />
+                <Avatar alt={user?.firstName || ""} src="/default-avatar.jpg" sx={{ width: 44, height: 44 }} />
                 <Box>
                   <Typography variant="subtitle2" fontWeight={700} sx={{ fontSize: { xs: "0.8rem", sm: "1rem" } }}>
-                    Shijin Puthur
+                    {user?.firstName + " " + user?.lastName}
                   </Typography>
                   <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.8rem" }}>
-                    shijinputhur480@gmail.com
+                    {user?.email}
                   </Typography>
                 </Box>
               </Box>

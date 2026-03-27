@@ -12,7 +12,6 @@ import {
   InputAdornment,
   Checkbox,
   FormControlLabel,
-  Divider,
   Slide,
 } from "@mui/material";
 import { useAuthContext } from "@/context/auth-provider";
@@ -52,6 +51,8 @@ const LoginUser: React.FC = () => {
         borderTopRightRadius: { xs: "30px", md: 0 },
         p: { xs: 4, md: 0 },
         boxShadow: { xs: "0 -10px 40px rgba(0,0,0,0.05)", md: "none" },
+        position: "relative",
+        zIndex: 20,
       }}
     >
       <Box sx={{ mb: 4, textAlign: { xs: "center", md: "left" } }}>
@@ -149,27 +150,6 @@ const LoginUser: React.FC = () => {
         </Box>
       </form>
 
-      <Box sx={{ mt: 5 }}>
-        <Divider>
-          <Typography variant="caption" color="text.secondary">Or sign in with</Typography>
-        </Divider>
-        <Box sx={{ display: "flex", justifyContent: "center", gap: 3, mt: 3 }}>
-          <Typography variant="caption" color="text.secondary">Other ways for login not available yet</Typography>
-          {/* <IconButton sx={{ border: "1px solid", borderColor: "divider", p: 1.5 }}>
-            <Facebook sx={{ color: "#1877F2" }} />
-          </IconButton>
-          <IconButton sx={{ border: "1px solid", borderColor: "divider", p: 1.5 }}>
-            <Twitter sx={{ color: "#1DA1F2" }} />
-          </IconButton>
-          <IconButton sx={{ border: "1px solid", borderColor: "divider", p: 1.5 }}>
-            <Google sx={{ color: "#EA4335" }} />
-          </IconButton>
-          <IconButton sx={{ border: "1px solid", borderColor: "divider", p: 1.5 }}>
-            <Apple sx={{ color: "#000000" }} />
-          </IconButton> */}
-        </Box>
-      </Box>
-
       <Typography variant="body2" sx={{ textAlign: "center", mt: 5, color: "text.secondary" }}>
         Unable to access your account?{" "}
         <Link href="#" underline="hover" color="primary" fontWeight={700}>
@@ -181,7 +161,6 @@ const LoginUser: React.FC = () => {
 
   return (
     <Box sx={{ width: "100%", position: "relative" }}>
-      {/* Animated CFX Logo and Name for Mobile */}
       <Box
         sx={{
           display: { xs: "flex", md: "none" },
@@ -192,7 +171,7 @@ const LoginUser: React.FC = () => {
           transform: "translateX(-50%)",
           top: showForm ? "3vh" : "38vh",
           transition: "top 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-          zIndex: 20,
+          zIndex: 10,
           gap: 1,
         }}
       >
@@ -225,14 +204,12 @@ const LoginUser: React.FC = () => {
         <Button
           variant="contained"
           onClick={() => setShowForm(true)}
+          size="large"
           sx={{
             bgcolor: "white",
             color: "primary.main",
             fontWeight: 800,
-            px: 10,
-            py: 2.2,
             borderRadius: "32px",
-            fontSize: "1.1rem",
             boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
             "&:hover": { bgcolor: "#f5f5f5" },
             textTransform: "none",
