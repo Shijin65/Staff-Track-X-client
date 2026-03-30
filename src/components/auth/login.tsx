@@ -22,11 +22,13 @@ import {
   EmailOutlined,
   LockOutlined,
 } from "@mui/icons-material";
+import { useToast } from "@/lib/store/useToastStore";
 
 const LoginUser: React.FC = () => {
   const { loading, setLoading } = useLoader();
   const { login } = useAuthContext();
   const [showForm, setShowForm] = React.useState(false);
+  const toast = useToast();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,8 +38,10 @@ const LoginUser: React.FC = () => {
       const email = (form.elements.namedItem("user_email") as HTMLInputElement).value;
       const password = (form.elements.namedItem("user_password") as HTMLInputElement).value;
       await login({ email, password });
-    } catch (error) {
+      toast.success(`Login successful ${email},${password}`);
+    } catch (error: any) {
       console.log(error);
+      toast.error("Failed to login");
     } finally {
       setLoading(false);
     }
@@ -63,7 +67,7 @@ const LoginUser: React.FC = () => {
         </Typography>
       </Box>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} suppressHydrationWarning>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           <Box>
             <Typography variant="body2" fontWeight={600} sx={{ mb: 1, ml: 0.5 }}>
@@ -83,6 +87,7 @@ const LoginUser: React.FC = () => {
                   bgcolor: "rgba(0,0,0,0.02)",
                 },
               }}
+              inputProps={{ suppressHydrationWarning: true }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -104,6 +109,7 @@ const LoginUser: React.FC = () => {
               required
               size="small"
               autoComplete="current-password"
+              inputProps={{ suppressHydrationWarning: true }}
               sx={{
                 "& .MuiOutlinedInput-root": {
                   borderRadius: "12px",
@@ -120,7 +126,7 @@ const LoginUser: React.FC = () => {
 
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: -1 }}>
             <FormControlLabel
-              control={<Checkbox size="small" sx={{ color: "primary.main" }} />}
+              control={<Checkbox size="small" sx={{ color: "primary.main" }} inputProps={{ suppressHydrationWarning: true } as any} />}
               label={<Typography variant="caption" color="text.secondary">Remember me</Typography>}
             />
             <Link href="#" variant="caption" underline="hover" color="primary" fontWeight={600}>

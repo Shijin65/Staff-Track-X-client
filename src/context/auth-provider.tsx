@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useUserStore } from "@/lib/store";
 import Cookies from "js-cookie";
 import { useAxios } from "@/lib/hooks/useAxios";
+import { useToast } from "@/lib/store/useToastStore";
 
   interface User {
   user: {
@@ -43,6 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const axiosBase = useAxios()
   const [loading, setLoading] = useState<boolean>(false);
+  const toast = useToast();
 
   const user = useUserStore((state) => state.user);
   const setUserStore = useUserStore((state) => state.setUser);
@@ -63,7 +65,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUserStore(userData);
       setLoading(false)
       router.push("/");
-    } catch (error) {
+    } catch (error:any) {
+      toast.error("Failed to login");
       console.log(error)
       setLoading(false)
     }
