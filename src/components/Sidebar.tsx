@@ -11,7 +11,8 @@ export const Sidebar = () => {
       sx={{
         width: 260,
         flexShrink: 0,
-        display: { xs: "none", md: "block" },
+        display: { xs: "none", md: "flex" },
+        flexDirection: "column", 
         borderRight: "1px solid",
         borderColor: "divider",
         bgcolor: "background.paper",
@@ -42,15 +43,15 @@ export const Sidebar = () => {
           StaffTrack<Box component="span" sx={{ color: "#1976d2", fontStyle: "italic", fontSize: "1.4rem", ml: 0.2 }}>X</Box>
         </Typography>
       </Box>
-      <List sx={{ px: 2 }}>
-        {navItems.map((item) => (
+
+      <List sx={{ px: 2, flexGrow: 1, overflowY: "auto" }}>
+        {navItems.slice(0, -1).map((item) => (
           <ListItem key={item.label} disablePadding sx={{ mb: 1 }}>
             <ListItemButton
               sx={{
-
                 borderRadius: 3,
                 "&:hover": {
-                  bgcolor: "rgba(37, 99, 235, 0.08)", // Blue transparent background
+                  bgcolor: "rgba(37, 99, 235, 0.08)",
                   color: "primary.main",
                   "& .MuiListItemIcon-root": {
                     color: "primary.main",
@@ -69,6 +70,31 @@ export const Sidebar = () => {
           </ListItem>
         ))}
       </List>
+
+      <Box sx={{ px: 2, pb: 2 }}>
+        <ListItem disablePadding>
+          <ListItemButton
+            sx={{
+              borderRadius: 3,
+              "&:hover": {
+                bgcolor: "rgba(37, 99, 235, 0.08)",
+                color: "primary.main",
+                "& .MuiListItemIcon-root": {
+                  color: "primary.main",
+                },
+              },
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 40, color: "text.secondary" }}>
+              {navItems[navItems.length - 1].icon}
+            </ListItemIcon>
+            <ListItemText
+              primary={navItems[navItems.length - 1].label}
+              primaryTypographyProps={{ fontWeight: 600, fontSize: "0.95rem" }}
+            />
+          </ListItemButton>
+        </ListItem>
+      </Box>
     </Box>
   );
 };
