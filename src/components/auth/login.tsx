@@ -53,14 +53,14 @@ const LoginUser: React.FC = () => {
         bgcolor: { xs: "white", md: "transparent" },
         borderTopLeftRadius: { xs: "30px", md: 0 },
         borderTopRightRadius: { xs: "30px", md: 0 },
-        p: { xs: 4, md: 0 },
+        p: { xs: 3, md: 0 },
         boxShadow: { xs: "0 -10px 40px rgba(0,0,0,0.05)", md: "none" },
         position: "relative",
         zIndex: 20,
       }}
     >
-      <Box sx={{ mb: 4, textAlign: { xs: "center", md: "left" } }}>
-        <Typography variant="h4" fontWeight={800} color="primary" sx={{ mb: 1 }}>
+      <Box sx={{ mb: { xs: 2.5, md: 4 }, textAlign: { xs: "center", md: "left" } }}>
+        <Typography variant="h4" fontWeight={800} color="primary" sx={{ mb: 1, fontSize: { xs: "1.75rem", md: "2.125rem" } }}>
           Welcome back
         </Typography>
         <Typography variant="body2" color="text.secondary">
@@ -69,7 +69,7 @@ const LoginUser: React.FC = () => {
       </Box>
 
       <form onSubmit={handleSubmit} suppressHydrationWarning>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: { xs: 2, md: 3 } }}>
           <Box>
             <Typography variant="body2" fontWeight={600} sx={{ mb: 1, ml: 0.5 }}>
               Email
@@ -156,7 +156,7 @@ const LoginUser: React.FC = () => {
         </Box>
       </form>
 
-      <Typography variant="body2" sx={{ textAlign: "center", mt: 5, color: "text.secondary" }}>
+      <Typography variant="body2" sx={{ textAlign: "center", mt: { xs: 3, md: 5 }, color: "text.secondary" }}>
         Unable to access your account?{" "}
         <Link href="#" underline="hover" color="primary" fontWeight={700}>
           Contact Support
@@ -175,24 +175,32 @@ const LoginUser: React.FC = () => {
           position: "fixed",
           left: "50%",
           transform: "translateX(-50%)",
-          top: showForm ? "3vh" : "38vh",
+          top: showForm ? "2vh" : "38vh",
           transition: "top 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           zIndex: 10,
-          gap: 1,
+          gap: 0.5,
         }}
       >
-        <NextImage src="/cfx_logo.png" alt="Logo" width={140} height={40} priority style={{ objectFit: "contain" }} />
+        <NextImage 
+          src="/cfx_logo.png" 
+          alt="Logo" 
+          width={showForm ? 110 : 140} 
+          height={showForm ? 32 : 40} 
+          priority 
+          style={{ objectFit: "contain", transition: "all 0.3s" }} 
+        />
         <Typography
           variant="h6"
           sx={{
             color: "rgba(255, 255, 255, 0.8)",
             fontWeight: 700,
-            fontSize: "1.2rem",
+            fontSize: showForm ? "1rem" : "1.2rem",
             letterSpacing: "0.1em",
             textTransform: "uppercase",
+            transition: "all 0.3s",
           }}
         >
-          StaffTrack<span style={{ fontStyle: "italic", fontWeight: 800, fontSize: "1.5rem" }}>X</span>
+          StaffTrack<span style={{ fontStyle: "italic", fontWeight: 800, fontSize: showForm ? "1.2rem" : "1.5rem" }}>X</span>
         </Typography>
       </Box>
 
