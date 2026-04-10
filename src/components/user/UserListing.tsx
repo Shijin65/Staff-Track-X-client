@@ -17,10 +17,10 @@ import {
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { EnhancedTable } from "@/components/table/EnhancedTable";
-import { UserData } from "@/lib/mock/users";
-import { useAxios } from "@/lib/hooks/useAxios";
+
 import { CustomModal as Modal } from "@/components/ui/modal";
 import UserDelete from "./UserDelete";
+import { UserRow } from "./user-type";
 
 type Order = "asc" | "desc";
 
@@ -32,14 +32,6 @@ type ApiUser = {
   isActive: boolean;
   isSuperAdmin: boolean;
   updatedAt: string;
-};
-
-type UserRow = {
-  id: string;
-  fullName: string;
-  email: string;
-  isActive: string;
-  verification: string;
 };
 
 type Column<T> = {
@@ -55,7 +47,6 @@ type UserListingProps = {
 }
 
 export const UserListing = ({ order, orderBy, setOrder, setOrderBy }: UserListingProps) => {
-  const api = useAxios();
   const { data, error, isLoading, mutate } = useSWR("/api/users");
 
 
