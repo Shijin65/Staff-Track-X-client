@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Paper,
   BottomNavigation,
@@ -8,10 +8,11 @@ import {
   Box,
 } from "@mui/material";
 import { navItems } from "@/lib/utils/constance";
+import { usePathname, useRouter } from "next/navigation";
+
 export const BottomNav = () => {
-  const [value, setValue] = useState(0);
-
-
+  const pathname = usePathname();
+  const router = useRouter();
   return (
     <Paper
       elevation={0}
@@ -30,15 +31,17 @@ export const BottomNav = () => {
       }}
     >
       <BottomNavigation
-        value={value}
-        onChange={(event, newValue) => setValue(newValue)}
+        value={navItems.findIndex(item => item.path === pathname)}
+        onChange={(event, newValue) => {
+          router.push(navItems[newValue].path);
+        }}
         sx={{
           height: 70,
           background: "transparent",
         }}
       >
         {navItems.map((item, index) => {
-          const isSelected = value === index;
+          const isSelected = pathname === item.path;
 
           return (
             <BottomNavigationAction

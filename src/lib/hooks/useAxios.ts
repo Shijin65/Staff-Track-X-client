@@ -26,7 +26,7 @@ export const useAxios = () => {
       );
       setUser({
         user: data.payload.user,
-        availableAccess: data.payload.permissions,
+        availableAccess: data.payload.availableAccess,
       });
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {

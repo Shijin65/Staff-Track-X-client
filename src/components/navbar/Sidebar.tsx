@@ -3,9 +3,13 @@
 import React from "react";
 import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
 import { navItems } from "@/lib/utils/constance";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 
 export const Sidebar = () => {
+  const pathname = usePathname();
+
   return (
     <Box
       sx={{
@@ -45,11 +49,20 @@ export const Sidebar = () => {
       </Box>
 
       <List sx={{ px: 2, flexGrow: 1, overflowY: "auto" }}>
-        {navItems.slice(0, -1).map((item) => (
+        {navItems.slice(0, -1).map((item) => {
+          const isActive = pathname === item.path;
+          return (
           <ListItem key={item.label} disablePadding sx={{ mb: 1 }}>
             <ListItemButton
+              component={Link}
+              href={item.path}
               sx={{
                 borderRadius: 3,
+                bgcolor: isActive ? "rgba(37, 99, 235, 0.08)" : "transparent",
+                color: isActive ? "primary.main" : "inherit",
+                "& .MuiListItemIcon-root": {
+                  color: isActive ? "primary.main" : "text.secondary",
+                },
                 "&:hover": {
                   bgcolor: "rgba(37, 99, 235, 0.08)",
                   color: "primary.main",
@@ -59,23 +72,30 @@ export const Sidebar = () => {
                 },
               }}
             >
-              <ListItemIcon sx={{ minWidth: 40, color: "text.secondary" }}>
+              <ListItemIcon sx={{ minWidth: 40 }}>
                 {item.icon}
               </ListItemIcon>
               <ListItemText
                 primary={item.label}
-                primaryTypographyProps={{ fontWeight: 600, fontSize: "0.95rem" }}
+                primaryTypographyProps={{ fontWeight: isActive ? 700 : 600, fontSize: "0.95rem" }}
               />
             </ListItemButton>
           </ListItem>
-        ))}
+        )})}
       </List>
 
       <Box sx={{ px: 2, pb: 2 }}>
         <ListItem disablePadding>
           <ListItemButton
+            component={Link}
+            href={navItems[navItems.length - 1].path}
             sx={{
               borderRadius: 3,
+              bgcolor: pathname === navItems[navItems.length - 1].path ? "rgba(37, 99, 235, 0.08)" : "transparent",
+              color: pathname === navItems[navItems.length - 1].path ? "primary.main" : "inherit",
+              "& .MuiListItemIcon-root": {
+                color: pathname === navItems[navItems.length - 1].path ? "primary.main" : "text.secondary",
+              },
               "&:hover": {
                 bgcolor: "rgba(37, 99, 235, 0.08)",
                 color: "primary.main",
@@ -85,12 +105,12 @@ export const Sidebar = () => {
               },
             }}
           >
-            <ListItemIcon sx={{ minWidth: 40, color: "text.secondary" }}>
+            <ListItemIcon sx={{ minWidth: 40 }}>
               {navItems[navItems.length - 1].icon}
             </ListItemIcon>
             <ListItemText
               primary={navItems[navItems.length - 1].label}
-              primaryTypographyProps={{ fontWeight: 600, fontSize: "0.95rem" }}
+              primaryTypographyProps={{ fontWeight: pathname === navItems[navItems.length - 1].path ? 700 : 600, fontSize: "0.95rem" }}
             />
           </ListItemButton>
         </ListItem>

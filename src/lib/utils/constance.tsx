@@ -11,9 +11,9 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 export const API_URL = "http://localhost:5000";
 
 export const navItems = [
-  { label: "Overview", icon: <DashboardOutlined /> },
-  { label: "Events", icon: <EventOutlined /> },
-  { label: "Create", icon: <AddCircleOutlineIcon /> },
-  { label: "Staff", icon: <PeopleAltOutlined /> },
-  { label: "Settings", icon: <SettingsOutlined /> },
-];
+  { label: "Overview", icon: <DashboardOutlined />, path: "/" },
+  { label: "Events", icon: <EventOutlined />, path: "/events" },
+  { label: "Create", icon: <AddCircleOutlineIcon />, path: "/events/create" },
+  { label: "Users", icon: <PeopleAltOutlined />, path: "/users" },
+  { label: "Settings", icon: <SettingsOutlined />, path: "/settings" },
+];  
