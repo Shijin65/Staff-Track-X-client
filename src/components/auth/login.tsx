@@ -38,7 +38,7 @@ const LoginUser: React.FC = () => {
       const password = (form.elements.namedItem("user_password") as HTMLInputElement).value;
       await login({ email, password });
       toast.success(`Login successful ${email},${password}`);
-    } catch (error: any) {
+    } catch (error) {
       console.log(error);
       toast.error("Failed to login");
     } finally {
@@ -127,7 +127,7 @@ const LoginUser: React.FC = () => {
 
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: -1 }}>
             <FormControlLabel
-              control={<Checkbox size="small" sx={{ color: "primary.main" }} inputProps={{ suppressHydrationWarning: true } as any} />}
+              control={<Checkbox size="small" sx={{ color: "primary.main" }} inputProps={{ suppressHydrationWarning: true }} />}
               label={<Typography variant="caption" color="text.secondary">Remember me</Typography>}
             />
             <Link href="#" variant="caption" underline="hover" color="primary" fontWeight={600}>

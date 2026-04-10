@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUserStore(userData);
       setLoading(false)
       router.push("/");
-    } catch (error:any) {
+    } catch (error:unknown) {
       toast.error("Failed to login");
       console.log(error)
       setLoading(false)

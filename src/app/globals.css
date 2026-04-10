@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
-.root {
-  background-color: #F8FAFC;
+.root, body {
+  background-color: #f3f6fa;
 }
 
 /* globals.css */
