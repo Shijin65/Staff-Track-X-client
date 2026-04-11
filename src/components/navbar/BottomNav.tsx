@@ -59,7 +59,7 @@ export const BottomNav = () => {
                     borderRadius: "12px",
                     transition: "all 0.3s ease",
                     background: isSelected
-                      ? "linear-gradient(135deg, #1976d2, #42a5f5)"
+                      ? "var(--primary-gradient)"
                       : "transparent",
                     color: isSelected ? "#fff" : "text.secondary",
                   }}

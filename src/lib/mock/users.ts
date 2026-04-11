@@ -34,6 +34,10 @@ export interface UserData {
     rating: number;
     comment: string;
   }>;
+  permissions?: Array<{
+    name: string;
+    is_access: boolean;
+  }>;
 }
 
 export const initialUsers: UserData[] = [

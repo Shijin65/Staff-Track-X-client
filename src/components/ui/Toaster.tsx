@@ -9,7 +9,12 @@ function TransitionRight(props: SlideProps) {
 }
 
 export const Toaster = () => {
+  const [mounted, setMounted] = React.useState(false);
   const { toasts, removeToast } = useToastStore();
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const getAlertColor = (type: ToastType) => {
     switch (type) {
@@ -20,6 +25,8 @@ export const Toaster = () => {
       default: return "info";
     }
   };
+
+  if (!mounted) return null;
 
   return (
     <Stack

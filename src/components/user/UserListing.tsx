@@ -115,12 +115,12 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy }: UserListin
             pl: { sm: 2 },
             p: { xs: 2, sm: 2 },
             ...(selected.length > 0 && {
-              bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+              bgcolor: (theme) => `rgba(var(--primary-rgb), ${theme.palette.action.activatedOpacity})`,
             }),
           }}
         >
           <Typography sx={{ flex: "1 1 100%", fontWeight: 600, marginLeft: 1 }} variant="h6" component="div">
-            Users Database
+            Users Management
           </Typography>
 
           <Tooltip title="Add">

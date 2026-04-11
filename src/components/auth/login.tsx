@@ -147,7 +147,7 @@ const LoginUser: React.FC = () => {
               borderRadius: "12px",
               fontWeight: 700,
               fontSize: "1rem",
-              boxShadow: "0 8px 16px rgba(37, 99, 235, 0.25)",
+              boxShadow: "var(--primary-shadow)",
               textTransform: "none",
             }}
           >
@@ -175,7 +175,7 @@ const LoginUser: React.FC = () => {
           position: "fixed",
           left: "50%",
           transform: "translateX(-50%)",
-          top: showForm ? "2vh" : "38vh",
+          top: showForm ? "10dvh" : "38dvh",
           transition: "top 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           zIndex: 10,
           gap: 0.5,
@@ -210,7 +210,7 @@ const LoginUser: React.FC = () => {
           flexDirection: "column",
           justifyContent: "flex-end",
           alignItems: "center",
-          height: "100vh",
+          height: "100dvh",
           pb: 10,
           width: "100%",
         }}
@@ -225,7 +225,7 @@ const LoginUser: React.FC = () => {
             fontWeight: 800,
             borderRadius: "32px",
             boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
-            "&:hover": { bgcolor: "#f5f5f5" },
+            "&:hover": { bgcolor: "var(--background)" },
             textTransform: "none",
           }}
         >

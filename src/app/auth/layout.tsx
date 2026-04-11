@@ -11,7 +11,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       sx={{
         display: "flex",
         flexDirection: { xs: "column", md: "row" },
-        minHeight: "100dvh",
+        height: "100dvh",
         position: "relative",
         overflow: "hidden",
       }}
@@ -93,7 +93,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           justifyContent: "center",
           zIndex: 5,
           position: "relative",
-          minHeight: "100dvh",
+          height: "100dvh",
           p: { xs: 0, md: 6 },
           order: { xs: 2, md: 1 },
         }}

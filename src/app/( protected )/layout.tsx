@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+
 import { SWRConfig } from "swr";
 import Header from "@/components/navbar/Header";
 import Sidebar from "@/components/navbar/Sidebar";
@@ -22,6 +24,15 @@ export default function ProtectedLayout({
     isLandingPage: true,
   });
 
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Return null on server and initial client render to avoid hydration mismatch
+  if (!mounted) return null;
+
   if (!user) {
     return (
       <Backdrop open sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -36,7 +47,7 @@ export default function ProtectedLayout({
         <Sidebar />
         <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1, minWidth: 0 }}>
           <Header />
-          <Box component="main" sx={{ flexGrow: 1, p: { xs: 1, md: 2 }, pb: { xs: 10, md: 4 } }}>
+          <Box component="main" sx={{ flexGrow: 1, p: { xs: 0, md: 2 }, pb: { xs: 10, md: 4 } }}>
             {children}
           </Box>
           <BottomNav />

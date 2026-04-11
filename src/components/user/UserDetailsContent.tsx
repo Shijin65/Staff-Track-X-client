@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -13,14 +13,17 @@ import {
   Tabs,
   Tab,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  CircularProgress
 } from '@mui/material';
 import {
   Verified as VerifiedIcon,
   Star as StarIcon,
   Person as PersonIcon,
   ContactPage as ContactIcon,
-  History as HistoryIcon
+  History as HistoryIcon,
+  Security as SecurityIcon,
+  Badge as BadgeIcon,
 } from '@mui/icons-material';
 import { UserData } from '@/lib/mock/users';
 
@@ -52,23 +55,38 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [tabValue, setTabValue] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const userEvents = user.recentEvents || [];
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
+  if (!mounted) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 8 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   const renderPersonal = () => (
     <Stack id="personal-section-stack" spacing={2.5}>
       <Paper id="personal-info-card" elevation={0} sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 4, border: '1px solid', borderColor: 'divider' }}>
         <SectionHeader title="Personal Information" icon={<PersonIcon color="primary" fontSize="small" />} />
-        <Grid container spacing={2}>
+        <Grid container spacing={{ xs: 0, md: 2 }}>
           <Grid size={{ xs: 12, sm: 6 }}>
             <InfoRow label="First Name" value={user.firstName} />
+            <InfoRow label="Last Name" value={user.lastName} />
             <InfoRow label="Gender" value={user.gender} />
-            <InfoRow label="Blood Group" value={user.bloodGroup} />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <InfoRow label="Last Name" value={user.lastName} />
+            <InfoRow label="Blood Group" value={user.bloodGroup} />
             <InfoRow label="Date of Birth" value={user.dateOfBirth} />
           </Grid>
         </Grid>
@@ -92,35 +110,89 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
           </Grid>
         </Grid>
       </Paper>
-    </Stack>
-  );
 
-  const renderContacts = () => (
-    <Stack id="contact-section-stack" spacing={2.5}>
       <Paper id="contact-info-card" elevation={0} sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 4, border: '1px solid', borderColor: 'divider' }}>
         <SectionHeader title="Contact Information" icon={<ContactIcon color="primary" fontSize="small" />} />
         <InfoRow label="Mobile Number" value={user.mobileNumber} />
         <InfoRow label="Email Address" value={user.email} />
         <InfoRow label="Emergency Contact" value={user.emergencyContact} />
       </Paper>
+    </Stack>
+  );
 
+  const renderPermissions = () => (
+    <Stack id="permissions-section-stack" spacing={2.5}>
       <Paper id="status-badges-card" elevation={0} sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 4, border: '1px solid', borderColor: 'divider', bgcolor: 'primary.main', color: 'white' }}>
         <Typography variant="h6" fontWeight={700} gutterBottom>Status & Badges</Typography>
         <Stack direction="row" spacing={1.5} sx={{ mt: 2 }}>
-          <Chip 
-            label={user.verification} 
-            icon={<VerifiedIcon style={{ color: user.verification === 'Verified' ? 'white' : '#cbd5e1' }} />} 
-            sx={{ 
-              bgcolor: user.verification === 'Verified' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)', 
-              color: 'white', 
-              fontWeight: 700 
-            }} 
+          <Chip
+            label={user.verification}
+            icon={<VerifiedIcon style={{ color: user.verification === 'Verified' ? 'white' : '#cbd5e1' }} />}
+            sx={{
+              bgcolor: user.verification === 'Verified' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)',
+              color: 'white',
+              fontWeight: 700
+            }}
           />
-          <Chip 
-            label={user.isActive ? 'Active Member' : 'Inactive'} 
-            sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white', fontWeight: 700 }} 
+          <Chip
+            label={user.isActive ? 'Active Member' : 'Inactive'}
+            sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white', fontWeight: 700 }}
           />
         </Stack>
+      </Paper>
+
+      <Paper id="permissions-card" elevation={0} sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 4, border: '1px solid', borderColor: 'divider' }}>
+        <SectionHeader title="Account Permissions" icon={<SecurityIcon color="primary" fontSize="small" />} />
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1, fontWeight: 500 }}>
+            Assigned Role
+          </Typography>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <BadgeIcon sx={{ color: 'primary.main', fontSize: '1.2rem' }} />
+            <Typography variant="body1" fontWeight={700}>
+              {user.role} (ID: {user.roleId})
+            </Typography>
+          </Stack>
+        </Box>
+        <Divider sx={{ mb: 3, borderStyle: 'dashed' }} />
+        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2, fontWeight: 500 }}>
+          Access Rights
+        </Typography>
+        <Grid container spacing={1.5}>
+          {user.permissions?.map((perm) => (
+            <Grid size={{ xs: 12, sm: 6 }} key={perm.name}>
+              <Box
+                sx={{
+                  p: 1.5,
+                  borderRadius: 2,
+                  bgcolor: perm.is_access ? 'rgba(0,183,121,0.05)' : 'rgba(239,68,68,0.05)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  border: '1px solid',
+                  borderColor: perm.is_access ? 'success.light' : 'error.light',
+                  opacity: perm.is_access ? 1 : 0.7
+                }}
+              >
+                <Typography variant="body2" fontWeight={600} sx={{ textTransform: 'capitalize' }}>
+                  {perm.name.replace(/_/g, ' ')}
+                </Typography>
+                <Chip
+                  label={perm.is_access ? 'Allowed' : 'Denied'}
+                  size="small"
+                  color={perm.is_access ? 'success' : 'error'}
+                  sx={{ height: 20, fontSize: '0.65rem', fontWeight: 800 }}
+                />
+              </Box>
+            </Grid>
+          )) || (
+              <Grid size={12}>
+                <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                  No specific permissions assigned.
+                </Typography>
+              </Grid>
+            )}
+        </Grid>
       </Paper>
     </Stack>
   );
@@ -128,34 +200,40 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
   const renderEvents = () => (
     <Paper id="event-participation-card" elevation={0} sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 4, border: '1px solid', borderColor: 'divider' }}>
       <SectionHeader title="Event Participation" icon={<HistoryIcon color="primary" fontSize="small" />} />
-      <Grid container spacing={2}>
-        {user.recentEvents?.map((event) => (
-          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={event.id}>
-            <Paper 
-              variant="outlined" 
-              sx={{ 
-                p: 2.5, 
-                borderRadius: 3, 
-                bgcolor: 'background.default',
-                '&:hover': { boxShadow: '0 4px 12px rgba(0,0,0,0.05)' } 
-              }}
-            >
-              <Typography variant="subtitle2" fontWeight={700} gutterBottom>{event.name}</Typography>
-              <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1.5 }}>{event.date}</Typography>
-              <Divider sx={{ my: 1 }} />
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <Typography variant="body2" fontWeight={700}>{event.rating}</Typography>
-                  <StarIcon sx={{ color: '#faaf00', fontSize: '1rem' }} />
+      {userEvents.length === 0 ? (
+        <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+          No events participated.
+        </Typography>
+      ) : (
+        <Grid container spacing={2}>
+          {userEvents.map((event) => (
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={event.id}>
+              <Paper
+                variant="outlined"
+                sx={{
+                  p: 2.5,
+                  borderRadius: 3,
+                  bgcolor: 'background.default',
+                  '&:hover': { boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }
+                }}
+              >
+                <Typography variant="subtitle2" fontWeight={700} gutterBottom>{event.name}</Typography>
+                <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1.5 }}>{event.date}</Typography>
+                <Divider sx={{ my: 1 }} />
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography variant="body2" fontWeight={700}>{event.rating}</Typography>
+                    <StarIcon sx={{ color: '#faaf00', fontSize: '1rem' }} />
+                  </Box>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', fontSize: '0.75rem' }}>
+                    {event.comment}
+                  </Typography>
                 </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', fontSize: '0.75rem' }}>
-                  {event.comment}
-                </Typography>
-              </Box>
-            </Paper>
-          </Grid>
-        ))}
-      </Grid>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </Paper>
   );
 
@@ -172,11 +250,11 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
                 height: 140,
                 bgcolor: 'primary.main',
                 fontSize: '4rem',
-                boxShadow: '0 12px 32px rgba(0,85,212,0.15)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
                 border: '6px solid white'
               }}
             >
-              {user.firstName[0]}
+              {user.firstName ? user.firstName[0] : 'U'}
             </Avatar>
           </Box>
           <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
@@ -194,10 +272,10 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
           </Typography>
 
           {/* Quick Stats on Mobile */}
-          <Stack 
-            direction="row" 
-            spacing={3} 
-            sx={{ mt: 3, mb: 3 }} 
+          <Stack
+            direction="row"
+            spacing={3}
+            sx={{ mt: 3, mb: 3 }}
             divider={<Divider orientation="vertical" flexItem sx={{ height: 24, my: 'auto' }} />}
           >
             <Box>
@@ -212,22 +290,22 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
 
           {/* Status & Badges - Moved here for Mobile */}
           <Stack direction="row" spacing={1.5}>
-            <Chip 
-              label={user.verification} 
-              icon={<VerifiedIcon style={{ color: user.verification === 'Verified' ? '#0055D4' : '#94a3b8' }} />} 
-              sx={{ 
-                bgcolor: user.verification === 'Verified' ? 'rgba(0,85,212,0.1)' : 'rgba(0,0,0,0.05)', 
-                color: user.verification === 'Verified' ? 'primary.main' : 'text.secondary', 
-                fontWeight: 700 
-              }} 
+            <Chip
+              label={user.verification}
+              icon={<VerifiedIcon style={{ color: user.verification === 'Verified' ? 'var(--primary)' : 'var(--text-secondary)' }} />}
+              sx={{
+                bgcolor: user.verification === 'Verified' ? 'rgba(0,85,212,0.1)' : 'rgba(0,0,0,0.05)',
+                color: user.verification === 'Verified' ? 'primary.main' : 'text.secondary',
+                fontWeight: 700
+              }}
             />
-            <Chip 
-              label={user.isActive ? 'Active Member' : 'Inactive'} 
-              sx={{ 
-                bgcolor: user.isActive ? 'success.light' : 'error.light', 
-                color: 'white', 
-                fontWeight: 700 
-              }} 
+            <Chip
+              label={user.isActive ? 'Active Member' : 'Inactive'}
+              sx={{
+                bgcolor: user.isActive ? 'success.light' : 'error.light',
+                color: 'white',
+                fontWeight: 700
+              }}
             />
           </Stack>
         </Box>
@@ -253,15 +331,15 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
           }}
         >
           {/* Decorative background element */}
-          <Box sx={{ 
-            position: 'absolute', 
-            top: -50, 
-            right: -50, 
-            width: 150, 
-            height: 150, 
-            borderRadius: '50%', 
-            bgcolor: 'primary.main', 
-            opacity: 0.03 
+          <Box sx={{
+            position: 'absolute',
+            top: -50,
+            right: -50,
+            width: 150,
+            height: 150,
+            borderRadius: '50%',
+            bgcolor: 'primary.main',
+            opacity: 0.03
           }} />
 
           <Box sx={{ position: 'relative' }}>
@@ -272,15 +350,15 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
                 height: { xs: 130, md: 180 },
                 bgcolor: 'primary.main',
                 fontSize: '4.5rem',
-                boxShadow: '0 20px 40px rgba(0,85,212,0.15)',
+                boxShadow: 'var(--primary-shadow)',
                 border: '8px solid white',
                 mb: 1
               }}
             >
-              {user.firstName[0]}
+              {user.firstName ? user.firstName[0] : 'U'}
             </Avatar>
           </Box>
-          
+
           <Box sx={{ textAlign: 'center', maxWidth: '600px', width: '100%' }}>
             <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
               <Typography variant={isMobile ? "h4" : "h3"} fontWeight={900} sx={{ letterSpacing: -1, color: 'text.primary' }}>
@@ -292,7 +370,7 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
                 <VerifiedIcon sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, color: 'action.disabled' }} />
               ) : null}
             </Stack>
-            
+
             <Typography variant="h6" color="primary" fontWeight={700} sx={{ mt: 1, textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.9rem', opacity: 0.9 }}>
               {user.role}
             </Typography>
@@ -328,11 +406,11 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
       {isMobile ? (
         <Box id="mobile-navigation" sx={{ mb: 3 }}>
           <Paper id="tab-container" elevation={0} sx={{ borderRadius: 3, bgcolor: 'background.paper', p: 0.5, border: '1px solid', borderColor: 'divider' }}>
-            <Tabs 
-              value={tabValue} 
-              onChange={handleTabChange} 
+            <Tabs
+              value={tabValue}
+              onChange={handleTabChange}
               variant="fullWidth"
-              sx={{ 
+              sx={{
                 minHeight: 44,
                 '& .MuiTabs-indicator': { display: 'none' },
                 '& .MuiTab-root': {
@@ -342,19 +420,19 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
                   '&.Mui-selected': {
                     bgcolor: 'primary.main',
                     color: 'white',
-                    boxShadow: '0 4px 12px rgba(0,85,212,0.2)'
+                    boxShadow: 'var(--primary-shadow)'
                   }
                 }
               }}
             >
               <Tab label="Personal" />
-              <Tab label="Contact" />
+              <Tab label="Access" />
               <Tab label="Events" />
             </Tabs>
           </Paper>
           <Box sx={{ mt: 3, animation: 'fadeIn 0.3s ease-in' }}>
             {tabValue === 0 && renderPersonal()}
-            {tabValue === 1 && renderContacts()}
+            {tabValue === 1 && renderPermissions()}
             {tabValue === 2 && renderEvents()}
           </Box>
         </Box>
@@ -362,7 +440,11 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
         /* Desktop Grid Layout */
         <Grid id="desktop-grid-layout" container spacing={3}>
           <Grid size={7}>{renderPersonal()}</Grid>
-          <Grid size={5}>{renderContacts()}</Grid>
+          <Grid size={5}>
+            <Stack spacing={3}>
+              {renderPermissions()}
+            </Stack>
+          </Grid>
           <Grid size={12}>{renderEvents()}</Grid>
         </Grid>
       )}

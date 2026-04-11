@@ -31,20 +31,20 @@ export const Sidebar = () => {
             width: 42,
             height: 42,
             borderRadius: "12px",
-            background: "linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)",
+            background: "var(--primary-gradient)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             color: "white",
             fontWeight: 900,
             fontSize: "1.4rem",
-            boxShadow: "0 8px 16px rgba(25, 118, 210, 0.25)",
+            boxShadow: "var(--primary-shadow)",
           }}
         >
           S
         </Box>
         <Typography variant="h6" fontWeight={800} sx={{ letterSpacing: 0.5, color: "text.primary" }}>
-          StaffTrack<Box component="span" sx={{ color: "#1976d2", fontStyle: "italic", fontSize: "1.4rem", ml: 0.2 }}>X</Box>
+          StaffTrack<Box component="span" sx={{ color: "var(--primary)", fontStyle: "italic", fontSize: "1.4rem", ml: 0.2 }}>X</Box>
         </Typography>
       </Box>
 
