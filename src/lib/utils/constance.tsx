@@ -17,3 +17,21 @@ export const navItems = [
   { label: "Users", icon: <PeopleAltOutlined />, path: "/users" },
   { label: "Settings", icon: <SettingsOutlined />, path: "/settings" },
 ];  
+
+// ── Kerala Districts ─────────────────────────────────────────────────────────
+export   const KERALA_DISTRICTS = [
+  "Alappuzha",
+  "Ernakulam",
+  "Idukki",
+  "Kannur",
+  "Kasaragod",
+  "Kollam",
+  "Kottayam",
+  "Kozhikode",
+  "Malappuram",
+  "Palakkad",
+  "Pathanamthitta",
+  "Thiruvananthapuram",
+  "Thrissur",
+  "Wayanad",
+];

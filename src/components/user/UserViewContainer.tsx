@@ -59,26 +59,27 @@ export const UserViewContainer = () => {
     firstName: apiUser.firstName,
     lastName: apiUser.lastName,
     email: apiUser.email,
-    mobileNumber: apiUser.phone,
+    mobileNumber: apiUser.mobileNumber,
     gender: apiUser.gender,
     role: apiUser.role?.title || 'User',
     isActive: apiUser.isActive,
-    bloodGroup: apiUser.address?.bloodGroup || 'N/A',
-    city: apiUser.address?.city || 'N/A',
-    district: apiUser.address?.district || 'N/A',
-    state: apiUser.address?.state || 'N/A',
-    permanentAddress: apiUser.address?.address || 'N/A',
-    currentAddress: apiUser.address?.address || 'N/A',
-    verification: apiUser.isSuperAdmin ? 'Verified' : 'Pending',
+    bloodGroup: apiUser.bloodGroup || 'N/A',
+    city: apiUser.city || 'N/A',
+    district: apiUser.district || 'N/A',
+    state: apiUser.state || 'N/A',
+    permanentAddress: apiUser.address || 'N/A',
+    currentAddress: apiUser.address || 'N/A',
+    verification: apiUser.verification ? 'Verified' : 'Pending',
     rating: apiUser.rating,
     emergencyContact: apiUser.emergencyContact,
     permissions: apiUser.permissions || [],
+    dateOfBirth: apiUser.dateOfBirth || 'N/A',
+    whiteShirt: apiUser.uniform?.whiteShirt || false,
+    blackPant: apiUser.uniform?.blackPant || false,
+    executiveBlackShoe: apiUser.uniform?.executiveBlackShoe || false,
+    grooming: apiUser.uniform?.grooming || false,
 
-    // Fields not in the API response (providing defaults/fallbacks)
-    dateOfBirth: 'N/A',
-    
     profilePhoto: '', 
-    
     totalEvents: 0,
     successRate: 0,
     dateOfJoining: 'N/A',
@@ -89,7 +90,7 @@ export const UserViewContainer = () => {
     <Box id="user-view-page-root" sx={{ bgcolor: 'background.default', minHeight: '100dvh', pb: 8 }}>
       <UserViewHeader 
         isMobile={isMobile} 
-        onEdit={() => alert('Edit User logic here')} 
+        onEdit={() => router.push(`/users/${id}/edit`)} 
         onBack={() => router.push('/users')} 
       />
 

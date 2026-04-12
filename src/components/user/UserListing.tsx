@@ -21,6 +21,9 @@ import { EnhancedTable } from "@/components/table/EnhancedTable";
 import { CustomModal as Modal } from "@/components/ui/modal";
 import UserDelete from "./UserDelete";
 import { UserRow } from "./user-type";
+import { useAxios } from "@/lib/hooks";
+import { useWindowSize } from "@/lib/hooks";
+import { useTablePageReset } from "@/lib/hooks/useTablePageReset";
 
 type Order = "asc" | "desc";
 
@@ -44,17 +47,21 @@ type UserListingProps = {
   orderBy: keyof UserRow;
   setOrder: React.Dispatch<React.SetStateAction<Order>>;
   setOrderBy: React.Dispatch<React.SetStateAction<keyof UserRow>>;
+  query: string;
 }
 
-export const UserListing = ({ order, orderBy, setOrder, setOrderBy }: UserListingProps) => {
+export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: UserListingProps) => {
   const { data, error, isLoading, mutate } = useSWR("/api/users");
 
 
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(0);
   const [open, setOpen] = useState(false);
-  const [modalInfo, setModalInfo] = useState<{ id: string; type: string }>({ id: "", type: "" });
+  const [modalInfo, setModalInfo] = useState<{ id: string[]; type: string }>({ id: [], type: "" });
 
+  var limit = 17;
+  const { height } = useWindowSize();
+  limit = height === 0 ? limit : Math.floor((height - 240) / 41);
 
   const router = useRouter();
 
@@ -75,13 +82,18 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy }: UserListin
     };
   });
 
-  const handleOpen = (_event: React.MouseEvent<HTMLButtonElement>, type: string, uid: string) => {
-    setOpen(true);
-    setModalInfo({ id: uid, type: type });
+  const handleOpen = async (_event: React.MouseEvent<HTMLButtonElement>, type: string, uid: string[]) => {
+    if (type === "edit") {
+      router.push(`/users/${uid}/edit`);
+    } else {
+      setModalInfo({ id: uid, type });
+      setOpen(true);
+    }
   };
 
   const handleClose = () => {
     setOpen(false);
+    setModalInfo({ id: [], type: "" });
   };
 
 
@@ -93,6 +105,9 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy }: UserListin
   const handleViewDetails = (userId: string) => {
     router.push(`/users/${userId}/view`);
   };
+
+
+  useTablePageReset(data?.metaData?.itemCount, query, setPage, page);
 
   if (isLoading) return (
     <Box id="user-listing-loading" sx={{ display: 'flex', justifyContent: 'center', p: 10 }}>
@@ -114,9 +129,6 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy }: UserListin
           sx={{
             pl: { sm: 2 },
             p: { xs: 2, sm: 2 },
-            ...(selected.length > 0 && {
-              bgcolor: (theme) => `rgba(var(--primary-rgb), ${theme.palette.action.activatedOpacity})`,
-            }),
           }}
         >
           <Typography sx={{ flex: "1 1 100%", fontWeight: 600, marginLeft: 1 }} variant="h6" component="div">
@@ -145,6 +157,9 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy }: UserListin
           handleOpen={handleOpen}
           handleViewDetails={handleViewDetails}
           mainCol="fullName"
+          limit={limit}
+          totalPages={data?.metaData?.totalPages || 1}
+          totalItems={data?.metaData.totalCount || 0}
         />
       </Paper>
       {modalInfo?.type === "delete" && (
@@ -155,7 +170,7 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy }: UserListin
         >
           <UserDelete
             handleClose={handleClose}
-            uid={[modalInfo.id]}
+            uid={modalInfo.id}
             mutate={handleMutate}
           />
         </Modal>

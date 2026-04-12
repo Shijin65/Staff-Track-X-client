@@ -27,7 +27,7 @@ const LoginUser: React.FC = () => {
   const { loading, setLoading } = useLoader();
   const { login } = useAuthContext();
   const [showForm, setShowForm] = React.useState(false);
-  const toast = useToast();
+  const { setToast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -37,10 +37,10 @@ const LoginUser: React.FC = () => {
       const email = (form.elements.namedItem("user_email") as HTMLInputElement).value;
       const password = (form.elements.namedItem("user_password") as HTMLInputElement).value;
       await login({ email, password });
-      toast.success(`Login successful ${email},${password}`);
+      setToast({ message: `Login successful ${email},${password}`, type: "success", open: true });
     } catch (error) {
       console.log(error);
-      toast.error("Failed to login");
+      setToast({ message: "Failed to login", type: "error", open: true });
     } finally {
       setLoading(false);
     }
@@ -181,13 +181,13 @@ const LoginUser: React.FC = () => {
           gap: 0.5,
         }}
       >
-        <NextImage 
-          src="/cfx_logo.png" 
-          alt="Logo" 
-          width={showForm ? 110 : 140} 
-          height={showForm ? 32 : 40} 
-          priority 
-          style={{ objectFit: "contain", transition: "all 0.3s" }} 
+        <NextImage
+          src="/cfx_logo.png"
+          alt="Logo"
+          width={showForm ? 110 : 140}
+          height={showForm ? 32 : 40}
+          priority
+          style={{ objectFit: "contain", transition: "all 0.3s" }}
         />
         <Typography
           variant="h6"

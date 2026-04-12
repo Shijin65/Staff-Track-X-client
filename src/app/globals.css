@@ -19,6 +19,10 @@
   --text-disabled: #94a3b8;
   --primary-gradient: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
   --primary-shadow: 0 8px 16px rgba(0, 85, 212, 0.25);
+  --green: 142 71% 45%;
+  --sky : 219 94% 57%;
+  --yellow: 43 100% 53%;
+  --red: 0 84% 60%;
 }
 
 .root, body {

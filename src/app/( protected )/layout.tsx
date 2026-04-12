@@ -6,8 +6,7 @@ import { SWRConfig } from "swr";
 import Header from "@/components/navbar/Header";
 import Sidebar from "@/components/navbar/Sidebar";
 import BottomNav from "@/components/navbar/BottomNav";
-import { useAuthUser } from "@/lib/hooks/useAuthUser";
-import { useAxios } from "@/lib/hooks/useAxios";
+import { useAuthUser, useAxios } from "@/lib/hooks";
 import { Box, Backdrop, CircularProgress } from "@mui/material";
 
 

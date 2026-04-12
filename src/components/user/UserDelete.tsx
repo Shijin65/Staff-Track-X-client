@@ -19,7 +19,7 @@ interface ApiError {
 
 const UserDelete = ({ uid, handleClose, mutate }: UserDeleteProps) => {
     const api = useAxios();
-    const toast = useToast();
+    const { setToast } = useToast();
 
     const title = uid.length === 1 ? "User" : "Users";
 
@@ -42,20 +42,24 @@ const UserDelete = ({ uid, handleClose, mutate }: UserDeleteProps) => {
                 mutate();
                 handleClose();
 
-                toast.success(
-                    uid.length === 1
+                setToast({
+                    message: uid.length === 1
                         ? "User Deleted."
                         : `${uid.length} Users Deleted.`,
-                );
+                    type: "success",
+                    open: true,
+                });
             }
         } catch (error) {
             const err = error as AxiosError<ApiError>;
-            toast.error(
-                err.response?.data?.message ||
+            setToast({
+                message: err.response?.data?.message ||
                 (uid.length === 1
                     ? "Failed to Delete User."
                     : `Failed To Delete ${uid.length} Users.`),
-            );
+                type: "error",
+                open: true,
+            });
         }
     };
 

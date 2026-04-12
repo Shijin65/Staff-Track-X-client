@@ -1,3 +1,3 @@
-export { MainLoader } from "./main-loader";
+export * from "./global-loader";
 export { PasswordField } from "./password-input";
-export { Toaster } from "./Toaster";
+export * from "./global-toast";

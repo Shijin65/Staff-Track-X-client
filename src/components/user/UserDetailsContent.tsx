@@ -24,6 +24,9 @@ import {
   History as HistoryIcon,
   Security as SecurityIcon,
   Badge as BadgeIcon,
+  Checkroom as CheckroomIcon,
+  CheckCircle as CheckCircleIcon,
+  Cancel as CancelIcon,
 } from '@mui/icons-material';
 import { UserData } from '@/lib/mock/users';
 
@@ -195,6 +198,52 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
         </Grid>
       </Paper>
     </Stack>
+  );
+
+  const renderUniform = () => (
+    <Paper id="uniform-compliance-card" elevation={0} sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 4, border: '1px solid', borderColor: 'divider' }}>
+      <SectionHeader title="Uniform & Compliance" icon={<CheckroomIcon color="primary" fontSize="small" />} />
+      <Grid container spacing={2}>
+        {[
+          { label: 'White Shirt', value: user.whiteShirt },
+          { label: 'Black Pant', value: user.blackPant },
+          { label: 'Executive Black Shoes', value: user.executiveBlackShoe },
+          { label: 'Grooming Standards', value: user.grooming },
+        ].map((item) => (
+          <Grid size={{ xs: 12, sm: 6 }} key={item.label}>
+            <Box
+              sx={{
+                p: 2,
+                borderRadius: 3,
+                border: '1px solid',
+                borderColor: item.value ? 'success.light' : 'divider',
+                bgcolor: item.value ? 'rgba(0,183,121,0.02)' : 'rgba(0,0,0,0.02)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <Typography variant="body2" fontWeight={600} color="text.primary">
+                {item.label}
+              </Typography>
+              <Chip
+                size="small"
+                icon={item.value ? <CheckCircleIcon /> : <CancelIcon />}
+                label={item.value ? 'Issued/Met' : 'Pending'}
+                color={item.value ? 'success' : 'default'}
+                variant={item.value ? 'filled' : 'outlined'}
+                sx={{
+                  height: 24,
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  '& .MuiChip-icon': { fontSize: '1rem' }
+                }}
+              />
+            </Box>
+          </Grid>
+        ))}
+      </Grid>
+    </Paper>
   );
 
   const renderEvents = () => (
@@ -426,14 +475,16 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
               }}
             >
               <Tab label="Personal" />
+              <Tab label="Uniform" />
               <Tab label="Access" />
               <Tab label="Events" />
             </Tabs>
           </Paper>
           <Box sx={{ mt: 3, animation: 'fadeIn 0.3s ease-in' }}>
             {tabValue === 0 && renderPersonal()}
-            {tabValue === 1 && renderPermissions()}
-            {tabValue === 2 && renderEvents()}
+            {tabValue === 1 && renderUniform()}
+            {tabValue === 2 && renderPermissions()}
+            {tabValue === 3 && renderEvents()}
           </Box>
         </Box>
       ) : (
@@ -443,6 +494,7 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
           <Grid size={5}>
             <Stack spacing={3}>
               {renderPermissions()}
+              {renderUniform()}
             </Stack>
           </Grid>
           <Grid size={12}>{renderEvents()}</Grid>
