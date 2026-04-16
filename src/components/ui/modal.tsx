@@ -51,13 +51,13 @@ export const CustomModal = ({
           sx={style}
           className={
             size === "medium"
-              ? "modal-box modal-width"
+              ? "w-[95%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%]"
               : size === "small"
-              ? "w-[30%]"
-              : ""
+              ? "w-[95%] sm:w-[60%] md:w-[45%] lg:w-[35%] xl:w-[25%]"
+              : "w-[95%] sm:w-[90%] md:w-[80%]"
           }
         >
-          <div className="bg-white px-4 rounded-2xl py-4 pb-5 2xl:py-5 2xl:pb-6">
+          <div className="bg-white p-4 rounded-2xl pb-5 2xl:py-5 2xl:pb-6">
             <header className="flex items-center justify-between mb-3">
               <h1 className="w-[90%] font-semibold text-lg 2xl:text-xl text-ellipsis text-gray-500 pl-0 sm:pl-3">
                 {title || ""}

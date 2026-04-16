@@ -20,22 +20,14 @@ import { EnhancedTable } from "@/components/table/EnhancedTable";
 
 import { CustomModal as Modal } from "@/components/ui/modal";
 import UserDelete from "./UserDelete";
-import { UserRow } from "./user-type";
+import { ApiUser, UserRow } from "./user-type";
 import { useAxios } from "@/lib/hooks";
 import { useWindowSize } from "@/lib/hooks";
 import { useTablePageReset } from "@/lib/hooks/useTablePageReset";
 
 type Order = "asc" | "desc";
 
-type ApiUser = {
-  userId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  isActive: boolean;
-  isSuperAdmin: boolean;
-  updatedAt: string;
-};
+
 
 type Column<T> = {
   id: keyof T;
@@ -78,7 +70,7 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
       fullName: `${item.firstName} ${item.lastName}`,
       email: item.email,
       isActive: item.isActive,
-      verification: item.isSuperAdmin,
+      verification: item.verification,
     };
   });
 
@@ -167,6 +159,7 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
           isOpen={open}
           handleClose={handleClose}
           title="Delete User"
+          size="small"
         >
           <UserDelete
             handleClose={handleClose}

@@ -7,10 +7,11 @@ import {
   TableContainer,
   TableRow,
   Checkbox,
-  IconButton,
   Pagination,
   Box,
-  Typography,
+  Chip,
+  alpha,
+  IconButton,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -25,18 +26,18 @@ interface Column<T> {
   render?: (row: T) => React.ReactNode;
 }
 
-interface EnhancedTableProps<T> {
+interface EnhancedTableProps<T, K extends keyof T = keyof T> {
   rows: T[];
   columns: Column<T>[];
-  idField: keyof T;
+  idField: K;
 
   // Pagination
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
 
   // Selection
-  selected: T[keyof T][];
-  setSelected: React.Dispatch<React.SetStateAction<T[keyof T][]>>;
+  selected: T[K][];
+  setSelected: React.Dispatch<React.SetStateAction<T[K][]>>;
 
   // Sorting
   order?: Order;
@@ -44,7 +45,7 @@ interface EnhancedTableProps<T> {
   orderBy?: keyof T;
   setOrderBy: React.Dispatch<React.SetStateAction<keyof T>>;
 
-  handleOpen: (event: React.MouseEvent<HTMLButtonElement>, type: string, uid: Array<T[keyof T]>) => void;
+  handleOpen: (event: React.MouseEvent<HTMLButtonElement>, type: string, uid: Array<T[K]>) => void;
   handleViewDetails: (userId: string) => void;
   mainCol?: keyof T;
   limit?: number;
@@ -52,7 +53,7 @@ interface EnhancedTableProps<T> {
   totalItems?: number;
 }
 
-export function EnhancedTable<T>({
+export function EnhancedTable<T, K extends keyof T = keyof T>({
   rows,
   columns,
   idField,
@@ -68,8 +69,8 @@ export function EnhancedTable<T>({
   mainCol,
   totalPages = 1,
   totalItems = 0,
-}: EnhancedTableProps<T>) {
-  const isSelected = (id: T[keyof T]) => selected.includes(id);
+}: EnhancedTableProps<T, K>) {
+  const isSelected = (id: T[K]) => (selected || []).includes(id);
 
   // ── Select all on current page ──────────────────────────────────────────────
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,9 +87,9 @@ export function EnhancedTable<T>({
   };
 
   // ── Row checkbox toggle ─────────────────────────────────────────────────────
-  const handleClick = (_event: React.MouseEvent<HTMLTableRowElement>, id: T[keyof T]) => {
+  const handleClick = (_event: React.MouseEvent<HTMLTableRowElement>, id: T[K]) => {
     const selectedIndex = selected.indexOf(id);
-    let newSelected: T[keyof T][] = [];
+    let newSelected: T[K][] = [];
 
     if (selectedIndex === -1) {
       newSelected = [...selected, id];
@@ -181,29 +182,70 @@ export function EnhancedTable<T>({
                   )}
 
                   {/* Data columns */}
-                  {columns.map((col) => (
-                    <TableCell
-                      onClick={(e) => {
-                        if (col.id === mainCol) {
-                          e.stopPropagation();
-                          handleViewDetails(id as string)
+                  {columns.map((col) => {
+                    const value = row[col.id];
+                    let content: React.ReactNode;
+
+                    if (col.render) {
+                      content = col.render(row);
+                    } else if (col.id === "isActive" || col.id === "status") {
+                      content = (
+                        <Chip
+                          label={value ? "Active" : "Inactive"}
+                          size="small"
+                          sx={{
+                            bgcolor: value ? alpha("#4caf50", 0.1) : alpha("#f44336", 0.1),
+                            color: value ? "#2e7d32" : "#d32f2f",
+                            fontWeight: 600,
+                            borderRadius: "6px",
+                            height: 24,
+                            "& .MuiChip-label": { px: 1 }
+                          }}
+                        />
+                      );
+                    } else if (col.id === "verification") {
+                      content = (
+                        <Chip
+                          label={value ? "Verified" : "Pending"}
+                          size="small"
+                          sx={{
+                            bgcolor: value ? alpha("#2196f3", 0.1) : alpha("#ff9800", 0.1),
+                            color: value ? "#1976d2" : "#ed6c02",
+                            fontWeight: 600,
+                            borderRadius: "6px",
+                            height: 24,
+                            "& .MuiChip-label": { px: 1 }
+                          }}
+                        />
+                      );
+                    } else {
+                      content = String(value ?? "");
+                    }
+
+                    return (
+                      <TableCell
+                        onClick={(e) => {
+                          if (col.id === mainCol) {
+                            e.stopPropagation();
+                            handleViewDetails(id as string)
+                          }
+                        }}
+                        key={String(col.id)}
+                        sx={
+                          col.id === mainCol
+                            ? { fontWeight: 600, textTransform: "capitalize", whiteSpace: "nowrap", color: "primary.main" }
+                            : { color: "text.primary" }
                         }
-                      }}
-                      key={String(col.id)}
-                      sx={
-                        col.id === mainCol
-                          ? { fontWeight: 600, textTransform: "capitalize", whiteSpace: "nowrap" }
-                          : {}
-                      }
-                    >
-                      {col.render ? col.render(row) : String(row[col.id] ?? "")}
-                    </TableCell>
-                  ))}
+                      >
+                        {content}
+                      </TableCell>
+                    );
+                  })}
 
                   {/* Actions */}
-                  {/* <TableCell align="right" sx={{ py: 0.25 }}>
+                  <TableCell align="right" sx={{ py: 0.25 }}>
                     <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.5 }}>
-                      <IconButton
+                      {/* <IconButton
                         size="small"
                         color="primary"
                         onClick={(e) => {
@@ -212,7 +254,7 @@ export function EnhancedTable<T>({
                         }}
                       >
                         <EditIcon fontSize="small" />
-                      </IconButton>
+                      </IconButton> */}
                       <IconButton
                         size="small"
                         color="error"
@@ -224,7 +266,7 @@ export function EnhancedTable<T>({
                         <DeleteIcon fontSize="small" />
                       </IconButton>
                     </Box>
-                  </TableCell> */}
+                  </TableCell>
                 </TableRow>
               );
             })}

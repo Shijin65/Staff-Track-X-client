@@ -11,8 +11,8 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { UserViewHeader } from '@/components/user/UserViewHeader';
-import { UserDetailsContent } from '@/components/user/UserDetailsContent';
+import { UserViewHeader } from '@/app/( protected )/users/components/UserViewHeader';
+import { UserDetailsContent } from '@/app/( protected )/users/components/UserDetailsContent';
 import { UserData } from '@/lib/mock/users';
 import useSWR from 'swr';
 import { CircularProgress } from '@mui/material';
@@ -70,7 +70,7 @@ export const UserViewContainer = () => {
     permanentAddress: apiUser.address || 'N/A',
     currentAddress: apiUser.address || 'N/A',
     verification: apiUser.verification ? 'Verified' : 'Pending',
-    rating: apiUser.rating,
+    rating: apiUser.rating || 0.0,
     emergencyContact: apiUser.emergencyContact,
     permissions: apiUser.permissions || [],
     dateOfBirth: apiUser.dateOfBirth || 'N/A',
@@ -78,8 +78,8 @@ export const UserViewContainer = () => {
     blackPant: apiUser.uniform?.blackPant || false,
     executiveBlackShoe: apiUser.uniform?.executiveBlackShoe || false,
     grooming: apiUser.uniform?.grooming || false,
-
-    profilePhoto: '', 
+    
+    profilePhoto: '',
     totalEvents: 0,
     successRate: 0,
     dateOfJoining: 'N/A',
@@ -88,10 +88,10 @@ export const UserViewContainer = () => {
 
   return (
     <Box id="user-view-page-root" sx={{ bgcolor: 'background.default', minHeight: '100dvh', pb: 8 }}>
-      <UserViewHeader 
-        isMobile={isMobile} 
-        onEdit={() => router.push(`/users/${id}/edit`)} 
-        onBack={() => router.push('/users')} 
+      <UserViewHeader
+        isMobile={isMobile}
+        onEdit={() => router.push(`/users/${id}/edit`)}
+        onBack={() => router.push('/users')}
       />
 
       <Container id="user-details-view-container" maxWidth={false} sx={{ mt: { xs: 0, md: -18 }, position: 'relative', px: { xs: 2, md: 4 } }}>

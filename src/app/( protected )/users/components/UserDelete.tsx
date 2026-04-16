@@ -3,7 +3,7 @@
 import React, { FormEvent } from "react";
 import { AxiosError } from "axios";
 import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
-import DeleteConfirmation from "../ui/delete-confirmation";
+import DeleteConfirmation from "../../../../components/ui/delete-confirmation";
 import { useToast } from "@/lib/store/useToastStore";
 import { useAxios } from "@/lib/hooks/useAxios";
 
@@ -14,7 +14,7 @@ interface UserDeleteProps {
 }
 
 interface ApiError {
-  message: string;
+    message: string;
 }
 
 const UserDelete = ({ uid, handleClose, mutate }: UserDeleteProps) => {
@@ -54,9 +54,9 @@ const UserDelete = ({ uid, handleClose, mutate }: UserDeleteProps) => {
             const err = error as AxiosError<ApiError>;
             setToast({
                 message: err.response?.data?.message ||
-                (uid.length === 1
-                    ? "Failed to Delete User."
-                    : `Failed To Delete ${uid.length} Users.`),
+                    (uid.length === 1
+                        ? "Failed to Delete User."
+                        : `Failed To Delete ${uid.length} Users.`),
                 type: "error",
                 open: true,
             });

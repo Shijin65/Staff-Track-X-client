@@ -47,7 +47,7 @@ import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { schema } from "./user-schema";
-import { MainLoader } from "../ui/main-loader";
+import { MainLoader } from "../../../../components/ui/main-loader";
 
 
 
@@ -159,6 +159,7 @@ export const UserForm: React.FC<UserFormProps> = ({
   const isEdit = !!uid;
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
 
 
   const theme = useTheme();
@@ -258,6 +259,31 @@ export const UserForm: React.FC<UserFormProps> = ({
           open: true,
         });
       });
+  };
+
+  const handleResetPassword = async () => {
+    if (!uid) return;
+    setIsResettingPassword(true);
+    try {
+      const password = Math.floor(1000 + Math.random() * 9000).toString();
+      const res = await api.put(`/api/users/reset-password/${uid}`, { password });
+      if (res.status === 200) {
+        setToast({
+          message: "Password Reset Successful.",
+          type: "success",
+          open: true,
+        });
+      }
+    } catch (error: any) {
+      console.error(error);
+      setToast({
+        message: error.response?.data?.message || "Failed to reset password.",
+        type: "error",
+        open: true,
+      });
+    } finally {
+      setIsResettingPassword(false);
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -749,7 +775,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                       fullWidth
                       size={fieldSize}
                       label="City / Town"
-                      placeholder="e.g. Thrissur"
+                      placeholder=""
                       error={!!fieldState.error}
                       helperText={fieldState.error?.message}
                       InputProps={{
@@ -818,12 +844,24 @@ export const UserForm: React.FC<UserFormProps> = ({
 
           {/* ── Form Actions ── */}
           <Divider sx={{ my: 3 }} />
-          <Stack direction="row" spacing={2} justifyContent="flex-end">
+                      <Stack direction="row" spacing={2} justifyContent={isEdit ? "space-between" : "flex-end"}>
+            {isEdit && (
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={handleResetPassword}
+                disabled={isResettingPassword}
+              sx={{ px: isMobile ? 2 : 4, py: isMobile ? .8 : 1.5, borderRadius: 2 }}
+              >
+                {isResettingPassword ? "Resetting..." : "Reset Password"}
+              </Button>
+            )}
+            <Stack direction="row" spacing={2}></Stack>
             <Button
               onClick={() => router.back()}
               variant="outlined"
               color="inherit"
-              sx={{ px: 4, py: 1.5, borderRadius: 2 }}
+              sx={{ px: isMobile ? 2 : 4, py: isMobile ? .8 : 1.5, borderRadius: 2 }}
             >
               Cancel
             </Button>
@@ -832,9 +870,10 @@ export const UserForm: React.FC<UserFormProps> = ({
               variant="contained"
               color="primary"
               disabled={isSubmitting}
+              size="small"
               sx={{
-                px: 6,
-                py: 1.5,
+                px: isMobile ? 2 : 6,
+                py: isMobile ? .8 : 1.5,
                 borderRadius: 2,
                 boxShadow: theme.shadows[4],
                 fontWeight: 600,

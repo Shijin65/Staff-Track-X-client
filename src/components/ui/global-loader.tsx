@@ -1,5 +1,5 @@
 import React from "react";
-import {  Portal } from "@mui/material";
+import { Portal } from "@mui/material";
 import { MainLoader } from "./main-loader";
 
 export const GlobalLoader = ({ loading }: { loading: boolean }) => {

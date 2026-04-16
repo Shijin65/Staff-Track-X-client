@@ -16,7 +16,7 @@ export const Sidebar = () => {
         width: 260,
         flexShrink: 0,
         display: { xs: "none", md: "flex" },
-        flexDirection: "column", 
+        flexDirection: "column",
         borderRight: "1px solid",
         borderColor: "divider",
         bgcolor: "background.paper",
@@ -44,7 +44,7 @@ export const Sidebar = () => {
           S
         </Box>
         <Typography variant="h6" fontWeight={800} sx={{ letterSpacing: 0.5, color: "text.primary" }}>
-          StaffTrack<Box component="span" sx={{ color: "var(--primary)", fontStyle: "italic", fontSize: "1.4rem", ml: 0.2 }}>X</Box>
+          Caters Hub
         </Typography>
       </Box>
 
@@ -52,36 +52,37 @@ export const Sidebar = () => {
         {navItems.slice(0, -1).map((item) => {
           const isActive = pathname === item.path;
           return (
-          <ListItem key={item.label} disablePadding sx={{ mb: 1 }}>
-            <ListItemButton
-              component={Link}
-              href={item.path}
-              sx={{
-                borderRadius: 3,
-                bgcolor: isActive ? "rgba(37, 99, 235, 0.08)" : "transparent",
-                color: isActive ? "primary.main" : "inherit",
-                "& .MuiListItemIcon-root": {
-                  color: isActive ? "primary.main" : "text.secondary",
-                },
-                "&:hover": {
-                  bgcolor: "rgba(37, 99, 235, 0.08)",
-                  color: "primary.main",
+            <ListItem key={item.label} disablePadding sx={{ mb: 1 }}>
+              <ListItemButton
+                component={Link}
+                href={item.path}
+                sx={{
+                  borderRadius: 3,
+                  bgcolor: isActive ? "rgba(37, 99, 235, 0.08)" : "transparent",
+                  color: isActive ? "primary.main" : "inherit",
                   "& .MuiListItemIcon-root": {
-                    color: "primary.main",
+                    color: isActive ? "primary.main" : "text.secondary",
                   },
-                },
-              }}
-            >
-              <ListItemIcon sx={{ minWidth: 40 }}>
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText
-                primary={item.label}
-                primaryTypographyProps={{ fontWeight: isActive ? 700 : 600, fontSize: "0.95rem" }}
-              />
-            </ListItemButton>
-          </ListItem>
-        )})}
+                  "&:hover": {
+                    bgcolor: "rgba(37, 99, 235, 0.08)",
+                    color: "primary.main",
+                    "& .MuiListItemIcon-root": {
+                      color: "primary.main",
+                    },
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 40 }}>
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.label}
+                  primaryTypographyProps={{ fontWeight: isActive ? 700 : 600, fontSize: "0.95rem" }}
+                />
+              </ListItemButton>
+            </ListItem>
+          )
+        })}
       </List>
 
       <Box sx={{ px: 2, pb: 2 }}>

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Box } from "@mui/material";
-import { UserListing } from "../../../components/user/UserListing";
-import { UserRow } from "@/components/user/user-type";
+import { UserListing } from "./components/UserListing";
+import { UserRow } from "@/app/( protected )/users/components/user-type";
 import { useDebounce } from "@/lib/hooks/useDebounce";
 
 

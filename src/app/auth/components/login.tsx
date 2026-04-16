@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { useAuthContext } from "@/context/auth-provider";
 import { useLoader } from "@/lib/store";
-import { PasswordField } from "../ui/password-input";
+import { PasswordField } from "../../../components/ui/password-input";
 import {
   EmailOutlined,
   LockOutlined,
@@ -200,7 +200,7 @@ const LoginUser: React.FC = () => {
             transition: "all 0.3s",
           }}
         >
-          StaffTrack<span style={{ fontStyle: "italic", fontWeight: 800, fontSize: showForm ? "1.2rem" : "1.5rem" }}>X</span>
+          Caters Hub
         </Typography>
       </Box>
 

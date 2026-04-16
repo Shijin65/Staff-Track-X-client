@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Box, Typography, Container, CircularProgress, Paper } from "@mui/material";
-import { UserForm } from "@/components/user/UserForm";
+import { UserForm } from "@/app/( protected )/users/components/UserForm";
 import { useAxios } from "@/lib/hooks";
 
 export default function ProfilePage() {
@@ -44,7 +44,7 @@ export default function ProfilePage() {
       </Box>
 
       <Paper sx={{ p: 4, borderRadius: 3 }}>
-        <UserForm/>
+        <UserForm />
       </Paper>
     </Container>
   );

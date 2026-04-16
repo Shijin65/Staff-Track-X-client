@@ -59,8 +59,8 @@ input:-webkit-autofill:focus~label {
   animation: spinReverse 1s linear infinite;
 }
 
-* {
+/* * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-}
+} */

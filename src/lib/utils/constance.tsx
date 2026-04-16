@@ -16,10 +16,10 @@ export const navItems = [
   { label: "Create", icon: <AddCircleOutlineIcon />, path: "/events/create" },
   { label: "Users", icon: <PeopleAltOutlined />, path: "/users" },
   { label: "Settings", icon: <SettingsOutlined />, path: "/settings" },
-];  
+];
 
 // ── Kerala Districts ─────────────────────────────────────────────────────────
-export   const KERALA_DISTRICTS = [
+export const KERALA_DISTRICTS = [
   "Alappuzha",
   "Ernakulam",
   "Idukki",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { UserForm } from "@/components/user/UserForm";
+import { UserForm } from "@/app/( protected )/users/components/UserForm";
 import { Box } from "@mui/material";
 
 

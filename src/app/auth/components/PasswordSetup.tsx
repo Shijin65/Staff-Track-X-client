@@ -9,8 +9,8 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { useLoader } from "@/lib/store";
-import { PasswordField } from "../ui/password-input";
-import { LockOutlined } from "@mui/icons-material";
+import { PasswordField } from "../../../components/ui/password-input";
+import { LockOutlined, ArrowBackIosNew } from "@mui/icons-material";
 import { useToast } from "@/lib/store/useToastStore";
 import { useAxios } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
@@ -44,10 +44,10 @@ const PasswordSetup: React.FC<PasswordSetupProps> = ({ token }) => {
       router.push("/auth/login");
     } catch (error: any) {
       console.log(error);
-      setToast({ 
-        message: error.response?.data?.message || "Failed to set password", 
-        type: "error", 
-        open: true 
+      setToast({
+        message: error.response?.data?.message || "Failed to set password",
+        type: "error",
+        open: true
       });
     } finally {
       setLoading(false);
@@ -146,6 +146,28 @@ const PasswordSetup: React.FC<PasswordSetupProps> = ({ token }) => {
             }}
           >
             {loading ? "Setting Password..." : "Set Password"}
+          </Button>
+
+          <Button
+            variant="text"
+            fullWidth
+            size="small"
+            onClick={() => router.push("/auth/login")}
+            startIcon={<ArrowBackIosNew sx={{ fontSize: 14 }} />}
+            sx={{
+              mt: 1,
+              borderRadius: "12px",
+              fontWeight: 600,
+              fontSize: "0.875rem",
+              textTransform: "none",
+              color: "text.secondary",
+              "&:hover": {
+                bgcolor: "rgba(0,0,0,0.02)",
+                color: "primary.main",
+              },
+            }}
+          >
+            Back to Login
           </Button>
         </Box>
       </form>

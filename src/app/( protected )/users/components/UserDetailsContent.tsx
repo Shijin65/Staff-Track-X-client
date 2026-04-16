@@ -153,7 +153,7 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
           <Stack direction="row" spacing={1} alignItems="center">
             <BadgeIcon sx={{ color: 'primary.main', fontSize: '1.2rem' }} />
             <Typography variant="body1" fontWeight={700}>
-              {user.role} (ID: {user.roleId})
+              {user.role}
             </Typography>
           </Stack>
         </Box>

@@ -69,7 +69,7 @@ export function EnhancedTableHead<T>({
           </TableCell>
         ))}
 
-        {/* <TableCell align="right"></TableCell> */}
+        <TableCell align="right"></TableCell>
       </TableRow>
     </TableHead>
   );
