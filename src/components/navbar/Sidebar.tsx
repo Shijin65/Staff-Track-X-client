@@ -26,23 +26,6 @@ export const Sidebar = () => {
       }}
     >
       <Box sx={{ p: 3, pb: 4, display: "flex", alignItems: "center", gap: 1.5 }}>
-        <Box
-          sx={{
-            width: 42,
-            height: 42,
-            borderRadius: "12px",
-            background: "var(--primary-gradient)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "white",
-            fontWeight: 900,
-            fontSize: "1.4rem",
-            boxShadow: "var(--primary-shadow)",
-          }}
-        >
-          S
-        </Box>
         <Typography variant="h6" fontWeight={800} sx={{ letterSpacing: 0.5, color: "text.primary" }}>
           Caters Hub
         </Typography>

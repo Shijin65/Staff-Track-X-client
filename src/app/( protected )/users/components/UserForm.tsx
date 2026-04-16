@@ -235,7 +235,7 @@ export const UserForm: React.FC<UserFormProps> = ({
   }
 
   const onSubmit = async (formData: Record<string, unknown>) => {
-    let body = {
+    const body = {
       ...formData
     };
 
@@ -552,7 +552,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                           <Skeleton width="100%" />
                         </MenuItem>
                       ) : (
-                        roles.map((r: any) => (
+                        roles.map((r: { roleId: string, name: string }) => (
                           <MenuItem key={r.roleId} value={r.roleId}>
                             {r.name.charAt(0).toUpperCase() + r.name.slice(1).replace(/_/g, " ")}
                           </MenuItem>
@@ -844,14 +844,14 @@ export const UserForm: React.FC<UserFormProps> = ({
 
           {/* ── Form Actions ── */}
           <Divider sx={{ my: 3 }} />
-                      <Stack direction="row" spacing={2} justifyContent={isEdit ? "space-between" : "flex-end"}>
+          <Stack direction="row" spacing={2} justifyContent={isEdit ? "space-between" : "flex-end"}>
             {isEdit && (
               <Button
                 variant="outlined"
                 color="error"
                 onClick={handleResetPassword}
                 disabled={isResettingPassword}
-              sx={{ px: isMobile ? 2 : 4, py: isMobile ? .8 : 1.5, borderRadius: 2 }}
+                sx={{ px: isMobile ? 2 : 4, py: isMobile ? .8 : 1.5, borderRadius: 2 }}
               >
                 {isResettingPassword ? "Resetting..." : "Reset Password"}
               </Button>

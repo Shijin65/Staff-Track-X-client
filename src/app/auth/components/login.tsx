@@ -2,6 +2,7 @@
 
 import React from "react";
 import NextImage from "next/image";
+
 import {
   Box,
   Typography,
@@ -10,8 +11,6 @@ import {
   CircularProgress,
   TextField,
   InputAdornment,
-  Checkbox,
-  FormControlLabel,
   Slide,
 } from "@mui/material";
 import { useAuthContext } from "@/context/auth-provider";
@@ -22,14 +21,19 @@ import {
   LockOutlined,
 } from "@mui/icons-material";
 import { useToast } from "@/lib/store/useToastStore";
+import { useAxios } from "@/lib/hooks";
 
 const LoginUser: React.FC = () => {
   const { loading, setLoading } = useLoader();
   const { login } = useAuthContext();
   const [showForm, setShowForm] = React.useState(false);
+  const [view, setView] = React.useState<"login" | "forgot">("login");
+  const [forgotEmail, setForgotEmail] = React.useState("");
+  const [forgotSubmitted, setForgotSubmitted] = React.useState(false);
   const { setToast } = useToast();
+  const axiosBase = useAxios();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     const form = e.currentTarget;
@@ -37,7 +41,7 @@ const LoginUser: React.FC = () => {
       const email = (form.elements.namedItem("user_email") as HTMLInputElement).value;
       const password = (form.elements.namedItem("user_password") as HTMLInputElement).value;
       await login({ email, password });
-      setToast({ message: `Login successful ${email},${password}`, type: "success", open: true });
+      setToast({ message: `Login successful ${email}`, type: "success", open: true });
     } catch (error) {
       console.log(error);
       setToast({ message: "Failed to login", type: "error", open: true });
@@ -46,19 +50,36 @@ const LoginUser: React.FC = () => {
     }
   };
 
-  const FormContent = (
-    <Box
-      sx={{
-        width: "100%",
-        bgcolor: { xs: "white", md: "transparent" },
-        borderTopLeftRadius: { xs: "30px", md: 0 },
-        borderTopRightRadius: { xs: "30px", md: 0 },
-        p: { xs: 3, md: 0 },
-        boxShadow: { xs: "0 -10px 40px rgba(0,0,0,0.05)", md: "none" },
-        position: "relative",
-        zIndex: 20,
-      }}
-    >
+  const handleForgotSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotEmail) return;
+    setLoading(true);
+    try {
+      await axiosBase.post("/api/auth/forgot-password", { email: forgotEmail });
+      setForgotSubmitted(true);
+      setToast({ message: "Request processed successfully.", type: "success", open: true });
+    } catch (error: any) {
+      if(error.response){
+        setToast({ 
+          message: error.response?.data?.message || "Failed to process request", 
+          type: "error", 
+          open: true 
+        });
+      }else{
+        setToast({ 
+          message: "Failed to process request", 
+          type: "error", 
+          open: true 
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const LoginForm = (
+    <>
       <Box sx={{ mb: { xs: 2.5, md: 4 }, textAlign: { xs: "center", md: "left" } }}>
         <Typography variant="h4" fontWeight={800} color="primary" sx={{ mb: 1, fontSize: { xs: "1.75rem", md: "2.125rem" } }}>
           Welcome back
@@ -68,7 +89,7 @@ const LoginUser: React.FC = () => {
         </Typography>
       </Box>
 
-      <form onSubmit={handleSubmit} suppressHydrationWarning>
+      <form onSubmit={handleLoginSubmit} suppressHydrationWarning>
         <Box sx={{ display: "flex", flexDirection: "column", gap: { xs: 2, md: 3 } }}>
           <Box>
             <Typography variant="body2" fontWeight={600} sx={{ mb: 1, ml: 0.5 }}>
@@ -125,12 +146,17 @@ const LoginUser: React.FC = () => {
             />
           </Box>
 
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: -1 }}>
-            <FormControlLabel
-              control={<Checkbox size="small" sx={{ color: "primary.main" }} inputProps={{ suppressHydrationWarning: true }} />}
-              label={<Typography variant="caption" color="text.secondary">Remember me</Typography>}
-            />
-            <Link href="#" variant="caption" underline="hover" color="primary" fontWeight={600}>
+          <Box sx={{ display: "flex", justifyContent: "end", alignItems: "center" }}>
+
+            <Link
+              component="button"
+              type="button"
+              variant="caption"
+              underline="hover"
+              color="primary"
+              fontWeight={600}
+              onClick={() => setView("forgot")}
+            >
               Forgot password?
             </Link>
           </Box>
@@ -155,13 +181,130 @@ const LoginUser: React.FC = () => {
           </Button>
         </Box>
       </form>
+    </>
+  );
 
-      <Typography variant="body2" sx={{ textAlign: "center", mt: { xs: 3, md: 5 }, color: "text.secondary" }}>
-        Unable to access your account?{" "}
-        <Link href="#" underline="hover" color="primary" fontWeight={700}>
-          Contact Support
-        </Link>
-      </Typography>
+  const ForgotForm = (
+    <Box sx={{ minHeight: { xs: "auto", md: 350 }, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+      {forgotSubmitted ? (
+        <Box sx={{ textAlign: "center", py: 4 }}>
+          <Box
+            sx={{
+              display: "inline-flex",
+              p: 2,
+              borderRadius: "50%",
+              bgcolor: "rgba(34, 197, 94, 0.1)",
+              color: "success.main",
+              mb: 3,
+            }}
+          >
+            <EmailOutlined sx={{ fontSize: 40 }} />
+          </Box>
+          <Typography variant="h5" fontWeight={800} gutterBottom>
+            Email Sent!
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 4, px: 2 }}>
+            Your temporary password has been successfully sent to your registered email address. Please check your inbox for further instructions.
+          </Typography>
+          <Button
+            variant="outlined"
+            onClick={() => {
+              setView("login");
+              setForgotSubmitted(false);
+            }}
+            sx={{ borderRadius: "12px", fontWeight: 700, px: 4 }}
+          >
+            Back to Login
+          </Button>
+        </Box>
+      ) : (
+        <>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h4" fontWeight={800} color="primary" sx={{ mb: 1 }}>
+              Recover
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Enter email address to receive a temporary password
+            </Typography>
+          </Box>
+
+          <form onSubmit={handleForgotSubmit}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+              <Box>
+                <Typography variant="body2" fontWeight={600} sx={{ mb: 1, ml: 0.5 }}>
+                  Email
+                </Typography>
+                <TextField
+                  fullWidth
+                  required
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  placeholder="name@company.com"
+                  type="email"
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "12px",
+                      bgcolor: "rgba(0,0,0,0.02)",
+                    },
+                  }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <EmailOutlined sx={{ fontSize: 20, color: "text.secondary" }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Box>
+
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                size="small"
+                disabled={loading || !forgotEmail}
+                sx={{
+                  py: 1,
+                  borderRadius: "12px",
+                  fontWeight: 700,
+                  fontSize: "1rem",
+                  boxShadow: "var(--primary-shadow)",
+                  textTransform: "none",
+                }}
+              >
+                {loading ? "Sending..." : "Reset Password"}
+              </Button>
+
+              <Button
+                onClick={() => setView("login")}
+                sx={{ fontWeight: 700, color: "text.secondary", textTransform: "none" }}
+              >
+                Cancel
+              </Button>
+            </Box>
+          </form>
+        </>
+      )}
+    </Box>
+  );
+
+  const FormContent = (
+    <Box
+      sx={{
+        width: "100%",
+        bgcolor: { xs: "white", md: "transparent" },
+        borderTopLeftRadius: { xs: "30px", md: 0 },
+        borderTopRightRadius: { xs: "30px", md: 0 },
+        p: { xs: 3, md: 0 },
+        boxShadow: { xs: "0 -10px 40px rgba(0,0,0,0.05)", md: "none" },
+        position: "relative",
+        zIndex: 20,
+      }}
+    >
+      {view === "login" ? LoginForm : ForgotForm}
+
     </Box>
   );
 

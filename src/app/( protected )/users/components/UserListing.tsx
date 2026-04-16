@@ -8,12 +8,12 @@ import {
   Toolbar,
   Tooltip,
   Button,
-  alpha,
   CircularProgress,
 } from "@mui/material";
 import {
   Add as AddIcon,
 } from "@mui/icons-material";
+
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { EnhancedTable } from "@/components/table/EnhancedTable";
@@ -21,9 +21,10 @@ import { EnhancedTable } from "@/components/table/EnhancedTable";
 import { CustomModal as Modal } from "@/components/ui/modal";
 import UserDelete from "./UserDelete";
 import { ApiUser, UserRow } from "./user-type";
-import { useAxios } from "@/lib/hooks";
 import { useWindowSize } from "@/lib/hooks";
 import { useTablePageReset } from "@/lib/hooks/useTablePageReset";
+import { TableLoaderSkeleton, TableErrorCard } from "@/components/ui";
+
 
 type Order = "asc" | "desc";
 
@@ -51,7 +52,7 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
   const [open, setOpen] = useState(false);
   const [modalInfo, setModalInfo] = useState<{ id: string[]; type: string }>({ id: [], type: "" });
 
-  var limit = 17;
+  let limit = 17;
   const { height } = useWindowSize();
   limit = height === 0 ? limit : Math.floor((height - 240) / 41);
 
@@ -102,16 +103,17 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
   useTablePageReset(data?.metaData?.itemCount, query, setPage, page);
 
   if (isLoading) return (
-    <Box id="user-listing-loading" sx={{ display: 'flex', justifyContent: 'center', p: 10 }}>
-      <CircularProgress />
-    </Box>
+    <TableLoaderSkeleton rowsNum={5} />
   );
 
   if (error) return (
-    <Box id="user-listing-error" sx={{ p: 4 }}>
-      <Typography color="error">Error loading users. Please check if the server is running.</Typography>
-    </Box>
+    <TableErrorCard 
+      message={error?.response?.data?.message || "We encountered an error while fetching the user list. Please try again."} 
+      onRetry={() => mutate()} 
+    />
   );
+
+
 
   return (
     <Box id="user-listing-container" sx={{ width: "100%" }}>

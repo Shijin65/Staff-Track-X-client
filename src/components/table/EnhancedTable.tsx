@@ -14,7 +14,6 @@ import {
   IconButton,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import { EnhancedTableHead } from "./EnhancedTableHeader";
 import { Button } from "../ui/button";
 
@@ -104,9 +103,7 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
     setPage(newPage);
   };
 
-  const rowStart = totalItems === 0 ? 0 : (page - 1) * rows.length + 1;
-  const rowEnd = Math.min(page * rows.length, totalItems);
-  const isEmpty = rows.length === 0;
+  const isEmpty = rows?.length === 0;
   return (
     <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
       <TableContainer>
