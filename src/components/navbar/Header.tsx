@@ -16,18 +16,21 @@ import {
 } from "@mui/material";
 import {
   SettingsOutlined,
-  InfoOutlined,
   ShoppingCartOutlined,
   LogoutOutlined,
   ChevronRight,
+  LockOutlined,
+  PersonOutlined,
 } from "@mui/icons-material";
 import { useAuthContext } from "@/context/auth-provider";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const auth = useAuthContext();
   const user = auth?.user?.user;
   const theme = useTheme();
+  const router = useRouter();
 
   const handleUserMenuOpen = (e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget);
   const handleUserMenuClose = () => setAnchorEl(null);
@@ -101,16 +104,20 @@ const Header = () => {
 
           {/* Settings Section */}
           <Box sx={{ py: 1 }}>
-            <MenuItem sx={{ py: 1.2, px: 2 }}>
+            <MenuItem sx={{ py: 1.2, px: 2 }} onClick={() => { handleUserMenuClose(); router.push('/profile'); }}>
+              <ListItemIcon><PersonOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Profile</Typography>
+            </MenuItem>
+            <MenuItem sx={{ py: 1.2, px: 2 }} onClick={() => { handleUserMenuClose(); router.push('/my-events'); }}>
               <ListItemIcon><ShoppingCartOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
               <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Events history</Typography>
             </MenuItem>
-            <MenuItem sx={{ py: 1.2, px: 2 }}>
-              <ListItemIcon><InfoOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
-              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Help and resources</Typography>
+            <MenuItem sx={{ py: 1.2, px: 2 }} onClick={() => { handleUserMenuClose(); router.push('/change-password'); }}>
+              <ListItemIcon><LockOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Change password</Typography>
               <ChevronRight fontSize="small" sx={{ color: "text.secondary" }} />
             </MenuItem>
-            <MenuItem sx={{ py: 1.2, px: 2 }}>
+            <MenuItem sx={{ py: 1.2, px: 2 }} onClick={() => { handleUserMenuClose(); router.push('/settings'); }}>
               <ListItemIcon><SettingsOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
               <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Settings</Typography>
             </MenuItem>

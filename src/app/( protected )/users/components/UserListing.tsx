@@ -8,7 +8,6 @@ import {
   Toolbar,
   Tooltip,
   Button,
-  CircularProgress,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -103,13 +102,13 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
   useTablePageReset(data?.metaData?.itemCount, query, setPage, page);
 
   if (isLoading) return (
-    <TableLoaderSkeleton rowsNum={5} />
+    <TableLoaderSkeleton rowsNum={3} />
   );
 
   if (error) return (
-    <TableErrorCard 
-      message={error?.response?.data?.message || "We encountered an error while fetching the user list. Please try again."} 
-      onRetry={() => mutate()} 
+    <TableErrorCard
+      message={error?.response?.data?.message || "We encountered an error while fetching the user list. Please try again."}
+      onRetry={() => mutate()}
     />
   );
 

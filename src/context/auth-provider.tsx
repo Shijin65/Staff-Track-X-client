@@ -6,7 +6,7 @@ import { useUserStore } from "@/lib/store";
 import Cookies from "js-cookie";
 import { useAxios } from "@/lib/hooks/useAxios";
 import { useToast } from "@/lib/store/useToastStore";
-import axios from "axios";
+import { handleAxiosError } from "@/lib/utils/axiosError";
 
 interface User {
   user: {
@@ -46,7 +46,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const axiosBase = useAxios()
   const [loading, setLoading] = useState<boolean>(false);
   const { setToast } = useToast();
-  const { setToast } = useToast();
 
   const user = useUserStore((state) => state.user);
   const setUserStore = useUserStore((state) => state.setUser);
@@ -69,15 +68,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       router.push("/");
     } catch (error: unknown) {
 
-      if (axios.isAxiosError(error)) {
-        const message =
-          error.response?.data?.message || "Failed to login";
-        setToast({ message: message, type: "error", open: true });
-      } else {
-        setToast({ message: "Unexpected error occurred", type: "error", open: true });
-      }
-
-      console.log(error);
+      const message = handleAxiosError(error, "Failed to login");
+      setToast({ message: message, type: "error", open: true });
     }
   };
 

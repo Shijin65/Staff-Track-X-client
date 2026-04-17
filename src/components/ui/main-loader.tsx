@@ -41,7 +41,7 @@ export const MainLoader = () => {
               animation: `${pulse} 1.5s ease-in-out infinite`,
             }}
           >
-            <PersonIcon sx={{ filter: "drop-shadow(0 0 6px rgba(255,255,255,0.3))", fontSize: 40, color: "#fff" }} />
+            <PersonIcon sx={{ filter: "drop-shadow(0 0 6px rgba(255,255,255,0.3))", fontSize: 30, color: "#fff" }} />
           </Box>
         </Box>
       </Box>

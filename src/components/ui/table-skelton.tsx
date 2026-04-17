@@ -4,10 +4,8 @@ export const TableLoaderSkeleton = ({ rowsNum }: { rowsNum: number }) => {
     return (
         <>
             {[...Array(rowsNum)].map((_, index) => (
-                <div key={index}>
-                    <Skeleton variant="rectangular" height={60} />
-                    <Skeleton variant="rectangular" height={60} />
-                    <Skeleton variant="rectangular" height={60} />
+                <div key={index} style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%", padding: 16 }}>
+                    <Skeleton variant="rectangular" height={40}  width={"100%"} animation="wave" sx={{ borderRadius: 2 }}/>
                 </div>
             ))}
         </>

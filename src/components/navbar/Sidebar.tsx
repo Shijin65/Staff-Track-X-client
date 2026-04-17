@@ -16,7 +16,8 @@ export const Sidebar = () => {
   const hasPermission = (path: string) => {
     if (!availableAccess) return false;
     if (path === "/") return true;
-    if (path === "/settings") return true;
+    if (path === "/profile") return true;
+    if (path === "/my-events") return true;
     if (path === "/events") return availableAccess.includes("view_event");
     if (path === "/events/create") return availableAccess.includes("create_event");
     if (path === "/users") return availableAccess.includes("view_user");

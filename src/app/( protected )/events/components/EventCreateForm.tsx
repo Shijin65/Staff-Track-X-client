@@ -26,28 +26,30 @@ import { useToast } from "@/lib/store/useToastStore";
 import { useAxios } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 import { KERALA_DISTRICTS } from "@/lib/utils/constance";
+import { handleAxiosError } from "@/lib/utils/axiosError";
 
 const schema = yup.object({
-  title: yup.string().required("Title is required"),
-  eventVenue: yup.string().required("Venue is required"),
-  eventType: yup.string().required("Event type is required"),
-  eventDate: yup.string().required("Date is required"),
-  startTime: yup.string().required("Start time is required"),
-  endTime: yup.string().required("End time is required"),
-  clientName: yup.string().required("Client name is required"),
-  clientPhone: yup.string().required("Client phone is required"),
-  address: yup.string().optional(),
-  district: yup.string().optional(),
-  city: yup.string().optional(),
+  title: yup.string().required("Title is required."),
+  eventVenue: yup.string().required("Venue is required."),
+  eventType: yup.string().required("Event type is required."),
+  eventDate: yup.string().required("Date is required."),
+  startTime: yup.string().required("Start time is required."),
+  reportingTime: yup.string().required("Reporting time is required."),
+  clientName: yup.string().required("Client name is required."),
+  clientPhone: yup.string().required("Client phone is required."),
+  address: yup.string().optional().notRequired(),
+  district: yup.string().optional().notRequired(),
+  city: yup.string().optional().notRequired(),
   status: yup.string().default("Pending"),
-  description: yup.string().optional(),
-  locationInstructions: yup.string().optional(),
+  description: yup.string().optional().notRequired(),
+  locationInstructions: yup.string().optional().notRequired(),
+
 }).required();
 
 type EventFormData = yup.InferType<typeof schema>;
 
-interface EventCreateFormProps {
-  initialData?: any;
+interface eventFormProps {
+  eId?: string;
 }
 
 const SectionCard = ({ icon: Icon, title, subtitle, children }: any) => {
@@ -68,8 +70,10 @@ const SectionCard = ({ icon: Icon, title, subtitle, children }: any) => {
   );
 };
 
-export const EventCreateForm: React.FC<EventCreateFormProps> = ({ initialData }) => {
-  const isEdit = !!initialData;
+export const EventCreateForm: React.FC<eventFormProps> = ({
+  eId,
+}) => {
+  const isEdit = !!eId;
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const fieldSize = isMobile ? "small" : "medium";
@@ -77,40 +81,36 @@ export const EventCreateForm: React.FC<EventCreateFormProps> = ({ initialData })
   const api = useAxios();
   const router = useRouter();
 
-  const { control, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<EventFormData>({
+  const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<EventFormData>({
     resolver: yupResolver(schema),
-    defaultValues: { status: "Pending" }
+    defaultValues: {
+      title: "",
+      eventVenue: "",
+      eventType: "",
+      eventDate: "",
+      startTime: "",
+      reportingTime: "",
+      clientName: "",
+      clientPhone: "",
+      address: "",
+      district: "",
+      city: "",
+      status: "Pending",
+      description: "",
+      locationInstructions: "",
+    }
   });
 
-  useEffect(() => {
-    if (initialData) {
-      reset({
-        title: initialData.title || "",
-        eventVenue: initialData.eventVenue || "",
-        eventType: initialData.eventType || "",
-        eventDate: initialData.eventDate ? new Date(initialData.eventDate).toISOString().split('T')[0] : "",
-        startTime: initialData.startTime || "",
-        endTime: initialData.endTime || "",
-        clientName: initialData.clientName || "",
-        clientPhone: initialData.clientPhone || "",
-        address: initialData.address || "",
-        district: initialData.district || "",
-        city: initialData.city || "",
-        status: initialData.status || "Pending",
-        description: initialData.description || "",
-        locationInstructions: initialData.locationInstructions || "",
-      });
-    }
-  }, [initialData, reset]);
 
-  const onSubmit = async (data: any) => {
-    const request = isEdit ? api.put(`/api/events/${initialData.eventId || initialData.id}`, data) : api.post("/api/events", data);
+  const onSubmit = async (data: Record<string, unknown>) => {
+    const request = isEdit ? api.put(`/api/events/${eId}`, data) : api.post("/api/events", data);
     try {
       await request;
       setToast({ message: `Event ${isEdit ? "updated" : "created"} successfully.`, type: "success", open: true });
       router.push("/events");
-    } catch (err: any) {
-      setToast({ message: err.response?.data?.message || "Operation failed", type: "error", open: true });
+    } catch (err: unknown) {
+      const message = handleAxiosError(err, "Failed to create event");
+      setToast({ message, type: "error", open: true });
     }
   };
 
@@ -141,7 +141,7 @@ export const EventCreateForm: React.FC<EventCreateFormProps> = ({ initialData })
               name="eventType"
               control={control}
               render={({ field }) => (
-                <TextField {...field} select fullWidth size={fieldSize} label="Event Type" error={!!errors.eventType} helperText={errors.eventType?.message ?? ""}>
+                <TextField {...field} value={field.value || ""} select fullWidth size={fieldSize} label="Event Type" error={!!errors.eventType} helperText={errors.eventType?.message ?? ""}>
                   <MenuItem value="Wedding">Wedding</MenuItem>
                   <MenuItem value="Corporate">Corporate</MenuItem>
                   <MenuItem value="Birthday">Birthday</MenuItem>
@@ -155,7 +155,7 @@ export const EventCreateForm: React.FC<EventCreateFormProps> = ({ initialData })
               name="status"
               control={control}
               render={({ field }) => (
-                <TextField {...field} select fullWidth size={fieldSize} label="Status" error={!!errors.status} helperText={errors.status?.message ?? ""}>
+                <TextField {...field} value={field.value || ""} select fullWidth size={fieldSize} label="Status" error={!!errors.status} helperText={errors.status?.message ?? ""}>
                   <MenuItem value="Pending">Pending</MenuItem>
                   <MenuItem value="Confirmed">Confirmed</MenuItem>
                   <MenuItem value="Completed">Completed</MenuItem>
@@ -175,6 +175,15 @@ export const EventCreateForm: React.FC<EventCreateFormProps> = ({ initialData })
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
             <Controller
+              name="reportingTime"
+              control={control}
+              render={({ field }) => (
+                <TextField {...field} fullWidth size={fieldSize} label="Reporting Time" type="time" InputLabelProps={{ shrink: true }} error={!!errors.reportingTime} helperText={errors.reportingTime?.message ?? ""} />
+              )}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <Controller
               name="startTime"
               control={control}
               render={({ field }) => (
@@ -182,15 +191,7 @@ export const EventCreateForm: React.FC<EventCreateFormProps> = ({ initialData })
               )}
             />
           </Grid>
-          <Grid size={{ xs: 12, sm: 4 }}>
-            <Controller
-              name="endTime"
-              control={control}
-              render={({ field }) => (
-                <TextField {...field} fullWidth size={fieldSize} label="End Time" type="time" InputLabelProps={{ shrink: true }} error={!!errors.endTime} helperText={errors.endTime?.message ?? ""} />
-              )}
-            />
-          </Grid>
+          
         </Grid>
       </SectionCard>
 
@@ -233,7 +234,7 @@ export const EventCreateForm: React.FC<EventCreateFormProps> = ({ initialData })
               name="district"
               control={control}
               render={({ field }) => (
-                <TextField {...field} select fullWidth size={fieldSize} label="District" error={!!errors.district} helperText={errors.district?.message ?? ""}>
+                <TextField {...field} value={field.value || ""} select fullWidth size={fieldSize} label="District" error={!!errors.district} helperText={errors.district?.message ?? ""}>
                   {KERALA_DISTRICTS.map((dst) => (
                     <MenuItem key={dst} value={dst}>{dst}</MenuItem>
                   ))}

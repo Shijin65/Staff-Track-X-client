@@ -14,15 +14,20 @@ import { Add as AddIcon } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { EnhancedTable } from "@/components/table/EnhancedTable";
-import { CustomModal as Modal } from "@/components/ui/modal";
 import { useWindowSize } from "@/lib/hooks";
+
+interface Event {
+  eventId: string;
+  title: string;
+  eventDate: string;
+  eventVenue: string;
+  status: string;
+}
 
 export const EventListing = () => {
   const { data, error, isLoading, mutate } = useSWR("/api/events");
-  const [selected, setSelected] = useState<string[]>();
+  const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(1);
-  const [open, setOpen] = useState(false);
-  const [modalInfo, setModalInfo] = useState<{ id: string; type: string }>({ id: "", type: "" });
 
   const { height } = useWindowSize();
   const limit = height === 0 ? 10 : Math.floor((height - 240) / 41);
@@ -36,7 +41,7 @@ export const EventListing = () => {
     { id: "status", label: "Status" },
   ];
 
-  const parsedData = data?.payload?.map((item: any) => ({
+  const parsedData = data?.payload?.map((item: Event) => ({
     id: item.eventId,
     title: item.title,
     eventDate: item.eventDate,
@@ -44,21 +49,13 @@ export const EventListing = () => {
     status: item.status,
   })) || [];
 
-  const handleOpen = (_event: React.MouseEvent<HTMLButtonElement>, type: string, uid: string) => {
-    if (type === "edit") {
-      router.push(`/events/${uid}/edit`);
-    } else {
-      setModalInfo({ id: uid, type: type });
-      setOpen(true);
-    }
-  };
 
   const handleViewDetails = (eventId: string) => {
     router.push(`/events/${eventId}/view`);
   };
 
   if (isLoading) return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', p: 10 }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
       <CircularProgress />
     </Box>
   );
@@ -77,7 +74,7 @@ export const EventListing = () => {
                 onClick={() => router.push('/events/create')}
                 sx={{ borderRadius: 2 }}
             >
-              Add Event
+              Add 
             </Button>
           </Tooltip>
         </Toolbar>
@@ -85,12 +82,11 @@ export const EventListing = () => {
         <EnhancedTable
           rows={parsedData}
           columns={columns}
-          idField="id"
+          idField="title"
           selected={selected}
           setSelected={setSelected}
           page={page}
           setPage={setPage}
-          handleOpen={handleOpen}
           handleViewDetails={handleViewDetails}
           mainCol="title"
           limit={limit}
@@ -98,6 +94,7 @@ export const EventListing = () => {
           totalItems={data?.metaData?.totalCount || 0}
           setOrder={() => {}}
           setOrderBy={() => {}}
+          hasSelection={false}
         />
       </Paper>
     </Box>

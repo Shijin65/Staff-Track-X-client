@@ -1,11 +1,11 @@
 import React from "react";
-import { Box, Container } from "@mui/material";
-import { EventListing } from "@/components/components/EventListing";
+import { Box } from "@mui/material";
+import { EventListing } from "@/app/( protected )/events/components/EventListing";
 
 export default function EventsPage() {
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Box sx={{ mt: 2 }}>
       <EventListing />
-    </Container>
+    </Box>
   );
 }

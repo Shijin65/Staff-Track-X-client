@@ -44,12 +44,13 @@ interface EnhancedTableProps<T, K extends keyof T = keyof T> {
   orderBy?: keyof T;
   setOrderBy: React.Dispatch<React.SetStateAction<keyof T>>;
 
-  handleOpen: (event: React.MouseEvent<HTMLButtonElement>, type: string, uid: Array<T[K]>) => void;
+  handleOpen?: (event: React.MouseEvent<HTMLButtonElement>, type: string, uid: Array<T[K]>) => void;
   handleViewDetails: (userId: string) => void;
   mainCol?: keyof T;
   limit?: number;
   totalPages?: number;
   totalItems?: number;
+  hasSelection?: boolean;
 }
 
 export function EnhancedTable<T, K extends keyof T = keyof T>({
@@ -68,6 +69,7 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
   mainCol,
   totalPages = 1,
   totalItems = 0,
+  hasSelection = true,
 }: EnhancedTableProps<T, K>) {
   const isSelected = (id: T[K]) => (selected || []).includes(id);
 
@@ -127,7 +129,7 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
         >
           <EnhancedTableHead
             columns={columns}
-            hasSelection={!!selected}
+            hasSelection={hasSelection}
             order={order}
             orderBy={orderBy}
             numSelected={selected.length}
@@ -162,14 +164,14 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
                   key={String(id)}
                   hover
                   selected={checked}
-                  sx={{ cursor: "pointer" }}
+                  sx={{ cursor: "pointer" ,backgroundColor: checked ? "var(--background)" : "white" }}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleClick(e, id)
                   }}
                 >
                   {/* Checkbox */}
-                  {selected && (
+                  {hasSelection && (
                     <TableCell padding="checkbox">
                       <Checkbox
                         size="small"
@@ -257,7 +259,7 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
                         color="error"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleOpen(e, "delete", [id]);
+                          handleOpen?.(e, "delete", [id]);
                         }}
                       >
                         <DeleteIcon fontSize="small" />
@@ -290,7 +292,7 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
               variant="contained"
               color="error"
               size="small"
-              onClick={(e) => handleOpen(e, "delete", selected)}
+              onClick={(e) => handleOpen?.(e, "delete", selected)}
               startIcon={<DeleteIcon className="w-5 h-5 text-white " />}
             >
               Delete

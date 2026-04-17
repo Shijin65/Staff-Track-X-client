@@ -12,6 +12,8 @@ import {
   TextField,
   InputAdornment,
   Slide,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import { useAuthContext } from "@/context/auth-provider";
 import { useLoader } from "@/lib/store";
@@ -23,12 +25,12 @@ import {
 import { useToast } from "@/lib/store/useToastStore";
 import { useRouter } from "next/navigation";
 import { useAxios } from "@/lib/hooks";
+import { handleAxiosError } from "@/lib/utils/axiosError";
 
 const LoginUser: React.FC = () => {
   const { loading, setLoading } = useLoader();
   const { login } = useAuthContext();
   const [showForm, setShowForm] = React.useState(false);
-  const [view, setView] = React.useState<"login" | "forgot">("login");
   const [forgotEmail, setForgotEmail] = React.useState("");
   const [forgotSubmitted, setForgotSubmitted] = React.useState(false);
   const { setToast } = useToast();
@@ -37,7 +39,7 @@ const LoginUser: React.FC = () => {
   const [resetEmail, setResetEmail] = React.useState('');
 
   const router = useRouter();
-  const api = useAxios();
+  const axiosBase = useAxios();
 
   const handleLogin = async (form: HTMLFormElement) => {
     const email = (form.elements.namedItem("user_email") as HTMLInputElement).value;
@@ -50,14 +52,14 @@ const LoginUser: React.FC = () => {
     const email = (form.elements.namedItem("user_email") as HTMLInputElement).value;
     setResetEmail(email);
     const tempPassword = Math.floor(1000 + Math.random() * 9000).toString();
-    await api.post('/api/auth/forgot-password', { email, tempPassword });
+    await axiosBase.post('/api/auth/forgot-password', { email, tempPassword });
     setToast({ message: "OTP sent to your email", type: "success", open: true });
     setView('verify-otp');
   }
 
   const handleVerifyOtp = async (form: HTMLFormElement) => {
     const otpValue = (form.elements.namedItem("user_otp") as HTMLInputElement).value;
-    const response = await api.post('/api/auth/check-otp', { email: resetEmail, otp: otpValue });
+    const response = await axiosBase.post('/api/auth/check-otp', { email: resetEmail, otp: otpValue });
     setToast({ message: "OTP verified", type: "success", open: true });
     const token = response.data?.payload?.resetToken;
     if (token) {
@@ -74,8 +76,13 @@ const LoginUser: React.FC = () => {
       if (view === 'login') handleLogin(form);
       else if (view === 'forgot-password') handleForgotPassword(form);
       else if (view === 'verify-otp') handleVerifyOtp(form);
-    } catch (error: any) {
-      setToast({ message: error?.response?.data?.message || "Invalid User Details.", type: "error", open: true });
+    } catch (error: unknown) {
+      const message = handleAxiosError(error, "Invalid User Details.");
+        setToast({ 
+          message: message, 
+          type: "error", 
+          open: true 
+        });
     } finally {
       setLoading(false);
     }
@@ -83,26 +90,18 @@ const LoginUser: React.FC = () => {
 
   const handleForgotSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!forgotEmail) return;
     setLoading(true);
     try {
       await axiosBase.post("/api/auth/forgot-password", { email: forgotEmail });
       setForgotSubmitted(true);
       setToast({ message: "Request processed successfully.", type: "success", open: true });
-    } catch (error: any) {
-      if(error.response){
+    } catch (error: unknown) {
+      const message = handleAxiosError(error, "Failed to process request");
         setToast({ 
-          message: error.response?.data?.message || "Failed to process request", 
+          message: message, 
           type: "error", 
           open: true 
         });
-      }else{
-        setToast({ 
-          message: "Failed to process request", 
-          type: "error", 
-          open: true 
-        });
-      }
     } finally {
       setLoading(false);
     }
@@ -368,13 +367,20 @@ const LoginUser: React.FC = () => {
     <Box
       sx={{
         width: "100%",
+        height: { xs: "50dvh", md: "auto" },
+        overflowY: { xs: "auto", md: "visible" },
         bgcolor: { xs: "white", md: "transparent" },
         borderTopLeftRadius: { xs: "30px", md: 0 },
         borderTopRightRadius: { xs: "30px", md: 0 },
         p: { xs: 3, md: 0 },
         boxShadow: { xs: "0 -10px 40px rgba(0,0,0,0.05)", md: "none" },
-        position: "relative",
+        position: { xs: "fixed", md: "relative" },
+        bottom: 0,
+        left: 0,
+        right: 0,
         zIndex: 20,
+        '&::-webkit-scrollbar': { display: 'none' },
+        scrollbarWidth: 'none',
       }}
     >
       {view === "login" ? LoginForm : ForgotForm}

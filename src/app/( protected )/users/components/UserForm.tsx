@@ -48,6 +48,7 @@ import useSWR from "swr";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { schema } from "./user-schema";
 import { MainLoader } from "../../../../components/ui/main-loader";
+import { handleAxiosError } from "@/lib/utils/axiosError";
 
 
 
@@ -175,7 +176,6 @@ export const UserForm: React.FC<UserFormProps> = ({
   const roles = rolesData?.payload?.roles || [];
 
   const {
-    register,
     handleSubmit,
     control,
     setValue,
@@ -198,28 +198,28 @@ export const UserForm: React.FC<UserFormProps> = ({
     setIsLoading(true);
     if (!uid) return;
     try {
-      let res = await api.get(`/api/users/${uid}`);
+      const res = await api.get(`/api/users/${uid}`);
       if (res.status === 200) {
         const data = res?.data?.payload || {};
         fields.forEach((field) => {
           switch (field) {
             case "role":
-              setValue(field as any, data.role?.roleId || "");
+              setValue(field as keyof FormData, data.role?.roleId || "");
               break;
             case "whiteShirt":
-              setValue(field as any, data.uniform?.whiteShirt || false);
+              setValue(field as keyof FormData, data.uniform?.whiteShirt || false);
               break;
             case "blackPant":
-              setValue(field as any, data.uniform?.blackPant || false);
+              setValue(field as keyof FormData, data.uniform?.blackPant || false);
               break;
             case "executiveBlackShoe":
-              setValue(field as any, data.uniform?.executiveBlackShoe || false);
+              setValue(field as keyof FormData, data.uniform?.executiveBlackShoe || false);
               break;
             case "grooming":
-              setValue(field as any, data.uniform?.grooming || false);
+              setValue(field as keyof FormData, data.uniform?.grooming || false);
               break;
             default:
-              setValue(field as any, data[field] || "");
+              setValue(field as keyof FormData, data[field] || "");
               break;
           }
         });
@@ -227,8 +227,13 @@ export const UserForm: React.FC<UserFormProps> = ({
           setProfilePreview(data.profilePic);
         }
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: unknown) {
+      const message = handleAxiosError(error, "Failed to fetch user details.");
+      setToast({
+        message: message,
+        type: "error",
+        open: true
+      });
     } finally {
       setIsLoading(false);
     }
@@ -274,10 +279,10 @@ export const UserForm: React.FC<UserFormProps> = ({
           open: true,
         });
       }
-    } catch (error: any) {
-      console.error(error);
+    } catch (error: unknown) {
+      const message = handleAxiosError(error, "Failed to reset password.");
       setToast({
-        message: error.response?.data?.message || "Failed to reset password.",
+        message: message,
         type: "error",
         open: true,
       });
@@ -327,8 +332,8 @@ export const UserForm: React.FC<UserFormProps> = ({
         px: { xs: 0, md: 5 },
         position: 'relative'
       }}>
-        <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: "100" }}>
+        <Container maxWidth="xl">
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: "100%" }}>
             <IconButton
               onClick={() => router.back()}
               sx={{
@@ -350,7 +355,7 @@ export const UserForm: React.FC<UserFormProps> = ({
       </Box>
 
       {/* Form Section */}
-      <Container maxWidth="lg" sx={{ mt: -6, pb: 8 }}>
+      <Container maxWidth="xl" sx={{ mt: -6, pb: 8 }}>
 
         <Box
           component="form"

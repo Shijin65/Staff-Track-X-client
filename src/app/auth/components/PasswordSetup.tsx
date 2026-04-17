@@ -14,7 +14,7 @@ import { LockOutlined, ArrowBackIosNew } from "@mui/icons-material";
 import { useToast } from "@/lib/store/useToastStore";
 import { useAxios } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import { handleAxiosError } from "@/lib/utils/axiosError";
 
 interface PasswordSetupProps {
   token: string;
@@ -44,15 +44,8 @@ const PasswordSetup: React.FC<PasswordSetupProps> = ({ token }) => {
       setToast({ message: "Password set successfully. Please login.", type: "success", open: true });
       router.push("/auth/login");
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        const message =
-          error.response?.data?.message || "Failed to set password";
-        setToast({ message: message, type: "error", open: true });
-      } else {
-        setToast({ message: "Unexpected error occurred", type: "error", open: true });
-      }
-
-      console.log(error);
+      const message = handleAxiosError(error, "Failed to set password");
+      setToast({ message: message, type: "error", open: true });
     } finally {
       setLoading(false);
     }

@@ -2,7 +2,7 @@
 
 import React, { use, useEffect, useState } from "react";
 import { Box, Container, Typography, CircularProgress } from "@mui/material";
-import { EventCreateForm } from "@/components/components/EventCreateForm";
+import { EventCreateForm } from "@/app/( protected )/events/components/EventCreateForm";
 import { useAxios } from "@/lib/hooks";
 
 export default function EditEventPage({ params }: { params: Promise<{ id: string }> }) {
@@ -34,12 +34,12 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" fontWeight={700}>Edit Event</Typography>
         <Typography variant="body1" color="text.secondary">Update details for this catering event</Typography>
       </Box>
-      <EventCreateForm initialData={eventData} />
+      <EventCreateForm eId={id as string} />
     </Container>
   );
 }

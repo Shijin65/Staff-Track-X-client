@@ -6,6 +6,7 @@ import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
 import DeleteConfirmation from "../../../../components/ui/delete-confirmation";
 import { useToast } from "@/lib/store/useToastStore";
 import { useAxios } from "@/lib/hooks/useAxios";
+import { handleAxiosError } from "@/lib/utils/axiosError";
 
 interface UserDeleteProps {
     uid: string[];
@@ -50,17 +51,14 @@ const UserDelete = ({ uid, handleClose, mutate }: UserDeleteProps) => {
                     open: true,
                 });
             }
-        } catch (error) {
-            const err = error as AxiosError<ApiError>;
-            setToast({
-                message: err.response?.data?.message ||
-                    (uid.length === 1
-                        ? "Failed to Delete User."
-                        : `Failed To Delete ${uid.length} Users.`),
-                type: "error",
-                open: true,
-            });
-        }
+        } catch (error: unknown) {
+              const message = handleAxiosError(error, "Invalid User Details.");
+                setToast({ 
+                  message: message, 
+                  type: "error", 
+                  open: true 
+                });
+            } 
     };
 
     return (
