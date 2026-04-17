@@ -2,7 +2,7 @@
 
 import React, { use, useEffect, useState } from "react";
 import { Box, Container, Typography, CircularProgress } from "@mui/material";
-import { EventCreateForm } from "@/components/event/EventCreateForm";
+import { EventCreateForm } from "@/components/components/EventCreateForm";
 import { useAxios } from "@/lib/hooks";
 
 export default function EditEventPage({ params }: { params: Promise<{ id: string }> }) {

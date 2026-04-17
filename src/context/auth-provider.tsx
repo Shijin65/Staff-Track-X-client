@@ -46,6 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const axiosBase = useAxios()
   const [loading, setLoading] = useState<boolean>(false);
   const { setToast } = useToast();
+  const { setToast } = useToast();
 
   const user = useUserStore((state) => state.user);
   const setUserStore = useUserStore((state) => state.setUser);

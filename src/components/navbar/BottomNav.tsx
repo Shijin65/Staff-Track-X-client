@@ -9,10 +9,30 @@ import {
 } from "@mui/material";
 import { navItems } from "@/lib/utils/constance";
 import { usePathname, useRouter } from "next/navigation";
+import { useUserStore } from "@/lib/store";
 
 export const BottomNav = () => {
   const pathname = usePathname();
   const router = useRouter();
+
+  const availableAccess = useUserStore((state) => state.user?.availableAccess) as unknown as string[] | undefined;
+
+  const hasPermission = (path: string) => {
+    if (!availableAccess) return false;
+    if (path === "/") return true;
+    if (path === "/settings") return true;
+    if (path === "/events") return availableAccess.includes("view_event");
+    if (path === "/events/create") return availableAccess.includes("create_event");
+    if (path === "/users") return availableAccess.includes("view_user");
+    return false;
+  };
+
+  const filteredItems = navItems.filter((item) => hasPermission(item.path));
+
+  // Determine active value
+  const activeIndex = filteredItems.findIndex(item => item.path === pathname);
+  const value = activeIndex === -1 ? 0 : activeIndex;
+
   return (
     <Paper
       elevation={0}
@@ -31,16 +51,18 @@ export const BottomNav = () => {
       }}
     >
       <BottomNavigation
-        value={navItems.findIndex(item => item.path === pathname)}
+        value={value}
         onChange={(event, newValue) => {
-          router.push(navItems[newValue].path);
+          if (filteredItems[newValue]) {
+            router.push(filteredItems[newValue].path);
+          }
         }}
         sx={{
           height: 70,
           background: "transparent",
         }}
       >
-        {navItems.map((item, index) => {
+        {filteredItems.map((item, index) => {
           const isSelected = pathname === item.path;
 
           return (

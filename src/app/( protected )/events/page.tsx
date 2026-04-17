@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Container } from "@mui/material";
-import { EventListing } from "@/components/event/EventListing";
+import { EventListing } from "@/components/components/EventListing";
 
 export default function EventsPage() {
   return (
