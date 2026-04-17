@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Container, Typography } from "@mui/material";
-import { EventCreateForm } from "@/components/event/EventCreateForm";
+import { EventCreateForm } from "@/components/components/EventCreateForm";
 
 export default function CreateEventPage() {
   return (
@@ -9,7 +9,7 @@ export default function CreateEventPage() {
         <Typography variant="h4" fontWeight={700}>Create New Event</Typography>
         <Typography variant="body1" color="text.secondary">Enter details to organize a new catering event</Typography>
       </Box>
-      <EventCreateForm onCancel={() => {}} />
+      <EventCreateForm />
     </Container>
   );
 }

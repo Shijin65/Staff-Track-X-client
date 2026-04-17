@@ -22,6 +22,8 @@ import {
   LockOutlined,
 } from "@mui/icons-material";
 import { useToast } from "@/lib/store/useToastStore";
+import { useRouter } from "next/navigation";
+import { useAxios } from "@/lib/hooks";
 
 const LoginUser: React.FC = () => {
   const { loading, setLoading } = useLoader();
@@ -29,18 +31,49 @@ const LoginUser: React.FC = () => {
   const [showForm, setShowForm] = React.useState(false);
   const { setToast } = useToast();
 
+  const [view, setView] = React.useState<'login' | 'forgot-password' | 'verify-otp'>('login');
+  const [resetEmail, setResetEmail] = React.useState('');
+
+  const router = useRouter();
+  const api = useAxios();
+
+  const handleLogin = async (form: HTMLFormElement) => {
+    const email = (form.elements.namedItem("user_email") as HTMLInputElement).value;
+    const password = (form.elements.namedItem("user_password") as HTMLInputElement).value;
+    await login({ email, password });
+    setToast({ message: `Login successful`, type: "success", open: true });
+  }
+
+  const handleForgotPassword = async (form: HTMLFormElement) => {
+    const email = (form.elements.namedItem("user_email") as HTMLInputElement).value;
+    setResetEmail(email);
+    const tempPassword = Math.floor(1000 + Math.random() * 9000).toString();
+    await api.post('/api/auth/forgot-password', { email, tempPassword });
+    setToast({ message: "OTP sent to your email", type: "success", open: true });
+    setView('verify-otp');
+  }
+
+  const handleVerifyOtp = async (form: HTMLFormElement) => {
+    const otpValue = (form.elements.namedItem("user_otp") as HTMLInputElement).value;
+    const response = await api.post('/api/auth/check-otp', { email: resetEmail, otp: otpValue });
+    setToast({ message: "OTP verified", type: "success", open: true });
+    const token = response.data?.payload?.resetToken;
+    if (token) {
+      router.push(`/auth/${token}?email=${resetEmail}`);
+    }
+  }
+
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     const form = e.currentTarget;
     try {
-      const email = (form.elements.namedItem("user_email") as HTMLInputElement).value;
-      const password = (form.elements.namedItem("user_password") as HTMLInputElement).value;
-      await login({ email, password });
-      setToast({ message: `Login successful ${email},${password}`, type: "success", open: true });
-    } catch (error) {
-      console.log(error);
-      setToast({ message: "Failed to login", type: "error", open: true });
+      if (view === 'login') handleLogin(form);
+      else if (view === 'forgot-password') handleForgotPassword(form);
+      else if (view === 'verify-otp') handleVerifyOtp(form);
+    } catch (error: any) {
+      setToast({ message: error?.response?.data?.message || "Invalid User Details.", type: "error", open: true });
     } finally {
       setLoading(false);
     }
@@ -61,79 +94,115 @@ const LoginUser: React.FC = () => {
     >
       <Box sx={{ mb: { xs: 2.5, md: 4 }, textAlign: { xs: "center", md: "left" } }}>
         <Typography variant="h4" fontWeight={800} color="primary" sx={{ mb: 1, fontSize: { xs: "1.75rem", md: "2.125rem" } }}>
-          Welcome back
+          {view === 'login' ? "Welcome back" : view === 'forgot-password' ? "Forgot Password" : "Verify OTP"}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Enter your credentials to continue
+          {view === 'login' ? "Enter your credentials to continue" : view === 'forgot-password' ? "Enter your email to receive an OTP." : `Enter the 4 digit OTP sent to ${resetEmail}`}
         </Typography>
       </Box>
 
       <form onSubmit={handleSubmit} suppressHydrationWarning>
         <Box sx={{ display: "flex", flexDirection: "column", gap: { xs: 2, md: 3 } }}>
-          <Box>
-            <Typography variant="body2" fontWeight={600} sx={{ mb: 1, ml: 0.5 }}>
-              Email
-            </Typography>
-            <TextField
-              fullWidth
-              required
-              name="user_email"
-              placeholder="kristin.watson@example.com"
-              type="email"
-              variant="outlined"
-              size="small"
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: "12px",
-                  bgcolor: "rgba(0,0,0,0.02)",
-                },
-              }}
-              inputProps={{ suppressHydrationWarning: true }}
-              InputProps={{
-                startAdornment: (
+          {view !== 'verify-otp' && (
+            <Box>
+              <Typography variant="body2" fontWeight={600} sx={{ mb: 1, ml: 0.5 }}>
+                Email
+              </Typography>
+              <TextField
+                fullWidth
+                required
+                name="user_email"
+                placeholder="kristin.watson@example.com"
+                type="email"
+                variant="outlined"
+                size="small"
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "12px",
+                    bgcolor: "rgba(0,0,0,0.02)",
+                  },
+                }}
+                inputProps={{ suppressHydrationWarning: true }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <EmailOutlined sx={{ fontSize: 20, color: "text.secondary" }} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Box>
+          )}
+
+          {view === 'login' && (
+            <Box>
+              <Typography variant="body2" fontWeight={600} sx={{ mb: 1, ml: 0.5 }}>
+                Password
+              </Typography>
+              <PasswordField
+                fullWidth
+                name="user_password"
+                placeholder="**********"
+                required
+                size="small"
+                autoComplete="current-password"
+                inputProps={{ suppressHydrationWarning: true }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "12px",
+                    bgcolor: "rgba(0,0,0,0.02)",
+                  },
+                }}
+                startAdornment={
                   <InputAdornment position="start">
-                    <EmailOutlined sx={{ fontSize: 20, color: "text.secondary" }} />
+                    <LockOutlined sx={{ color: "text.secondary", fontSize: 20 }} />
                   </InputAdornment>
-                ),
-              }}
-            />
-          </Box>
+                }
+              />
+            </Box>
+          )}
 
-          <Box>
-            <Typography variant="body2" fontWeight={600} sx={{ mb: 1, ml: 0.5 }}>
-              Password
-            </Typography>
-            <PasswordField
-              fullWidth
-              name="user_password"
-              placeholder="**********"
-              required
-              size="small"
-              autoComplete="current-password"
-              inputProps={{ suppressHydrationWarning: true }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: "12px",
-                  bgcolor: "rgba(0,0,0,0.02)",
-                },
-              }}
-              startAdornment={
-                <InputAdornment position="start">
-                  <LockOutlined sx={{ color: "text.secondary", fontSize: 20 }} />
-                </InputAdornment>
-              }
-            />
-          </Box>
+          {view === 'verify-otp' && (
+            <Box>
+              <Typography variant="body2" fontWeight={600} sx={{ mb: 1, ml: 0.5 }}>
+                OTP
+              </Typography>
+              <TextField
+                fullWidth
+                required
+                name="user_otp"
+                placeholder="1234"
+                variant="outlined"
+                size="small"
+                inputProps={{ maxLength: 6 }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "12px",
+                    bgcolor: "rgba(0,0,0,0.02)",
+                  },
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LockOutlined sx={{ fontSize: 20, color: "text.secondary" }} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Box>
+          )}
 
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: -1 }}>
-            <FormControlLabel
-              control={<Checkbox size="small" sx={{ color: "primary.main" }} inputProps={{ suppressHydrationWarning: true }} />}
-              label={<Typography variant="caption" color="text.secondary">Remember me</Typography>}
-            />
-            <Link href="#" variant="caption" underline="hover" color="primary" fontWeight={600}>
-              Forgot password?
-            </Link>
-          </Box>
+          {view === 'login' && (
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: -1 }}>
+              <FormControlLabel
+                control={<Checkbox size="small" sx={{ color: "primary.main" }} inputProps={{ suppressHydrationWarning: true }} />}
+                label={<Typography variant="caption" color="text.secondary">Remember me</Typography>}
+              />
+              <Link href="#" onClick={(e) => { e.preventDefault(); setView('forgot-password'); }} variant="caption" underline="hover" color="primary" fontWeight={600} sx={{ cursor: 'pointer' }}>
+                Forgot password?
+              </Link>
+            </Box>
+          )}
 
           <Button
             type="submit"
@@ -151,8 +220,20 @@ const LoginUser: React.FC = () => {
               textTransform: "none",
             }}
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? "Processing..." : view === 'login' ? "Sign in" : view === 'forgot-password' ? "Request OTP" : "Verify OTP"}
           </Button>
+
+          {view !== 'login' && (
+            <Button
+              variant="text"
+              fullWidth
+              onClick={() => setView('login')}
+              disabled={loading}
+              sx={{ textTransform: "none", color: "text.secondary" }}
+            >
+              Back to Login
+            </Button>
+          )}
         </Box>
       </form>
 

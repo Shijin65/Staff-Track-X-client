@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const axiosBase = useAxios()
   const [loading, setLoading] = useState<boolean>(false);
-  const toast = useToast();
+  const { setToast } = useToast();
 
   const user = useUserStore((state) => state.user);
   const setUserStore = useUserStore((state) => state.setUser);
@@ -65,9 +65,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUserStore(userData);
       setLoading(false)
       router.push("/");
-    } catch (error) {
-      toast.error("Failed to login");
-      console.log(error)
+    } catch (error: any) {
+      setToast({ message: error?.response?.data?.message || "Failed to login", type: "error", open: true });
       setLoading(false)
     }
   };
