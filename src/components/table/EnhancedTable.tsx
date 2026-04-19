@@ -19,7 +19,7 @@ import { Button } from "../ui/button";
 
 type Order = "asc" | "desc";
 
-interface Column<T> {
+export interface Column<T> {
   id: keyof T;
   label: string;
   render?: (row: T) => React.ReactNode;
@@ -164,7 +164,7 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
                   key={String(id)}
                   hover
                   selected={checked}
-                  sx={{ cursor: "pointer" ,backgroundColor: checked ? "var(--background)" : "white" }}
+                  sx={{ cursor: "pointer", backgroundColor: checked ? "var(--background)" : "white" }}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleClick(e, id)
@@ -187,7 +187,29 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
 
                     if (col.render) {
                       content = col.render(row);
-                    } else if (col.id === "isActive" || col.id === "status") {
+                    }
+                    else if (col.id === "status") {
+                      const statusStr = String(value).toLowerCase();
+                      let config = { bg: "#f5f5f5", color: "#9e9e9e" };
+                      if (statusStr === "pending") config = { bg: alpha("#ff9800", 0.1), color: "#ed6c02" };
+                      else if (statusStr === "confirmed") config = { bg: alpha("#4caf50", 0.1), color: "#2e7d32" };
+                      else if (statusStr === "completed") config = { bg: alpha("#2196f3", 0.1), color: "#1976d2" };
+                      else if (statusStr === "cancelled") config = { bg: alpha("#f44336", 0.1), color: "#d32f2f" };
+                      content = (
+                        <Chip
+                          label={statusStr}
+                          size="small"
+                          sx={{
+                            bgcolor: config.bg,
+                            color: config.color,
+                            fontWeight: 600,
+                            borderRadius: "6px",
+                            height: 24,
+                            "& .MuiChip-label": { px: 1 }
+                          }}
+                        />
+                      );
+                    } else if (col.id === "isActive") {
                       content = (
                         <Chip
                           label={value ? "Active" : "Inactive"}
@@ -202,7 +224,7 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
                           }}
                         />
                       );
-                    } else if (col.id === "verification") {
+                    } else if (col.id === "isVerified") {
                       content = (
                         <Chip
                           label={value ? "Verified" : "Pending"}

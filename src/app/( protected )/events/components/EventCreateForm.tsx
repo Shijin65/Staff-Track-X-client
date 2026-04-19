@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import React, { useEffect, useState } from "react";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import {
@@ -15,17 +15,22 @@ import {
   useMediaQuery,
   Grid,
   Paper,
+  CircularProgress,
 } from "@mui/material";
 import {
   Event,
   LocationOn,
   Person,
   Info,
+  GroupAdd,
+  Add,
+  Delete,
 } from "@mui/icons-material";
+import useSWR from "swr";
 import { useToast } from "@/lib/store/useToastStore";
 import { useAxios } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
-import { KERALA_DISTRICTS } from "@/lib/utils/constance";
+import { EventLocationPickerWrapper } from "./EventLocationWrapper";
 import { handleAxiosError } from "@/lib/utils/axiosError";
 
 const schema = yup.object({
@@ -40,11 +45,43 @@ const schema = yup.object({
   address: yup.string().optional().notRequired(),
   district: yup.string().optional().notRequired(),
   city: yup.string().optional().notRequired(),
+  state: yup.string().optional().notRequired(),
   status: yup.string().default("Pending"),
   description: yup.string().optional().notRequired(),
   locationInstructions: yup.string().optional().notRequired(),
-
+  latitude: yup.number().optional().nullable(),
+  longitude: yup.number().optional().nullable(),
+  staffRequirements: yup.array().of(
+    yup.object({
+      roleId: yup.string().required("Role is required"),
+      count: yup.number()
+        .transform((value) => (Number.isNaN(value) ? undefined : value))
+        .required("Count is required")
+        .min(1, "At least 1"),
+    })
+  ).default([]),
 }).required();
+
+const fields = [
+  "title",
+  "eventVenue",
+  "eventType",
+  "eventDate",
+  "startTime",
+  "reportingTime",
+  "clientName",
+  "clientPhone",
+  "address",
+  "district",
+  "city",
+  "state",
+  "status",
+  "description",
+  "locationInstructions",
+  "latitude",
+  "longitude",
+  "staffRequirements",
+]
 
 type EventFormData = yup.InferType<typeof schema>;
 
@@ -72,6 +109,7 @@ const SectionCard = ({ icon: Icon, title, subtitle, children }: any) => {
 
 export const EventCreateForm: React.FC<eventFormProps> = ({
   eId,
+
 }) => {
   const isEdit = !!eId;
   const theme = useTheme();
@@ -80,9 +118,13 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
   const { setToast } = useToast();
   const api = useAxios();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<EventFormData>({
-    resolver: yupResolver(schema),
+  const { data: rolesData, isLoading: rolesLoading } = useSWR("/api/meta/roles");
+  const roles = rolesData?.payload?.roles || [];
+
+  const { control, handleSubmit, formState: { errors, isSubmitting }, setValue, watch } = useForm<EventFormData>({
+    resolver: yupResolver(schema) as any,
     defaultValues: {
       title: "",
       eventVenue: "",
@@ -95,12 +137,48 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
       address: "",
       district: "",
       city: "",
+      state: "",
       status: "Pending",
       description: "",
       locationInstructions: "",
+      latitude: null,
+      longitude: null,
+      staffRequirements: [],
     }
   });
 
+  const { fields: staffFields, append: appendStaff, remove: removeStaff } = useFieldArray({
+    control,
+    name: "staffRequirements",
+  });
+
+  const currentRequirements = watch("staffRequirements") || [];
+
+  async function getEvent() {
+    setIsLoading(true);
+    if (!eId) return;
+    try {
+      const res = await api.get(`/api/events/${eId}`);
+      if (res.status === 200) {
+        const data = res?.data?.payload || {};
+        fields.forEach((f) => {
+          const field = f as keyof EventFormData;
+          switch (field) {
+            case "staffRequirements":
+              setValue(field as "staffRequirements", data[field] ?? []);
+              break;
+            default:
+              setValue(field as any, data[field] ?? "");
+              break;
+          }
+        });
+      }
+    } catch (err: unknown) {
+      handleAxiosError(err, "Failed to fetch user");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   const onSubmit = async (data: Record<string, unknown>) => {
     const request = isEdit ? api.put(`/api/events/${eId}`, data) : api.post("/api/events", data);
@@ -114,6 +192,19 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (eId) {
+      getEvent()
+    }
+  }, [eId]);
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+        <CircularProgress size={50} color="primary" />
+      </Box>
+    );
+  }
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ width: "100%" }}>
       <SectionCard icon={Event} title="Event Details" subtitle="Main information and schedule">
@@ -191,7 +282,7 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
               )}
             />
           </Grid>
-          
+
         </Grid>
       </SectionCard>
 
@@ -218,8 +309,113 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
         </Grid>
       </SectionCard>
 
+      <SectionCard icon={GroupAdd} title="Staff Requirements" subtitle="Specify roles and headcount needed">
+        {staffFields.map((item, index) => (
+          <Grid container spacing={2} key={item.id} sx={{ mb: 2, alignItems: "flex-start" }}>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <Controller
+                name={`staffRequirements.${index}.roleId` as const}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    select
+                    fullWidth
+                    size={fieldSize}
+                    label="Role"
+                    error={!!errors.staffRequirements?.[index]?.roleId}
+                    helperText={errors.staffRequirements?.[index]?.roleId?.message ?? ""}
+                  >
+                    <MenuItem disabled value="">
+                      <em>Select a role</em>
+                    </MenuItem>
+                    {!rolesLoading && roles.map((r: any) => {
+                      const isSelected = currentRequirements.some((req: any, i: number) => i !== index && req.roleId === r.roleId);
+                      return (
+                        <MenuItem key={r.roleId} value={r.roleId} disabled={isSelected}>
+                          {r.name.charAt(0).toUpperCase() + r.name.slice(1).replace(/_/g, " ")}
+                        </MenuItem>
+                      );
+                    })}
+                  </TextField>
+                )}
+              />
+            </Grid>
+            <Grid size={{ xs: 10, sm: 4 }}>
+              <Controller
+                name={`staffRequirements.${index}.count` as const}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    type="number"
+                    fullWidth
+                    size={fieldSize}
+                    label="Count"
+                    error={!!errors.staffRequirements?.[index]?.count}
+                    helperText={errors.staffRequirements?.[index]?.count?.message ?? ""}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid size={{ xs: 2, sm: 2 }} sx={{ display: "flex", justifyContent: "center", pt: 0.5 }}>
+              <Button color="error" onClick={() => removeStaff(index)}>
+                <Delete />
+              </Button>
+            </Grid>
+          </Grid>
+        ))}
+        <Button
+          startIcon={<Add />}
+          variant="outlined"
+          onClick={() => appendStaff({ roleId: "", count: 1 })}
+          sx={{ mt: 1 }}
+        >
+          Add Role Requirement
+        </Button>
+      </SectionCard>
+
       <SectionCard icon={LocationOn} title="Location Details" subtitle="Address and area details">
         <Grid container spacing={3}>
+          <Grid size={{ xs: 12 }}>
+            <Controller
+              name="latitude"
+              control={control}
+              render={({ field: latField }) => (
+                <Controller
+                  name="longitude"
+                  control={control}
+                  render={({ field: lngField }) => (
+                    <Controller
+                      name="address"
+                      control={control}
+                      render={({ field: addressField }) => (
+                        <EventLocationPickerWrapper
+                          location={
+                            latField.value && lngField.value
+                              ? { lat: latField.value, lng: lngField.value, name: addressField.value || "" }
+                              : null
+                          }
+                          onChange={(loc) => {
+                            if (loc) {
+                              latField.onChange(loc.lat);
+                              lngField.onChange(loc.lng);
+                              if (loc.name) {
+                                addressField.onChange(loc.name);
+                              }
+                            } else {
+                              latField.onChange(null);
+                              lngField.onChange(null);
+                            }
+                          }}
+                        />
+                      )}
+                    />
+                  )}
+                />
+              )}
+            />
+          </Grid>
           <Grid size={{ xs: 12 }}>
             <Controller
               name="address"
@@ -229,20 +425,16 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
               )}
             />
           </Grid>
-          <Grid size={{ xs: 12, sm: 6 }}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <Controller
               name="district"
               control={control}
               render={({ field }) => (
-                <TextField {...field} value={field.value || ""} select fullWidth size={fieldSize} label="District" error={!!errors.district} helperText={errors.district?.message ?? ""}>
-                  {KERALA_DISTRICTS.map((dst) => (
-                    <MenuItem key={dst} value={dst}>{dst}</MenuItem>
-                  ))}
-                </TextField>
+                <TextField {...field} fullWidth size={fieldSize} label="District" error={!!errors.district} helperText={errors.district?.message ?? ""} />
               )}
             />
           </Grid>
-          <Grid size={{ xs: 12, sm: 6 }}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <Controller
               name="city"
               control={control}
@@ -251,6 +443,16 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
               )}
             />
           </Grid>
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <Controller
+              name="state"
+              control={control}
+              render={({ field }) => (
+                <TextField {...field} fullWidth size={fieldSize} label="State" error={!!errors.state} helperText={errors.state?.message ?? ""} />
+              )}
+            />
+          </Grid>
+
         </Grid>
       </SectionCard>
 

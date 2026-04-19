@@ -44,7 +44,7 @@ import { KERALA_DISTRICTS } from "@/lib/utils/constance";
 import { useToast } from "@/lib/store/useToastStore";
 import { useAxios } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { schema } from "./user-schema";
 import { MainLoader } from "../../../../components/ui/main-loader";
@@ -71,7 +71,7 @@ const fields = ["firstName",
   "executiveBlackShoe",
   "grooming",
   "isActive",
-  "verification",
+  "isVerified",
   "profilePic"]
 
 type FormData = yup.InferType<typeof schema>;
@@ -170,6 +170,26 @@ export const UserForm: React.FC<UserFormProps> = ({
   const { setToast } = useToast();
   const api = useAxios();
   const router = useRouter();
+  const [imageId, setImageId] = useState<string | null>(null);
+
+  const fetcher = (resource: string) =>
+    api.get(resource, { responseType: "blob" }).then((res) => res.data);
+
+  const shouldFetch = imageId ? `/api/users/attachment/${imageId}` : null;
+
+  const { data: imageBlob } = useSWR(shouldFetch, fetcher, {
+    revalidateIfStale: true,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
+
+  useEffect(() => {
+    if (imageBlob) {
+      const url = URL.createObjectURL(imageBlob);
+      setProfilePreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+  }, [imageBlob]);
 
 
   const { data: rolesData, isLoading: rolesLoading } = useSWR("/api/meta/roles");
@@ -190,7 +210,7 @@ export const UserForm: React.FC<UserFormProps> = ({
       executiveBlackShoe: false,
       grooming: false,
       isActive: true,
-      verification: false,
+      isVerified: false,
     },
   });
 
@@ -223,8 +243,8 @@ export const UserForm: React.FC<UserFormProps> = ({
               break;
           }
         });
-        if (data.profilePic) {
-          setProfilePreview(data.profilePic);
+        if (data.attachment?.picId) {
+          setImageId(data.attachment.picId);
         }
       }
     } catch (error: unknown) {
@@ -239,17 +259,23 @@ export const UserForm: React.FC<UserFormProps> = ({
     }
   }
 
-  const onSubmit = async (formData: Record<string, unknown>) => {
-    const body = {
-      ...formData
-    };
+  const onSubmit = async (formData: Record<string, any>) => {
+    const data = new FormData();
+
+    // Append all form fields to FormData
+    Object.keys(formData).forEach((key) => {
+      if (formData[key] !== undefined && formData[key] !== null) {
+        data.append(key, formData[key] as any);
+      }
+    });
 
     const request = isEdit
-      ? api.put(`/api/users/${uid}`, body)
-      : api.post("/api/users", body);
+      ? api.put(`/api/users/${uid}`, data)
+      : api.post("/api/users", data);
 
     request
       .then(() => {
+        mutate(`/api/users/${uid}`);
         setToast({
           message: isEdit ? "User Updated." : "User Created.",
           type: "success",
@@ -294,11 +320,10 @@ export const UserForm: React.FC<UserFormProps> = ({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setValue("profilePic", file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setProfilePreview(base64String);
-        setValue("profilePic", base64String);
+        setProfilePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -592,7 +617,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                 <FormControlLabel
                   control={
                     <Controller
-                      name="verification"
+                      name="isVerified"
                       control={control}
                       render={({ field }) => (
                         <Checkbox {...field} checked={!!field.value} color="primary" />

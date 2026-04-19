@@ -29,6 +29,8 @@ import {
   Cancel as CancelIcon,
 } from '@mui/icons-material';
 import { UserData } from '@/lib/mock/users';
+import { useAxios } from '@/lib/hooks';
+import useSWR from 'swr';
 
 interface UserDetailsContentProps {
   user: UserData;
@@ -60,9 +62,31 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
   const [tabValue, setTabValue] = useState(0);
   const [mounted, setMounted] = useState(false);
 
+  const api = useAxios();
+  const [profileUrl, setProfileUrl] = useState<string | undefined>(user.profilePhoto);
+
+  const fetcher = (resource: string) =>
+    api.get(resource, { responseType: "blob" }).then((res) => res.data);
+
+  const shouldFetch = user.attachment?.picId ? `/api/users/attachment/${user.attachment.picId}` : null;
+
+  const { data: imageBlob } = useSWR(shouldFetch, fetcher, {
+    revalidateIfStale: true,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
+
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (imageBlob) {
+      const url = URL.createObjectURL(imageBlob);
+      setProfileUrl(url);
+      return () => URL.revokeObjectURL(url);
+    }
+  }, [imageBlob]);
 
   const userEvents = user.recentEvents || [];
 
@@ -129,10 +153,10 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
         <Typography variant="h6" fontWeight={700} gutterBottom>Status & Badges</Typography>
         <Stack direction="row" spacing={1.5} sx={{ mt: 2 }}>
           <Chip
-            label={user.verification}
-            icon={<VerifiedIcon style={{ color: user.verification === 'Verified' ? 'white' : '#cbd5e1' }} />}
+            label={user.isVerified}
+            icon={<VerifiedIcon style={{ color: user.isVerified ? 'white' : '#cbd5e1' }} />}
             sx={{
-              bgcolor: user.verification === 'Verified' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)',
+              bgcolor: user.isVerified ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)',
               color: 'white',
               fontWeight: 700
             }}
@@ -293,7 +317,7 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
         <Box id="mobile-profile-header" sx={{ mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
           <Box sx={{ position: 'relative', mb: 2 }}>
             <Avatar
-              src={user.profilePhoto}
+              src={profileUrl}
               sx={{
                 width: 140,
                 height: 140,
@@ -310,11 +334,11 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
             <Typography variant="h4" fontWeight={900} sx={{ letterSpacing: -1, color: theme.palette.text.primary }}>
               {user.firstName} {user.lastName}
             </Typography>
-            {user.verification === 'Verified' ? (
+            {user.isVerified ? (
               <VerifiedIcon color="primary" sx={{ fontSize: '2rem' }} />
-            ) : user.verification === 'Pending' ? (
+            ) : (
               <VerifiedIcon sx={{ fontSize: '2rem', color: 'action.disabled' }} />
-            ) : null}
+            )}
           </Stack>
           <Typography variant="h6" color="primary" fontWeight={700} sx={{ mt: 1, textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem' }}>
             {user.role}
@@ -340,11 +364,11 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
           {/* Status & Badges - Moved here for Mobile */}
           <Stack direction="row" spacing={1.5}>
             <Chip
-              label={user.verification}
-              icon={<VerifiedIcon style={{ color: user.verification === 'Verified' ? 'var(--primary)' : 'var(--text-secondary)' }} />}
+              label={user.isVerified}
+              icon={<VerifiedIcon style={{ color: user.isVerified ? 'var(--primary)' : 'var(--text-secondary)' }} />}
               sx={{
-                bgcolor: user.verification === 'Verified' ? 'rgba(0,85,212,0.1)' : 'rgba(0,0,0,0.05)',
-                color: user.verification === 'Verified' ? 'primary.main' : 'text.secondary',
+                bgcolor: user.isVerified ? 'rgba(0,85,212,0.1)' : 'rgba(0,0,0,0.05)',
+                color: user.isVerified ? 'primary.main' : 'text.secondary',
                 fontWeight: 700
               }}
             />
@@ -393,7 +417,7 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
 
           <Box sx={{ position: 'relative' }}>
             <Avatar
-              src={user.profilePhoto}
+              src={profileUrl}
               sx={{
                 width: { xs: 130, md: 180 },
                 height: { xs: 130, md: 180 },
@@ -413,11 +437,11 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
               <Typography variant={isMobile ? "h4" : "h3"} fontWeight={900} sx={{ letterSpacing: -1, color: 'text.primary' }}>
                 {user.firstName} {user.lastName}
               </Typography>
-              {user.verification === 'Verified' ? (
+              {user.isVerified ? (
                 <VerifiedIcon color="primary" sx={{ fontSize: { xs: '2rem', md: '2.5rem' } }} />
-              ) : user.verification === 'Pending' ? (
+              ) : (
                 <VerifiedIcon sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, color: 'action.disabled' }} />
-              ) : null}
+              )}
             </Stack>
 
             <Typography variant="h6" color="primary" fontWeight={700} sx={{ mt: 1, textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.9rem', opacity: 0.9 }}>

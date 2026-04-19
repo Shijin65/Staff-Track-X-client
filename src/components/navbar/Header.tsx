@@ -48,7 +48,8 @@ const Header = () => {
         background: "white",
         borderBottom: `1px solid ${theme.palette.divider}`,
         color: theme.palette.text.primary,
-        zIndex: theme.zIndex.drawer + 1
+        zIndex: theme.zIndex.drawer + 1,
+        boxShadow: "0 2px 10px rgba(0,0,0,0.05)"
       }}
     >
       <Toolbar sx={{ width: "100%", justifyContent: "flex-end", px: { xs: 2, sm: 3 }, minHeight: '64px' }}>
@@ -85,7 +86,10 @@ const Header = () => {
             <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ mb: 1.5, display: "block" }}>
               Accounts
             </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", "&:hover": { opacity: 0.8 } }}>
+            <Box 
+              onClick={() => { handleUserMenuClose(); router.push('/profile'); }}
+              sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", "&:hover": { opacity: 0.8 } }}
+            >
               <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                 <Avatar alt={user?.firstName || ""} src="/default.jpg" sx={{ width: 44, height: 44 }} />
                 <Box>
@@ -104,10 +108,6 @@ const Header = () => {
 
           {/* Settings Section */}
           <Box sx={{ py: 1 }}>
-            <MenuItem sx={{ py: 1.2, px: 2 }} onClick={() => { handleUserMenuClose(); router.push('/profile'); }}>
-              <ListItemIcon><PersonOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
-              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Profile</Typography>
-            </MenuItem>
             <MenuItem sx={{ py: 1.2, px: 2 }} onClick={() => { handleUserMenuClose(); router.push('/my-events'); }}>
               <ListItemIcon><ShoppingCartOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
               <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Events history</Typography>

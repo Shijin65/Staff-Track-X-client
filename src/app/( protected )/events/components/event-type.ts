@@ -11,6 +11,7 @@ export interface EventPayload {
   address?: string;
   district?: string;
   city?: string;
+  state?: string;
   status?: string;
   description?: string;
   locationInstructions?: string;

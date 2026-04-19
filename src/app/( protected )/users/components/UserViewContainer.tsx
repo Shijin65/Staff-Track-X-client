@@ -16,6 +16,7 @@ import { UserDetailsContent } from '@/app/( protected )/users/components/UserDet
 import { UserData } from '@/lib/mock/users';
 import useSWR from 'swr';
 import { CircularProgress } from '@mui/material';
+import { ErrorCard } from '@/components/ui';
 
 export const UserViewContainer = () => {
   const { id } = useParams();
@@ -35,17 +36,13 @@ export const UserViewContainer = () => {
 
   if (error || !data?.payload) {
     return (
-      <Container maxWidth="sm" sx={{ py: 8, textAlign: 'center' }}>
-        <Typography variant="h5" gutterBottom>
-          {error ? 'Error loading user data' : 'User Not Found'}
-        </Typography>
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={() => router.push('/users')}
-          sx={{ mt: 2 }}
-        >
-          Back to Users
-        </Button>
+      <Container maxWidth="sm" sx={{ py: 8 }}>
+        <ErrorCard
+          title={!data?.payload ? 'User Not Found' : 'Error loading user data'}
+          message={error?.response?.data?.message || (!data?.payload ? "The requested user could not be found." : "We encountered an error while fetching the user data.")}
+          onRetry={() => router.push('/users')}
+          retryText="Back to Users"
+        />
       </Container>
     );
   }
@@ -69,7 +66,7 @@ export const UserViewContainer = () => {
     state: apiUser.state || 'N/A',
     permanentAddress: apiUser.address || 'N/A',
     currentAddress: apiUser.address || 'N/A',
-    verification: apiUser.verification ? 'Verified' : 'Pending',
+    isVerified: apiUser.isVerified,
     rating: apiUser.rating || 0.0,
     emergencyContact: apiUser.emergencyContact,
     permissions: apiUser.permissions || [],
@@ -83,7 +80,8 @@ export const UserViewContainer = () => {
     totalEvents: 0,
     successRate: 0,
     dateOfJoining: 'N/A',
-    recentEvents: []
+    recentEvents: [],
+    attachment: apiUser.attachment
   };
 
   return (

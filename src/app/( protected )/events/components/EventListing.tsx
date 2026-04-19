@@ -13,9 +13,13 @@ import {
 import { Add as AddIcon } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
-import { EnhancedTable } from "@/components/table/EnhancedTable";
+import { EnhancedTable, Column } from "@/components/table/EnhancedTable";
 import { useWindowSize } from "@/lib/hooks";
+import { ErrorCard } from "@/components/ui";
 
+interface EventListingProps {
+  query: string;
+}
 interface Event {
   eventId: string;
   title: string;
@@ -24,24 +28,34 @@ interface Event {
   status: string;
 }
 
-export const EventListing = () => {
-  const { data, error, isLoading, mutate } = useSWR("/api/events");
+export interface EventRow {
+  id: string;
+  title: string;
+  eventDate: string;
+  eventVenue: string;
+  status: string;
+}
+
+const columns: Column<EventRow>[] = [
+  { id: "title", label: "Event Title" },
+  { id: "eventDate", label: "Date" },
+  { id: "eventVenue", label: "Venue" },
+  { id: "status", label: "Status" },
+];
+
+export const EventListing = ({ query }: EventListingProps) => {
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(1);
 
+  const router = useRouter();
   const { height } = useWindowSize();
   const limit = height === 0 ? 10 : Math.floor((height - 240) / 41);
 
-  const router = useRouter();
 
-  const columns = [
-    { id: "title", label: "Event Title" },
-    { id: "eventDate", label: "Date" },
-    { id: "eventVenue", label: "Venue" },
-    { id: "status", label: "Status" },
-  ];
 
-  const parsedData = data?.payload?.map((item: Event) => ({
+  const { data, error, isLoading, mutate } = useSWR(`/api/events?Page=${page}&Limit=${limit}&Search=${encodeURIComponent(query)}`);
+
+  const parsedData: EventRow[] = data?.payload?.map((item: Event) => ({
     id: item.eventId,
     title: item.title,
     eventDate: item.eventDate,
@@ -55,9 +69,16 @@ export const EventListing = () => {
   };
 
   if (isLoading) return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', p: 8 }}>
       <CircularProgress />
     </Box>
+  );
+
+  if (error) return (
+    <ErrorCard
+      message={error?.response?.data?.message || "We encountered an error while fetching the events. Please try again."}
+      onRetry={() => mutate()}
+    />
   );
 
   return (
@@ -68,13 +89,13 @@ export const EventListing = () => {
             Events Management
           </Typography>
           <Tooltip title="Add Event">
-            <Button 
-                variant="contained" 
-                startIcon={<AddIcon />} 
-                onClick={() => router.push('/events/create')}
-                sx={{ borderRadius: 2 }}
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => router.push('/events/create')}
+              sx={{ borderRadius: 2 }}
             >
-              Add 
+              Add
             </Button>
           </Tooltip>
         </Toolbar>
@@ -82,7 +103,7 @@ export const EventListing = () => {
         <EnhancedTable
           rows={parsedData}
           columns={columns}
-          idField="title"
+          idField="id"
           selected={selected}
           setSelected={setSelected}
           page={page}
@@ -92,8 +113,8 @@ export const EventListing = () => {
           limit={limit}
           totalPages={data?.metaData?.totalPages || 1}
           totalItems={data?.metaData?.totalCount || 0}
-          setOrder={() => {}}
-          setOrderBy={() => {}}
+          setOrder={() => { }}
+          setOrderBy={() => { }}
           hasSelection={false}
         />
       </Paper>

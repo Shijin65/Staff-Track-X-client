@@ -3,7 +3,7 @@ export type UserRow = {
   fullName: string;
   email: string;
   isActive: boolean;
-  verification: boolean;
+  isVerified: boolean;
 };
 
 export type ApiUser = {
@@ -12,6 +12,6 @@ export type ApiUser = {
   lastName: string;
   email: string;
   isActive: boolean;
-  verification: boolean;
+  isVerified: boolean;
   updatedAt: string;
 };

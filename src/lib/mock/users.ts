@@ -8,7 +8,7 @@ export interface UserData {
   email: string;
   mobileNumber: string;
   isActive: boolean;
-  verification: string;
+  isVerified: boolean;
   emergencyContact?: string;
   address?: string; // Permanent Address
   currentAddress?: string;
@@ -42,6 +42,13 @@ export interface UserData {
     name: string;
     is_access: boolean;
   }>;
+  attachment?: {
+    attachmentId: string;
+    picId: string;
+    fileName: string;
+    contentType?: string;
+    fileExtension?: string;
+  };
 }
 
 

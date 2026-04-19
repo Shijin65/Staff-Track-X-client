@@ -23,7 +23,6 @@ export const BottomNav = () => {
     if (path === "/profile") return true;
     if (path === "/my-events") return true;
     if (path === "/events") return availableAccess.includes("view_event");
-    if (path === "/events/create") return availableAccess.includes("create_event");
     if (path === "/users") return availableAccess.includes("view_user");
     return false;
   };
@@ -45,7 +44,7 @@ export const BottomNav = () => {
         borderRadius: "25px",
         backdropFilter: "blur(12px)",
         background: "rgba(255,255,255,0.7)",
-        boxShadow: "0 8px 30px rgba(0,0,0,0.08)",
+        boxShadow: "0 -4px 12px rgba(0,0,0,0.05)",
         display: { xs: "block", md: "none" },
         zIndex: (theme) => theme.zIndex.appBar,
         pb: "env(safe-area-inset-bottom)",

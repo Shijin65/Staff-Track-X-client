@@ -4,18 +4,20 @@ import React from "react";
 import { Box, Paper, Typography, Button } from "@mui/material";
 import { ErrorOutline as ErrorOutlineIcon } from "@mui/icons-material";
 
-interface TableErrorCardProps {
+interface ErrorCardProps {
   title?: string;
   message?: string;
   onRetry?: () => void;
   minHeight?: string | number;
+  retryText?: string;
 }
 
-export const TableErrorCard: React.FC<TableErrorCardProps> = ({
+export const ErrorCard: React.FC<ErrorCardProps> = ({
   title = "Oops! Something went wrong",
   message = "We encountered an error while fetching the data. This might be due to a connection issue or server maintenance.",
   onRetry,
   minHeight = "400px",
+  retryText = "Try Again",
 }) => {
   return (
     <Box
@@ -48,7 +50,7 @@ export const TableErrorCard: React.FC<TableErrorCardProps> = ({
             borderRadius: "50%",
             bgcolor: "rgba(239, 68, 68, 0.1)",
             color: "error.main",
-            mb: { xs: 2.5, sm: 3 }, 
+            mb: { xs: 2.5, sm: 3 },
           }}
         >
           <ErrorOutlineIcon sx={{ fontSize: { xs: 40, sm: 48 } }} />

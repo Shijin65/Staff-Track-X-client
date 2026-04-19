@@ -45,7 +45,6 @@ const LoginUser: React.FC = () => {
     const email = (form.elements.namedItem("user_email") as HTMLInputElement).value;
     const password = (form.elements.namedItem("user_password") as HTMLInputElement).value;
     await login({ email, password });
-    setToast({ message: `Login successful`, type: "success", open: true });
   }
 
   const handleForgotPassword = async (form: HTMLFormElement) => {

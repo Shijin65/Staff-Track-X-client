@@ -22,7 +22,7 @@ import UserDelete from "./UserDelete";
 import { ApiUser, UserRow } from "./user-type";
 import { useWindowSize } from "@/lib/hooks";
 import { useTablePageReset } from "@/lib/hooks/useTablePageReset";
-import { TableLoaderSkeleton, TableErrorCard } from "@/components/ui";
+import { TableLoaderSkeleton, ErrorCard } from "@/components/ui";
 
 
 type Order = "asc" | "desc";
@@ -43,17 +43,21 @@ type UserListingProps = {
 }
 
 export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: UserListingProps) => {
-  const { data, error, isLoading, mutate } = useSWR("/api/users");
-
-
-  const [selected, setSelected] = useState<string[]>([]);
-  const [page, setPage] = useState(0);
-  const [open, setOpen] = useState(false);
-  const [modalInfo, setModalInfo] = useState<{ id: string[]; type: string }>({ id: [], type: "" });
+  const [page, setPage] = useState(1);
 
   let limit = 17;
   const { height } = useWindowSize();
-  limit = height === 0 ? limit : Math.floor((height - 240) / 41);
+  limit = height === 0 ? limit : Math.floor((height - 380) / 43);
+
+  const { data, error, isLoading, mutate } = useSWR(
+    `/api/users?Page=${page}&Limit=${limit}&Order=${order}&OrderBy=${orderBy}&Search=${encodeURIComponent(
+      query
+    )}`
+  );
+
+  const [selected, setSelected] = useState<string[]>([]);
+  const [open, setOpen] = useState(false);
+  const [modalInfo, setModalInfo] = useState<{ id: string[]; type: string }>({ id: [], type: "" });
 
   const router = useRouter();
 
@@ -61,7 +65,7 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
     { id: "fullName", label: "Full Name" },
     { id: "email", label: "Email" },
     { id: "isActive", label: "Status", },
-    { id: "verification", label: "Verification", },
+    { id: "isVerified", label: "Verification", },
   ];
 
   const parsedData: UserRow[] = data?.payload?.map((item: ApiUser) => {
@@ -70,7 +74,7 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
       fullName: `${item.firstName} ${item.lastName}`,
       email: item.email,
       isActive: item.isActive,
-      verification: item.verification,
+      isVerified: item.isVerified,
     };
   });
 
@@ -99,14 +103,14 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
   };
 
 
-  useTablePageReset(data?.metaData?.itemCount, query, setPage, page);
+  useTablePageReset(data?.metaData?.itemCount, query, setPage, page, [query]);
 
   if (isLoading) return (
     <TableLoaderSkeleton rowsNum={3} />
   );
 
   if (error) return (
-    <TableErrorCard
+    <ErrorCard
       message={error?.response?.data?.message || "We encountered an error while fetching the user list. Please try again."}
       onRetry={() => mutate()}
     />

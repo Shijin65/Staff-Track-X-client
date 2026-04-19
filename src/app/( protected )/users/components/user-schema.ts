@@ -28,8 +28,8 @@ export const schema = yup
     grooming: yup.boolean().default(false),
 
     isActive: yup.boolean().default(true),
-    verification: yup.boolean().default(false),
+    isVerified: yup.boolean().default(false),
 
-    profilePic: yup.string().optional(),
+    profilePic: yup.mixed().optional(),
   })
   .required();

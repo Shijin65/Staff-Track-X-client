@@ -18,7 +18,7 @@ interface User {
     isActive: boolean;
     role: {
       roleId: string;
-      roleName: string;
+      name: string;
     };
   };
   availableAccess?: {

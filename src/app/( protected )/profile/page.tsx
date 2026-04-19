@@ -10,6 +10,7 @@ import {
   useTheme,
   Button,
   Chip,
+  Container,
 } from "@mui/material";
 import {
   EmailOutlined,
@@ -25,6 +26,7 @@ import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { QRCodeSVG } from "qrcode.react";
 import { MainLoader } from "@/components/ui/main-loader";
+import { ErrorCard } from "@/components/ui";
 
 export default function ProfilePage() {
   const { user } = useAuthContext();
@@ -44,9 +46,12 @@ export default function ProfilePage() {
 
   if (error) {
     return (
-      <Box sx={{ p: 3, textAlign: "center", mt: 10 }}>
-        <Typography color="error">Failed to load profile data.</Typography>
-      </Box>
+      <Container maxWidth="sm" sx={{ py: 8 }}>
+        <ErrorCard
+          message="Failed to load profile data."
+          onRetry={() => router.refresh()}
+        />
+      </Container>
     );
   }
 
@@ -61,7 +66,7 @@ export default function ProfilePage() {
   return (
     <Box sx={{ width: "100%", maxWidth: 1536, px: { xs: 2, xl: 4 }, margin: "0 auto", pb: 10 }}>
       {/* Banner Section */}
-      <Box
+      {/* <Box
         sx={{
           height: { xs: 180, md: 240 },
           width: "100%",
@@ -72,13 +77,13 @@ export default function ProfilePage() {
           boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
           overflow: "hidden"
         }}
-      >
+      > */}
         {/* Decorative elements behind banner */}
-        <Box sx={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
-        <Box sx={{ position: 'absolute', bottom: -20, left: '20%', width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
+        {/* <Box sx={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
+        <Box sx={{ position: 'absolute', bottom: -20, left: '20%', width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} /> */}
 
         {/* Profile Avatar overlapping banner */}
-        <Box
+        {/* <Box
           sx={{
             position: "absolute",
             bottom: { xs: -50, md: -60 },
@@ -107,7 +112,7 @@ export default function ProfilePage() {
             </Avatar>
           </Box>
         </Box>
-      </Box>
+      </Box> */}
       {/* Main Content Grid */}
       <Grid container spacing={{ xs: 3, md: 4 }}>
         {/* User Identity - Order 1 on all screens */}
