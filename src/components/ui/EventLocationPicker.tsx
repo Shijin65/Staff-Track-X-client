@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -37,7 +38,7 @@ L.Icon.Default.mergeOptions({
 
 interface LocationPickerProps {
   location?: { lat: number; lng: number; name?: string } | null;
-  onChange?: (location: { lat: number; lng: number; name: string } | null) => void;
+  onChange?: (location: { lat: number; lng: number; name: string; address?: any } | null) => void;
   readOnly?: boolean;
 }
 
@@ -106,7 +107,7 @@ export default function EventLocationPicker({ location, onChange, readOnly = fal
     const fetchPlaces = async () => {
       setIsSearching(true);
       try {
-        const res = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${debouncedQuery}`);
+        const res = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${debouncedQuery}`);
         setSearchResults(res.data);
         setShowDropdown(true);
       } catch (err) {
@@ -129,20 +130,20 @@ export default function EventLocationPicker({ location, onChange, readOnly = fal
             console.log(res.data);
             const newName = res.data.display_name;
             setSearchQuery(newName);
-            onChange({ lat: position.lat, lng: position.lng, name: newName });
+            onChange({ lat: position.lat, lng: position.lng, name: newName, address: res.data.address || {} });
           } else {
-            onChange({ lat: position.lat, lng: position.lng, name: "" });
+            onChange({ lat: position.lat, lng: position.lng, name: "", address: {} });
           }
         } catch (error) {
           console.error("Reverse geocoding error:", error);
-          onChange({ lat: position.lat, lng: position.lng, name: "" });
+          onChange({ lat: position.lat, lng: position.lng, name: "", address: {} });
         }
       };
       getAddress();
     }
   }, [position, readOnly, location, onChange]);
 
-  const handleSelectResult = (result: any) => {
+  const handleSelectResult = (result: { lat: string; lon: string; display_name: string; address: any }) => {
     const lat = parseFloat(result.lat);
     const lng = parseFloat(result.lon);
     const newPos = { lat, lng };
@@ -151,7 +152,7 @@ export default function EventLocationPicker({ location, onChange, readOnly = fal
     setShowDropdown(false);
     mapRef.current?.flyTo(newPos, 15);
     if (onChange) {
-      onChange({ lat, lng, name: result.display_name });
+      onChange({ lat, lng, name: result.display_name, address: result.address || {} });
     }
   };
 

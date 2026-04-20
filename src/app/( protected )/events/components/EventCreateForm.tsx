@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -46,6 +47,7 @@ const schema = yup.object({
   district: yup.string().optional().notRequired(),
   city: yup.string().optional().notRequired(),
   state: yup.string().optional().notRequired(),
+  country: yup.string().optional().notRequired(),
   status: yup.string().default("Pending"),
   description: yup.string().optional().notRequired(),
   locationInstructions: yup.string().optional().notRequired(),
@@ -75,6 +77,7 @@ const fields = [
   "district",
   "city",
   "state",
+  "country",
   "status",
   "description",
   "locationInstructions",
@@ -138,6 +141,7 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
       district: "",
       city: "",
       state: "",
+      country: "",
       status: "Pending",
       description: "",
       locationInstructions: "",
@@ -329,8 +333,8 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
                     <MenuItem disabled value="">
                       <em>Select a role</em>
                     </MenuItem>
-                    {!rolesLoading && roles.map((r: any) => {
-                      const isSelected = currentRequirements.some((req: any, i: number) => i !== index && req.roleId === r.roleId);
+                    {!rolesLoading && roles.map((r: { roleId: string; name: string }) => {
+                      const isSelected = currentRequirements.some((req: { roleId: string; count: number }, i: number) => i !== index && req.roleId === r.roleId);
                       return (
                         <MenuItem key={r.roleId} value={r.roleId} disabled={isSelected}>
                           {r.name.charAt(0).toUpperCase() + r.name.slice(1).replace(/_/g, " ")}
@@ -402,6 +406,20 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
                               lngField.onChange(loc.lng);
                               if (loc.name) {
                                 addressField.onChange(loc.name);
+                              }
+                              if (loc.address) {
+                                const addr = loc.address;
+                                const cty = addr.county || addr.town || addr.village || "";
+                                const dist = addr.state_district || addr.county || "";
+                                const st = addr.state || "";
+                                const ctr = addr.country || "";
+
+                                if (cty) setValue("city", cty, { shouldValidate: true });
+                                if (dist) {
+                                  setValue("district", dist.replace(" District", ""), { shouldValidate: true });
+                                }
+                                if (st) setValue("state", st, { shouldValidate: true });
+                                if (ctr) setValue("country", ctr, { shouldValidate: true });
                               }
                             } else {
                               latField.onChange(null);
