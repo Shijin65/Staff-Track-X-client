@@ -46,6 +46,7 @@ import { useAxios } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useAuthContext } from "@/context/auth-provider";
 import { schema } from "./user-schema";
 import { MainLoader } from "../../../../components/ui/main-loader";
 import { handleAxiosError } from "@/lib/utils/axiosError";
@@ -167,6 +168,9 @@ export const UserForm: React.FC<UserFormProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const fieldSize = !mounted ? "medium" : (isMobile ? "small" : "medium");
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
+  const { user: authUser } = useAuthContext();
+  const currentUserRole = authUser?.user?.role?.name;
+  const isAdmin = currentUserRole === "admin" || currentUserRole === "super_admin";
   const { setToast } = useToast();
   const api = useAxios();
   const router = useRouter();
@@ -569,6 +573,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                       fullWidth
                       size={fieldSize}
                       label="Role"
+                      disabled={!isAdmin}
                       error={!!fieldState.error}
                       helperText={fieldState.error?.message}
                       InputProps={{
@@ -583,7 +588,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                         </MenuItem>
                       ) : (
                         roles.map((r: { roleId: string, name: string }) => (
-                          <MenuItem key={r.roleId} value={r.roleId}>
+                          <MenuItem key={r.roleId} value={r.roleId} disabled={!isAdmin}>
                             {r.name.charAt(0).toUpperCase() + r.name.slice(1).replace(/_/g, " ")}
                           </MenuItem>
                         ))
@@ -603,7 +608,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                       name="isActive"
                       control={control}
                       render={({ field }) => (
-                        <Checkbox {...field} checked={!!field.value} color="primary" />
+                        <Checkbox {...field} checked={!!field.value} color="primary" disabled={!isAdmin} />
                       )}
                     />
                   }
@@ -620,7 +625,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                       name="isVerified"
                       control={control}
                       render={({ field }) => (
-                        <Checkbox {...field} checked={!!field.value} color="primary" />
+                        <Checkbox {...field} checked={!!field.value} color="primary" disabled={!isAdmin} />
                       )}
                     />
                   }

@@ -3,20 +3,27 @@ import InputBase, { InputBaseProps } from "@mui/material/InputBase";
 import { IconButton, InputAdornment } from "@mui/material";
 import { Close, Search as SearchIcon } from "@mui/icons-material";
 
-const Search = styled("div")({
+const Search = styled("div")(({ theme }) => ({
   position: "relative",
-  borderRadius: 6,
-  backgroundColor: "hsl(var(--ash-light)/0.15)",
-  transition: "background-color ease 200ms",
+  borderRadius: "100px",
+  backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.05)" : "#f1f5f9",
+  border: "1px solid",
+  borderColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.1)" : "#e2e8f0",
+  transition: "all 0.2s ease-in-out",
   display: "flex",
-  paddingRight: "0px",
+  alignItems: "center",
+  paddingLeft: "12px",
+  paddingRight: "4px",
   "&:hover": {
-    backgroundColor: "hsl(var(--ash-light)/0.2)",
+    backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.08)" : "#f8fafc",
+    borderColor: theme.palette.primary.main,
   },
   "&:focus-within": {
-    backgroundColor: "hsl(var(--ash-light)/0.2)",
+    backgroundColor: "#ffffff",
+    borderColor: theme.palette.primary.main,
+    boxShadow: `0 0 0 3px ${theme.palette.mode === "dark" ? "rgba(var(--primary-rgb), 0.2)" : "rgba(var(--primary-rgb), 0.1)"}`,
   },
-});
+}));
 
 const StyledInputBase = styled(InputBase)<{ fullWidth?: boolean }>(({ theme, fullWidth }) => ({
   transition: "width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",

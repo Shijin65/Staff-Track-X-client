@@ -23,13 +23,16 @@ interface User {
   };
   availableAccess?: {
     CreateUser?: boolean;
-    CreateUserRole?: boolean;
     DeleteUser?: boolean;
-    DeleteUserRole?: boolean;
     UpdateUser?: boolean;
-    UpdateUserRole?: boolean;
     ViewUser?: boolean;
-    ViewUserRole?: boolean;
+    VerifyUser?: boolean;
+    CreateEvent?: boolean;
+    DeleteEvent?: boolean;
+    UpdateEvent?: boolean;
+    ViewEvent?: boolean;
+    MarkAttendance?: boolean;
+    ViewAttendance?: boolean;
   };
 }
 

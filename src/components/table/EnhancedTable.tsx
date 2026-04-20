@@ -51,6 +51,8 @@ interface EnhancedTableProps<T, K extends keyof T = keyof T> {
   totalPages?: number;
   totalItems?: number;
   hasSelection?: boolean;
+  canDelete?: boolean;
+  canView?: boolean;
 }
 
 export function EnhancedTable<T, K extends keyof T = keyof T>({
@@ -70,6 +72,8 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
   totalPages = 1,
   totalItems = 0,
   hasSelection = true,
+  canDelete = true,
+  canView = true,
 }: EnhancedTableProps<T, K>) {
   const isSelected = (id: T[K]) => (selected || []).includes(id);
 
@@ -264,18 +268,8 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
                   })}
 
                   {/* Actions */}
-                  <TableCell align="right" sx={{ py: 0.25 }}>
+                  {canDelete && <TableCell align="right" sx={{ py: 0.25 }}>
                     <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.5 }}>
-                      {/* <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpen(e, "edit", [id]);
-                        }}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton> */}
                       <IconButton
                         size="small"
                         color="error"
@@ -287,7 +281,7 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
                         <DeleteIcon fontSize="small" />
                       </IconButton>
                     </Box>
-                  </TableCell>
+                  </TableCell>}
                 </TableRow>
               );
             })}
@@ -308,7 +302,7 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
           mt: "auto",
         }}
       >
-        {selected?.length > 0 && (
+        {selected?.length > 0 && canDelete && (
           <div className="text-white justify-between">
             <Button
               variant="contained"

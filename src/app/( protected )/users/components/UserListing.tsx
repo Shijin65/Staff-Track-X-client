@@ -20,7 +20,7 @@ import { EnhancedTable } from "@/components/table/EnhancedTable";
 import { CustomModal as Modal } from "@/components/ui/modal";
 import UserDelete from "./UserDelete";
 import { ApiUser, UserRow } from "./user-type";
-import { useWindowSize } from "@/lib/hooks";
+import { useAuthUser, useWindowSize } from "@/lib/hooks";
 import { useTablePageReset } from "@/lib/hooks/useTablePageReset";
 import { TableLoaderSkeleton, ErrorCard } from "@/components/ui";
 
@@ -60,6 +60,12 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
   const [modalInfo, setModalInfo] = useState<{ id: string[]; type: string }>({ id: [], type: "" });
 
   const router = useRouter();
+  const {user} = useAuthUser();
+  console.log(user);
+  const canCreateUser = user?.availableAccess?.CreateUser;
+  const canDeleteUser = user?.availableAccess?.DeleteUser;
+  const canUpdateUser = user?.availableAccess?.UpdateUser;
+  const canViewUser = user?.availableAccess?.ViewUser;
 
   const columns: Column<UserRow>[] = [
     { id: "fullName", label: "Full Name" },
@@ -132,11 +138,11 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
             Users Management
           </Typography>
 
-          <Tooltip title="Add">
+          {canCreateUser && <Tooltip title="Add">
             <Button variant="contained" startIcon={<AddIcon />} onClick={() => router.push('/users/create')} sx={{ borderRadius: 2 }}>
               Add
             </Button>
-          </Tooltip>
+          </Tooltip>}
         </Toolbar>
 
         <EnhancedTable
@@ -157,6 +163,8 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
           limit={limit}
           totalPages={data?.metaData?.totalPages || 1}
           totalItems={data?.metaData.totalCount || 0}
+          canDelete={canDeleteUser}
+          canView={canViewUser}
         />
       </Paper>
       {modalInfo?.type === "delete" && (
