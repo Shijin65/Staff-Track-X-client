@@ -5,21 +5,21 @@ import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typogr
 import { navItems } from "@/lib/utils/constance";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useUserStore } from "@/lib/store";
+import { useAuthUser } from "@/lib/hooks";
 
 
 export const Sidebar = () => {
   const pathname = usePathname();
-
-  const availableAccess = useUserStore((state) => state.user?.availableAccess) as unknown as string[] | undefined;
+  const { user } = useAuthUser();
+  const availableAccess = user?.availableAccess || {};
 
   const hasPermission = (path: string) => {
     if (!availableAccess) return false;
     if (path === "/") return true;
     if (path === "/profile") return true;
     if (path === "/my-events") return true;
-    if (path === "/events") return availableAccess.includes("view_event");
-    if (path === "/users") return availableAccess.includes("view_user");
+    if (path === "/events") return availableAccess.ViewEvent;
+    if (path === "/users") return availableAccess.ViewUser;
     return false;
   };
 

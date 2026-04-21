@@ -64,8 +64,8 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
   console.log(user);
   const canCreateUser = user?.availableAccess?.CreateUser;
   const canDeleteUser = user?.availableAccess?.DeleteUser;
-  const canUpdateUser = user?.availableAccess?.UpdateUser;
   const canViewUser = user?.availableAccess?.ViewUser;
+  
 
   const columns: Column<UserRow>[] = [
     { id: "fullName", label: "Full Name" },

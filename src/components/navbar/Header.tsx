@@ -24,9 +24,14 @@ import {
 } from "@mui/icons-material";
 import { useAuthContext } from "@/context/auth-provider";
 import { useRouter } from "next/navigation";
+import { CustomModal as Modal } from "@/components/ui/modal";
+import ChangePassword from "@/app/( protected )/profile/components/ChangePassword";
+
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+
   const auth = useAuthContext();
   const user = auth?.user?.user;
   const theme = useTheme();
@@ -112,7 +117,7 @@ const Header = () => {
               <ListItemIcon><ShoppingCartOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
               <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Events history</Typography>
             </MenuItem>
-            <MenuItem sx={{ py: 1.2, px: 2 }} onClick={() => { handleUserMenuClose(); router.push('/change-password'); }}>
+            <MenuItem sx={{ py: 1.2, px: 2 }} onClick={() => { handleUserMenuClose(); setIsChangePasswordOpen(true); }}>
               <ListItemIcon><LockOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
               <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Change password</Typography>
               <ChevronRight fontSize="small" sx={{ color: "text.secondary" }} />
@@ -133,6 +138,15 @@ const Header = () => {
           </Box>
         </Menu>
       </Toolbar>
+      
+      <Modal
+        isOpen={isChangePasswordOpen}
+        handleClose={() => setIsChangePasswordOpen(false)}
+        title="Change Password"
+        size="small"
+      >
+        <ChangePassword handleClose={() => setIsChangePasswordOpen(false)} />
+      </Modal>
     </AppBar>
   );
 };

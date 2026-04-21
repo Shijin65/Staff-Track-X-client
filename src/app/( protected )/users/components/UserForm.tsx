@@ -50,6 +50,7 @@ import { useAuthContext } from "@/context/auth-provider";
 import { schema } from "./user-schema";
 import { MainLoader } from "../../../../components/ui/main-loader";
 import { handleAxiosError } from "@/lib/utils/axiosError";
+import { ModuleHeader } from "@/components/ui";
 
 
 
@@ -79,6 +80,7 @@ type FormData = yup.InferType<typeof schema>;
 
 interface UserFormProps {
   uid?: string;
+  isProfile?: boolean;
 }
 
 // ── Section Card Wrapper ──────────────────────────────────────────────────────
@@ -157,6 +159,7 @@ const SectionCard = ({
 // ── Main Form ─────────────────────────────────────────────────────────────────
 export const UserForm: React.FC<UserFormProps> = ({
   uid,
+  isProfile = false,
 }) => {
   const isEdit = !!uid;
   const [isLoading, setIsLoading] = useState(false);
@@ -285,7 +288,11 @@ export const UserForm: React.FC<UserFormProps> = ({
           type: "success",
           open: true,
         });
-        if (!isEdit) router.push("/users");
+        if (!isEdit) {
+          router.push("/users");
+        } else if (isProfile) {
+          router.push("/profile");
+        }
       })
       .catch((error) => {
         setToast({
@@ -353,38 +360,13 @@ export const UserForm: React.FC<UserFormProps> = ({
   }
   return (
     <>
-      {/* Header Section */}
-      <Box sx={{
-        height: 180,
-        bgcolor: '#f1f5f9', // Light gray background to match image
-        pt: 2,
-        px: { xs: 0, md: 5 },
-        position: 'relative'
-      }}>
-        <Container maxWidth="xl">
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: "100%" }}>
-            <IconButton
-              onClick={() => router.back()}
-              sx={{
-                bgcolor: '#e2e8f0',
-                color: '#1e293b',
-                '&:hover': { bgcolor: '#cbd5e1' },
-              }}
-            >
-              <ArrowBackIcon />
-            </IconButton>
-
-            <Typography variant="h5" fontWeight={800} color="text.primary" sx={{ opacity: 0.8 }}>
-              {isEdit ? "Update" : "Create"} Staff
-            </Typography>
-
-            <Box sx={{ width: 45 }} /> {/* Spacer to center or balance */}
-          </Box>
-        </Container>
-      </Box>
+      <ModuleHeader
+        title={isProfile ? "Update Profile" : (isEdit ? "Update" : "Create") + " Staff"}
+        onBack={() => router.back()}
+      />
 
       {/* Form Section */}
-      <Container maxWidth="xl" sx={{ mt: -6, pb: 8 }}>
+      <Container maxWidth="xl" sx={{ mt: { xs: 2, md: 4 }, pb: 8 }}>
 
         <Box
           component="form"
@@ -397,7 +379,6 @@ export const UserForm: React.FC<UserFormProps> = ({
             sx={{
               display: "flex",
               justifyContent: "center",
-              mt: { xs: -8, md: -14 },
               mb: 4,
               position: "relative",
             }}
@@ -561,80 +542,86 @@ export const UserForm: React.FC<UserFormProps> = ({
                   )}
                 />
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <Controller
-                  name="role"
-                  control={control}
-                  defaultValue=""
-                  render={({ field, fieldState }) => (
-                    <TextField
-                      {...field}
-                      select
-                      fullWidth
-                      size={fieldSize}
-                      label="Role"
-                      disabled={!isAdmin}
-                      error={!!fieldState.error}
-                      helperText={fieldState.error?.message}
-                      InputProps={{
-                        startAdornment: (
-                          <Work sx={{ mr: 1, color: "action.active" }} fontSize="small" />
-                        ),
-                      }}
-                    >
-                      {!mounted || rolesLoading ? (
-                        <MenuItem disabled value="">
-                          <Skeleton width="100%" />
-                        </MenuItem>
-                      ) : (
-                        roles.map((r: { roleId: string, name: string }) => (
-                          <MenuItem key={r.roleId} value={r.roleId} disabled={!isAdmin}>
-                            {r.name.charAt(0).toUpperCase() + r.name.slice(1).replace(/_/g, " ")}
+              {!isProfile && (
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Controller
+                    name="role"
+                    control={control}
+                    defaultValue=""
+                    render={({ field, fieldState }) => (
+                      <TextField
+                        {...field}
+                        select
+                        fullWidth
+                        size={fieldSize}
+                        label="Role"
+                        disabled={!isAdmin}
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                        InputProps={{
+                          startAdornment: (
+                            <Work sx={{ mr: 1, color: "action.active" }} fontSize="small" />
+                          ),
+                        }}
+                      >
+                        {!mounted || rolesLoading ? (
+                          <MenuItem disabled value="">
+                            <Skeleton width="100%" />
                           </MenuItem>
-                        ))
-                      )}
-                    </TextField>
-                  )}
-                />
-              </Grid>
+                        ) : (
+                          roles.map((r: { roleId: string, name: string }) => (
+                            <MenuItem key={r.roleId} value={r.roleId} disabled={!isAdmin}>
+                              {r.name.charAt(0).toUpperCase() + r.name.slice(1).replace(/_/g, " ")}
+                            </MenuItem>
+                          ))
+                        )}
+                      </TextField>
+                    )}
+                  />
+                </Grid>
+              )}
               {/* Account Status Fields */}
-              <Grid size={{ xs: 12 }}>
-                <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <FormControlLabel
-                  control={
-                    <Controller
-                      name="isActive"
-                      control={control}
-                      render={({ field }) => (
-                        <Checkbox {...field} checked={!!field.value} color="primary" disabled={!isAdmin} />
-                      )}
+              {!isProfile && (
+                <>
+                  <Grid size={{ xs: 12 }}>
+                    <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <FormControlLabel
+                      control={
+                        <Controller
+                          name="isActive"
+                          control={control}
+                          render={({ field }) => (
+                            <Checkbox {...field} checked={!!field.value} color="primary" disabled={!isAdmin} />
+                          )}
+                        />
+                      }
+                      label="Active Account"
                     />
-                  }
-                  label="Active Account"
-                />
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', ml: 4, mt: -0.5 }}>
-                  * Allows the staff to log in and be assigned to events.
-                </Typography>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <FormControlLabel
-                  control={
-                    <Controller
-                      name="isVerified"
-                      control={control}
-                      render={({ field }) => (
-                        <Checkbox {...field} checked={!!field.value} color="primary" disabled={!isAdmin} />
-                      )}
+                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', ml: 4, mt: -0.5 }}>
+                      * Allows the staff to log in and be assigned to events.
+                    </Typography>
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <FormControlLabel
+                      control={
+                        <Controller
+                          name="isVerified"
+                          control={control}
+                          render={({ field }) => (
+                            <Checkbox {...field} checked={!!field.value} color="primary" disabled={!isAdmin} />
+                          )}
+                        />
+                      }
+                      label="Verified Member"
                     />
-                  }
-                  label="Verified Member"
-                />
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', ml: 4, mt: -0.5 }}>
-                  * Indicates that the account has been verified.
-                </Typography>
-              </Grid>
+                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', ml: 4, mt: -0.5 }}>
+                      * Indicates that the account has been verified.
+                    </Typography>
+                  </Grid>
+                </>
+              )}
             </Grid>
           </SectionCard>
 

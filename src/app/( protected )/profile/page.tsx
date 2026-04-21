@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -31,7 +31,6 @@ import { QRCodeSVG } from "qrcode.react";
 import { MainLoader } from "@/components/ui/main-loader";
 import { ErrorCard } from "@/components/ui";
 import { useAxios } from "@/lib/hooks";
-import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
   const { user } = useAuthContext();
@@ -41,9 +40,7 @@ export default function ProfilePage() {
   const { data, error, isLoading } = useSWR(userId ? `/api/users/${userId}` : null);
 
   const api = useAxios();
-  const [profilePreview, setProfilePreview] = useState<string | null>(null);
-
-  const profileData = data?.payload
+  const profileData = data?.payload;
   const imageId = profileData?.attachment?.picId || profileData?.profilePic;
 
   const fetcher = (url: string) =>
@@ -54,13 +51,20 @@ export default function ProfilePage() {
     fetcher
   );
 
-  useEffect(() => {
+  const profilePreview = useMemo(() => {
     if (imageBlob) {
-      const url = URL.createObjectURL(imageBlob);
-      setProfilePreview(url);
-      return () => URL.revokeObjectURL(url);
+      return URL.createObjectURL(imageBlob);
     }
+    return null;
   }, [imageBlob]);
+
+  useEffect(() => {
+    return () => {
+      if (profilePreview) {
+        URL.revokeObjectURL(profilePreview);
+      }
+    };
+  }, [profilePreview]);
 
   if (isLoading || !user) {
     return (
@@ -103,9 +107,11 @@ export default function ProfilePage() {
           overflow: "visible" // Changed to visible for shadow/avatar
         }}
       >
-        {/* Decorative elements behind banner */}
-        <Box sx={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
-        <Box sx={{ position: 'absolute', bottom: -20, left: '20%', width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
+        {/* Decorative elements - Wrapped to prevent horizontal scroll */}
+        <Box sx={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: 4 }}>
+          <Box sx={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
+          <Box sx={{ position: 'absolute', bottom: -20, left: '20%', width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
+        </Box>
 
         {/* Profile Avatar overlapping banner */}
         <Box
@@ -221,7 +227,7 @@ export default function ProfilePage() {
                 variant="contained"
                 size="small"
                 sx={{ borderRadius: 2 }}
-                onClick={() => router.push(`/users/${userId}/edit`)}
+                onClick={() => router.push(`/profile/edit`)}
               >
                 Edit Profile
               </Button>

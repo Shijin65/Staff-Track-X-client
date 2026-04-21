@@ -3,4 +3,5 @@ export { PasswordField } from "./password-input";
 export * from "./global-toast";
 export * from "./table-skelton";
 export * from "./error-card";
+export * from "./module-header";
 

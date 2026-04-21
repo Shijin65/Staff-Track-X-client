@@ -117,8 +117,8 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
           size="small"
           sx={{
             "& .MuiTableCell-root": {
-              py: 1.5,       // increased vertical padding (from 0.75)
-              fontSize: "0.875rem", // slightly larger font,
+              py: 1.5,
+              fontSize: "0.875rem",
             },
             "& .MuiTableCell-head": {
               py: 1,
@@ -250,14 +250,14 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
                     return (
                       <TableCell
                         onClick={(e) => {
-                          if (col.id === mainCol) {
+                          if (col.id === mainCol && canView) {
                             e.stopPropagation();
                             handleViewDetails(id as string)
                           }
                         }}
                         key={String(col.id)}
                         sx={
-                          col.id === mainCol
+                          col.id === mainCol && canView
                             ? { fontWeight: 600, textTransform: "capitalize", whiteSpace: "nowrap", color: "primary.main" }
                             : { color: "text.primary" }
                         }

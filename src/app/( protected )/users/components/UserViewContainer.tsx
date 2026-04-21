@@ -5,23 +5,22 @@ import { useParams, useRouter } from 'next/navigation';
 import {
   Box,
   Container,
-  Typography,
-  Button,
   useTheme,
   useMediaQuery,
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { UserViewHeader } from '@/app/( protected )/users/components/UserViewHeader';
 import { UserDetailsContent } from '@/app/( protected )/users/components/UserDetailsContent';
 import { UserData } from '@/lib/mock/users';
 import useSWR from 'swr';
 import { CircularProgress } from '@mui/material';
-import { ErrorCard } from '@/components/ui';
+import { ErrorCard, ModuleHeader } from '@/components/ui';
+import { useAuthUser } from '@/lib/hooks';
 
 export const UserViewContainer = () => {
   const { id } = useParams();
   const router = useRouter();
   const theme = useTheme();
+  const { user } = useAuthUser();
+  const canUpdateUser = user?.availableAccess?.UpdateUser;
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const { data, error, isLoading } = useSWR(`/api/users/${id}`);
@@ -75,7 +74,7 @@ export const UserViewContainer = () => {
     blackPant: apiUser.uniform?.blackPant || false,
     executiveBlackShoe: apiUser.uniform?.executiveBlackShoe || false,
     grooming: apiUser.uniform?.grooming || false,
-    
+
     profilePhoto: '',
     totalEvents: 0,
     successRate: 0,
@@ -86,13 +85,14 @@ export const UserViewContainer = () => {
 
   return (
     <Box id="user-view-page-root" sx={{ bgcolor: 'background.default', minHeight: '100dvh', pb: 8 }}>
-      <UserViewHeader
+      <ModuleHeader
+        title="User Details"
         isMobile={isMobile}
         onEdit={() => router.push(`/users/${id}/edit`)}
         onBack={() => router.push('/users')}
+        updatePermission={canUpdateUser}
       />
-
-      <Container id="user-details-view-container" maxWidth={false} sx={{ mt: { xs: 0, md: -18 }, position: 'relative', px: { xs: 2, md: 4 } }}>
+      <Container id="user-details-view-container" maxWidth={false} sx={{ mt: { xs: 0 }, px: { xs: 2, md: 4 } }}>
         <UserDetailsContent user={mappedUser} />
       </Container>
     </Box>

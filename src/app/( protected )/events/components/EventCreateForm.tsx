@@ -29,10 +29,11 @@ import {
 } from "@mui/icons-material";
 import useSWR from "swr";
 import { useToast } from "@/lib/store/useToastStore";
-import { useAxios } from "@/lib/hooks";
+import { useAuthUser, useAxios } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 import { EventLocationPickerWrapper } from "./EventLocationWrapper";
 import { handleAxiosError } from "@/lib/utils/axiosError";
+import { ModuleHeader } from "@/components/ui";
 
 const schema = yup.object({
   title: yup.string().required("Title is required."),
@@ -51,8 +52,16 @@ const schema = yup.object({
   status: yup.string().default("Pending"),
   description: yup.string().optional().notRequired(),
   locationInstructions: yup.string().optional().notRequired(),
-  latitude: yup.number().optional().nullable(),
-  longitude: yup.number().optional().nullable(),
+  latitude: yup
+    .number()
+    .transform((value, originalValue) => (originalValue === "" ? null : value))
+    .nullable()
+    .optional(),
+  longitude: yup
+    .number()
+    .transform((value, originalValue) => (originalValue === "" ? null : value))
+    .nullable()
+    .optional(),
   staffRequirements: yup.array().of(
     yup.object({
       roleId: yup.string().required("Role is required"),
@@ -112,7 +121,6 @@ const SectionCard = ({ icon: Icon, title, subtitle, children }: any) => {
 
 export const EventCreateForm: React.FC<eventFormProps> = ({
   eId,
-
 }) => {
   const isEdit = !!eId;
   const theme = useTheme();
@@ -121,6 +129,8 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
   const { setToast } = useToast();
   const api = useAxios();
   const router = useRouter();
+  const { user } = useAuthUser();
+  const canViewClientInfo = user?.availableAccess?.ViewClientInfo || false;
   const [isLoading, setIsLoading] = useState(false);
 
   const { data: rolesData, isLoading: rolesLoading } = useSWR("/api/meta/roles");
@@ -150,7 +160,7 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
       staffRequirements: [],
     }
   });
-
+  console.log(errors)
   const { fields: staffFields, append: appendStaff, remove: removeStaff } = useFieldArray({
     control,
     name: "staffRequirements",
@@ -170,6 +180,10 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
           switch (field) {
             case "staffRequirements":
               setValue(field as "staffRequirements", data[field] ?? []);
+              break;
+            case "latitude":
+            case "longitude":
+              setValue(field as any, data[field] ?? null);
               break;
             default:
               setValue(field as any, data[field] ?? "");
@@ -211,6 +225,10 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
   }
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ width: "100%" }}>
+      <ModuleHeader
+        title={isEdit ? "Update Event" : "Create Event"}
+        onBack={() => router.push("/events")}
+      />
       <SectionCard icon={Event} title="Event Details" subtitle="Main information and schedule">
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, sm: 6 }}>
@@ -290,7 +308,7 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
         </Grid>
       </SectionCard>
 
-      <SectionCard icon={Person} title="Client Information" subtitle="Client contact details">
+      {canViewClientInfo && <SectionCard icon={Person} title="Client Information" subtitle="Client contact details">
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Controller
@@ -311,7 +329,7 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
             />
           </Grid>
         </Grid>
-      </SectionCard>
+      </SectionCard>}
 
       <SectionCard icon={GroupAdd} title="Staff Requirements" subtitle="Specify roles and headcount needed">
         {staffFields.map((item, index) => (
@@ -503,6 +521,6 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
           {isSubmitting ? "Saving..." : (isEdit ? "Update Event" : "Create Event")}
         </Button>
       </Stack>
-    </Box>
+        </Box>
   );
 };

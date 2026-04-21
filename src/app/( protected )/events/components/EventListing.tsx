@@ -14,7 +14,7 @@ import { Add as AddIcon } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { EnhancedTable, Column } from "@/components/table/EnhancedTable";
-import { useWindowSize } from "@/lib/hooks";
+import { useAuthUser, useWindowSize } from "@/lib/hooks";
 import { ErrorCard } from "@/components/ui";
 
 interface EventListingProps {
@@ -48,6 +48,8 @@ export const EventListing = ({ query }: EventListingProps) => {
   const [page, setPage] = useState(1);
 
   const router = useRouter();
+  const { user } = useAuthUser();
+  const canCreateEvent = user?.availableAccess?.CreateEvent;
   const { height } = useWindowSize();
   const limit = height === 0 ? 10 : Math.floor((height - 240) / 41);
 
@@ -88,7 +90,7 @@ export const EventListing = ({ query }: EventListingProps) => {
           <Typography sx={{ flex: "1 1 100%", fontWeight: 600 }} variant="h6">
             Events Management
           </Typography>
-          <Tooltip title="Add Event">
+          {canCreateEvent && <Tooltip title="Add Event">
             <Button
               variant="contained"
               startIcon={<AddIcon />}
@@ -97,7 +99,7 @@ export const EventListing = ({ query }: EventListingProps) => {
             >
               Add
             </Button>
-          </Tooltip>
+          </Tooltip>}
         </Toolbar>
 
         <EnhancedTable

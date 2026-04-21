@@ -31,8 +31,9 @@ import {
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { MainLoader } from "@/components/ui/main-loader";
-import { ErrorCard } from "@/components/ui";
+import { ErrorCard, ModuleHeader } from "@/components/ui";
 import { EventLocationPickerWrapper } from "./EventLocationWrapper";
+import { useAuthUser } from "@/lib/hooks";
 
 interface EventViewProps {
   eventId: string;
@@ -40,7 +41,11 @@ interface EventViewProps {
 
 export function EventView({ eventId }: EventViewProps) {
   const router = useRouter();
+  const { user } = useAuthUser();
 
+  const canEditEvent = user?.availableAccess?.UpdateEvent;
+  const canViewUsers = user?.availableAccess?.ViewUser;
+  const canViewClientInfo = user?.availableAccess?.ViewClientInfo;
   const { data, isLoading, error } = useSWR(`/api/events/${eventId}`);
   const { data: rolesData } = useSWR("/api/meta/roles");
 
@@ -95,15 +100,12 @@ export function EventView({ eventId }: EventViewProps) {
 
   return (
     <Box sx={{ width: "100%", maxWidth: 1536, margin: "0 auto", pb: 6, px: { xs: 2, xl: 4 } }}>
-      <Button
-        startIcon={<ArrowBack />}
-        onClick={() => router.back()}
-        sx={{ mb: 3 }}
-        color="inherit"
-      >
-        Back to Events
-      </Button>
-
+      <ModuleHeader
+        title="Event Details"
+        onBack={() => router.push("/events")}
+        onEdit={() => router.push(`/events/${eventId}/edit`)}
+        updatePermission={canEditEvent}
+      />
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 4 }}>
         <Box>
           <Typography variant="h4" fontWeight={800} gutterBottom>
@@ -118,9 +120,6 @@ export function EventView({ eventId }: EventViewProps) {
             />
           </Box>
         </Box>
-        <Button variant="contained" onClick={() => router.push(`/events/${eventId}/edit`)}>
-          Edit Event
-        </Button>
       </Box>
 
       <Grid container spacing={4}>
@@ -163,7 +162,7 @@ export function EventView({ eventId }: EventViewProps) {
             </Grid>
           </Paper>
 
-          <Paper elevation={0} sx={{ mb: 4, p: 4, borderRadius: 3, border: "1px solid", borderColor: "divider" }}>
+          {canViewClientInfo && <Paper elevation={0} sx={{ mb: 4, p: 4, borderRadius: 3, border: "1px solid", borderColor: "divider" }}>
             <Typography variant="h6" fontWeight={700} sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1 }}>
               <Person color="primary" /> Client Information
             </Typography>
@@ -185,10 +184,10 @@ export function EventView({ eventId }: EventViewProps) {
                 </List>
               </Grid>
             </Grid>
-          </Paper>
+          </Paper>}
 
           {/* Staff Requirements & Applications */}
-          <Grid container spacing={3}>
+          {canViewUsers && <Grid container spacing={3}>
             <Grid size={{ xs: 12, sm: 6 }}>
               <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: "1px solid", borderColor: "divider", height: "100%" }}>
                 <Typography variant="h6" fontWeight={700} sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1 }}>
@@ -233,7 +232,7 @@ export function EventView({ eventId }: EventViewProps) {
                 </List>
               </Paper>
             </Grid>
-          </Grid>
+          </Grid>}
 
         </Grid>
 
