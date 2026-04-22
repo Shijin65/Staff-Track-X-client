@@ -23,7 +23,7 @@ export const ModuleHeader: React.FC<ModuleHeaderProps> = ({
 }) => {
 
   return (
-    <Box sx={{ p: 2, display: 'flex', alignItems: 'center' }}>
+    <Box sx={{pb:3, display: 'flex', alignItems: 'center' }}>
       
       {/* Left */}
       <IconButton

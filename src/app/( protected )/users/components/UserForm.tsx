@@ -272,7 +272,7 @@ export const UserForm: React.FC<UserFormProps> = ({
     // Append all form fields to FormData
     Object.keys(formData).forEach((key) => {
       if (formData[key] !== undefined && formData[key] !== null) {
-        data.append(key, formData[key] as any);
+        data.append(key, formData[key] as string);
       }
     });
 

@@ -29,7 +29,7 @@ import { useRouter } from "next/navigation";
 export default function MyEventsPage() {
   const theme = useTheme();
   const router = useRouter();
-  const { data, error, isLoading } = useSWR("/api/events/my-requests");
+  const { data, error, isLoading } = useSWR("/api/events/applications/me");
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -50,28 +50,25 @@ export default function MyEventsPage() {
     <Box sx={{ width: "100%", maxWidth: 1536, px: { xs: 1, sm: 2, xl: 4 }, margin: "0 auto", pb: 10 }}>
 
       {/* Header */}
-      <Box sx={{ mb: { xs: 3, md: 4 }, display: 'flex', alignItems: 'flex-start', gap: { xs: 1.5, md: 2 } }}>
+      <Box sx={{ mb: { xs: 3, md: 4 }, display: 'flex', alignItems: 'center', gap: { xs: 1.5, md: 2 } }}>
         <Box sx={{ p: { xs: 1.25, md: 1.5 }, borderRadius: 2, bgcolor: "rgba(var(--primary-rgb), 0.1)", color: "primary.main", display: 'flex' }}>
-             <EventIcon sx={{ fontSize: { xs: 28, md: 35 } }} />
+          <EventIcon sx={{ fontSize: { xs: 28, md: 35 } }} />
         </Box>
         <Box>
-            <Typography variant="h4" fontWeight={800} sx={{ mb: 0.5, fontSize: { xs: '1.5rem', md: '2.125rem' } }}>
-             My Events
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.4, maxWidth: { xs: '260px', sm: '100%'} }}>
-             Track and manage the events you&apos;ve applied for.
-            </Typography>
+          <Typography variant="h4" fontWeight={800} sx={{  fontSize: { xs: '1.5rem', md: '2.125rem' } }}>
+            My Events
+          </Typography>
         </Box>
       </Box>
 
       {/* Events Grid */}
       {requests.length === 0 ? (
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            p: { xs: 6, md: 10 }, 
-            textAlign: 'center', 
-            borderRadius: 4, 
+        <Paper
+          elevation={0}
+          sx={{
+            p: { xs: 6, md: 10 },
+            textAlign: 'center',
+            borderRadius: 4,
             border: `1px dashed ${theme.palette.divider}`,
             bgcolor: 'rgba(0,0,0,0.01)'
           }}
@@ -88,10 +85,10 @@ export default function MyEventsPage() {
         <Grid container spacing={{ xs: 1.5, sm: 3 }}>
           {requests.map((request: any) => (
             <Grid size={{ xs: 12, md: 6, lg: 4 }} key={request.requestId}>
-              <Card 
-                elevation={0} 
-                sx={{ 
-                  borderRadius: { xs: 2, sm: 4 }, 
+              <Card
+                elevation={0}
+                sx={{
+                  borderRadius: { xs: 2, sm: 4 },
                   border: `1px solid ${theme.palette.divider}`,
                   transition: "all 0.3s ease",
                   "&:hover": {
@@ -103,15 +100,15 @@ export default function MyEventsPage() {
               >
                 <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                   <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
-                    <Chip 
-                      label={request.event?.eventType || "Event"} 
-                      size="small" 
-                      sx={{ bgcolor: "rgba(var(--primary-rgb), 0.08)", color: "primary.main", fontWeight: 700, borderRadius: 1.5 }} 
+                    <Chip
+                      label={request.event?.eventType || "Event"}
+                      size="small"
+                      sx={{ bgcolor: "rgba(var(--primary-rgb), 0.08)", color: "primary.main", fontWeight: 700, borderRadius: 1.5 }}
                     />
-                    <Chip 
-                      label={request.status} 
-                      color={getStatusColor(request.status) as any} 
-                      size="small" 
+                    <Chip
+                      label={request.status}
+                      color={getStatusColor(request.status) as any}
+                      size="small"
                       variant="filled"
                       sx={{ fontWeight: 600, textTransform: 'capitalize' }}
                     />
@@ -140,9 +137,9 @@ export default function MyEventsPage() {
                     </Box>
                   </Stack>
 
-                  <Button 
-                    fullWidth 
-                    variant="outlined" 
+                  <Button
+                    fullWidth
+                    variant="outlined"
                     onClick={() => router.push(`/events/${request.event?.eventId}/view`)}
                     endIcon={<ChevronRight />}
                     sx={{ mt: 3, borderRadius: 2, textTransform: "none", fontWeight: 700 }}

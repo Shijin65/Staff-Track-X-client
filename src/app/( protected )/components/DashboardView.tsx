@@ -286,7 +286,6 @@ export function DashboardView() {
         </Box>
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">Overview Dashboard</h1>
-          <p className="text-gray-500 text-xs md:text-sm capitalize">{userRole?.name.replace('_', ' ')} Dashboard</p>
         </div>
       </Box>
 

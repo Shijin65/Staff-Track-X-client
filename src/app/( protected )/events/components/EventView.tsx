@@ -24,22 +24,23 @@ import {
   AccessTime,
   Phone,
   Business,
-  ArrowBack,
   Group,
   Assignment,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
-import { MainLoader } from "@/components/ui/main-loader";
-import { ErrorCard, ModuleHeader } from "@/components/ui";
+import { CustomDialog, ErrorCard, GroupSkeleton, ModuleHeader } from "@/components/ui";
 import { EventLocationPickerWrapper } from "./EventLocationWrapper";
 import { useAuthUser } from "@/lib/hooks";
+import { ApplicationManagementModal } from "./ApplicationManagementModal";
+import { useState } from "react";
 
 interface EventViewProps {
   eventId: string;
 }
 
 export function EventView({ eventId }: EventViewProps) {
+  const [isManageModalOpen, setIsManageModalOpen] = useState(false);
   const router = useRouter();
   const { user } = useAuthUser();
 
@@ -50,7 +51,7 @@ export function EventView({ eventId }: EventViewProps) {
   const { data: rolesData } = useSWR("/api/meta/roles");
 
   if (isLoading) {
-    return <MainLoader />;
+    return <GroupSkeleton rowsNum={2} />;
   }
 
   const roles = rolesData?.payload?.roles || [];
@@ -102,7 +103,7 @@ export function EventView({ eventId }: EventViewProps) {
     <Box sx={{ width: "100%", maxWidth: 1536, margin: "0 auto", pb: 6, px: { xs: 2, xl: 4 } }}>
       <ModuleHeader
         title="Event Details"
-        onBack={() => router.push("/events")}
+        onBack={() => router.back()}
         onEdit={() => router.push(`/events/${eventId}/edit`)}
         updatePermission={canEditEvent}
       />
@@ -198,9 +199,25 @@ export function EventView({ eventId }: EventViewProps) {
                     event.staffRequirements.map((req: any) => {
                       const roleObj = roles.find((r: any) => String(r.roleId) === String(req.roleId));
                       const roleName = roleObj ? (roleObj.name.charAt(0).toUpperCase() + roleObj.name.slice(1).replace(/_/g, " ")) : `Role ${req.roleId}`;
+
+                      const confirmedCount = event.eventRequests?.filter((er: any) =>
+                        String(er.roleId) === String(req.roleId) && er.status === 'confirmed'
+                      ).length || 0;
+
                       return (
                         <ListItem key={req.requirementId} sx={{ px: 0, py: 1, borderBottom: '1px solid #f0f0f0' }}>
-                          <ListItemText primary={roleName} secondary={`Required Count: ${req.count}`} />
+                          <ListItemText
+                            primary={roleName}
+                            secondary={`Required: ${req.count} | Confirmed: ${confirmedCount}`}
+                          />
+                          <Box>
+                            <Chip
+                              label={confirmedCount >= req.count ? "Filled" : "Pending"}
+                              size="small"
+                              color={confirmedCount >= req.count ? "success" : "warning"}
+                              variant="outlined"
+                            />
+                          </Box>
                         </ListItem>
                       );
                     })
@@ -212,28 +229,66 @@ export function EventView({ eventId }: EventViewProps) {
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
               <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: "1px solid", borderColor: "divider", height: "100%" }}>
-                <Typography variant="h6" fontWeight={700} sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1 }}>
-                  <Assignment color="primary" /> Applications
-                </Typography>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+                  <Typography variant="h6" fontWeight={700} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Assignment color="primary" /> Applications ({event.totalApplications || 0})
+                  </Typography>
+                  {canEditEvent && (
+                    <Button
+                      size="small"
+                      variant="contained"
+                      onClick={() => setIsManageModalOpen(true)}
+                      startIcon={<Assignment fontSize="small" />}
+                    >
+                      Manage
+                    </Button>
+                  )}
+                </Box>
+
                 <List disablePadding>
                   {event.eventRequests && event.eventRequests.length > 0 ? (
-                    event.eventRequests.map((req: any) => (
+                    event.eventRequests.slice(0, 3).map((req: any) => (
                       <ListItem key={req.requestId} sx={{ px: 0, py: 1, borderBottom: '1px solid #f0f0f0' }}>
                         <ListItemText
                           primary={`${req.user?.firstName || "-"} ${req.user?.lastName || ""}`}
-                          secondary={`Contact: ${req.user?.mobileNumber || "N/A"}`}
+                          secondary={roles.find((r: any) => String(r.roleId) === String(req.roleId))?.name?.replace(/_/g, " ")?.toUpperCase() || "No Role"}
                         />
-                        <Chip label={req.status} size="small" color={getStatusColor(req.status) as any} />
+                        <Chip
+                          label={req.status}
+                          size="small"
+                          color={getStatusColor(req.status) as any}
+                          variant="outlined"
+                        />
                       </ListItem>
                     ))
                   ) : (
                     <Typography variant="body2" color="text.secondary">No staff have applied yet.</Typography>
                   )}
+                  {event.totalApplications > (event.eventRequests?.length || 0) && (
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        mt: 2,
+                        borderRadius: 2,
+                        fontWeight: 600,
+                        textTransform: 'none',
+                        borderColor: 'primary.light',
+                        '&:hover': {
+                          bgcolor: 'rgba(var(--primary-rgb), 0.04)',
+                          borderColor: 'primary.main'
+                        }
+                      }}
+                      onClick={() => setIsManageModalOpen(true)}
+                    >
+                      View {event.totalApplications - event.eventRequests.length} more applications
+                    </Button>
+                  )}
                 </List>
               </Paper>
             </Grid>
           </Grid>}
-
         </Grid>
 
         {/* Right Column: Location & Map */}
@@ -299,6 +354,21 @@ export function EventView({ eventId }: EventViewProps) {
           </Paper>
         </Grid>
       </Grid>
+      <CustomDialog
+        open={isManageModalOpen}
+        onClose={() => setIsManageModalOpen(false)}
+        title="Manage Applications"
+        maxWidth="md"
+        actions={
+          <Button onClick={() => setIsManageModalOpen(false)} variant="outlined" sx={{ borderRadius: 2 }}>Close</Button>
+        }
+      >
+        <ApplicationManagementModal
+          eventId={eventId}
+          roles={roles}
+          canEdit={!!canEditEvent}
+        />
+      </CustomDialog>
     </Box>
   );
 }

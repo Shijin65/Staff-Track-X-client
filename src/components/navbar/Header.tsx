@@ -30,7 +30,7 @@ import ChangePassword from "@/app/( protected )/profile/components/ChangePasswor
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   const auth = useAuthContext();
   const user = auth?.user?.user;
@@ -91,7 +91,7 @@ const Header = () => {
             <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ mb: 1.5, display: "block" }}>
               Accounts
             </Typography>
-            <Box 
+            <Box
               onClick={() => { handleUserMenuClose(); router.push('/profile'); }}
               sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", "&:hover": { opacity: 0.8 } }}
             >
@@ -138,7 +138,7 @@ const Header = () => {
           </Box>
         </Menu>
       </Toolbar>
-      
+
       <Modal
         isOpen={isChangePasswordOpen}
         handleClose={() => setIsChangePasswordOpen(false)}

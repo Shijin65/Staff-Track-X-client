@@ -22,7 +22,7 @@ import UserDelete from "./UserDelete";
 import { ApiUser, UserRow } from "./user-type";
 import { useAuthUser, useWindowSize } from "@/lib/hooks";
 import { useTablePageReset } from "@/lib/hooks/useTablePageReset";
-import { TableLoaderSkeleton, ErrorCard } from "@/components/ui";
+import { GroupSkeleton, ErrorCard } from "@/components/ui";
 
 
 type Order = "asc" | "desc";
@@ -60,12 +60,12 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
   const [modalInfo, setModalInfo] = useState<{ id: string[]; type: string }>({ id: [], type: "" });
 
   const router = useRouter();
-  const {user} = useAuthUser();
+  const { user } = useAuthUser();
   console.log(user);
   const canCreateUser = user?.availableAccess?.CreateUser;
   const canDeleteUser = user?.availableAccess?.DeleteUser;
   const canViewUser = user?.availableAccess?.ViewUser;
-  
+
 
   const columns: Column<UserRow>[] = [
     { id: "fullName", label: "Full Name" },
@@ -112,7 +112,7 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
   useTablePageReset(data?.metaData?.itemCount, query, setPage, page, [query]);
 
   if (isLoading) return (
-    <TableLoaderSkeleton rowsNum={3} />
+    <GroupSkeleton rowsNum={3} />
   );
 
   if (error) return (

@@ -87,7 +87,6 @@ export const UserViewContainer = () => {
     <Box id="user-view-page-root" sx={{ bgcolor: 'background.default', minHeight: '100dvh', pb: 8 }}>
       <ModuleHeader
         title="User Details"
-        isMobile={isMobile}
         onEdit={() => router.push(`/users/${id}/edit`)}
         onBack={() => router.push('/users')}
         updatePermission={canUpdateUser}
