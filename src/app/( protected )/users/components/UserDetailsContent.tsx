@@ -30,7 +30,7 @@ import {
 } from '@mui/icons-material';
 import { UserData } from '@/lib/mock/users';
 import { useAxios } from '@/lib/hooks';
-import useSWR from 'swr';
+import { API_URL } from '@/lib/utils/constance';
 
 interface UserDetailsContentProps {
   user: UserData;
@@ -63,30 +63,13 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
   const [mounted, setMounted] = useState(false);
 
   const api = useAxios();
-  const [profileUrl, setProfileUrl] = useState<string | undefined>(user.profilePhoto);
-
-  const fetcher = (resource: string) =>
-    api.get(resource, { responseType: "blob" }).then((res) => res.data);
-
-  const shouldFetch = user.attachment?.picId ? `/api/users/attachment/${user.attachment.picId}` : null;
-
-  const { data: imageBlob } = useSWR(shouldFetch, fetcher, {
-    revalidateIfStale: true,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-  });
+  const profileUrl = user.attachment?.picId 
+    ? `${API_URL}/api/users/attachment/${user.attachment.picId}` 
+    : user.profilePhoto;
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  useEffect(() => {
-    if (imageBlob) {
-      const url = URL.createObjectURL(imageBlob);
-      setProfileUrl(url);
-      return () => URL.revokeObjectURL(url);
-    }
-  }, [imageBlob]);
 
   const userEvents = user.recentEvents || [];
 

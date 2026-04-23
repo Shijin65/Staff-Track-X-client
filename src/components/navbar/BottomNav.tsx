@@ -16,10 +16,11 @@ export const BottomNav = () => {
   const router = useRouter();
   const {user}=useAuthUser()
   const availableAccess = user?.availableAccess || {};
+  const roleName = user?.user?.role?.name;
   const hasPermission = (path: string) => {
     if (path === "/") return true;
     if (path === "/profile") return true;
-    if (path === "/my-events") return true;
+    if (path === "/my-events") return !["supervisor", "super_admin"].includes(roleName as string);
     if (path === "/events") return availableAccess?.ViewEvent;
     if (path === "/users") return availableAccess?.ViewUser;
     return false;

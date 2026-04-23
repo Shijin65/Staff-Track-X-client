@@ -262,7 +262,7 @@ export function DashboardView() {
 
     setIsSubmitting(true);
     try {
-      const response = await api.post(`/api/events/${applyingEvent.eventId}/request`, {
+      const response = await api.post(`/api/events/${applyingEvent.eventId}/applications`, {
         roleId: selectedRoleId,
       });
 

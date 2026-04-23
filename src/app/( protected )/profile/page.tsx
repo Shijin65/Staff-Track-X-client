@@ -28,6 +28,7 @@ import { useAuthContext } from "@/context/auth-provider";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { QRCodeSVG } from "qrcode.react";
+import { API_URL } from "@/lib/utils/constance";
 import { MainLoader } from "@/components/ui/main-loader";
 import { ErrorCard } from "@/components/ui";
 import { useAxios } from "@/lib/hooks";
@@ -43,28 +44,12 @@ export default function ProfilePage() {
   const profileData = data?.payload;
   const imageId = profileData?.attachment?.picId || profileData?.profilePic;
 
-  const fetcher = (url: string) =>
-    api.get(url, { responseType: "blob" }).then((res) => res.data);
-
-  const { data: imageBlob } = useSWR(
-    imageId ? `/api/users/attachment/${imageId}` : null,
-    fetcher
-  );
-
   const profilePreview = useMemo(() => {
-    if (imageBlob) {
-      return URL.createObjectURL(imageBlob);
+    if (imageId) {
+      return `${API_URL}/api/users/attachment/${imageId}`;
     }
     return null;
-  }, [imageBlob]);
-
-  useEffect(() => {
-    return () => {
-      if (profilePreview) {
-        URL.revokeObjectURL(profilePreview);
-      }
-    };
-  }, [profilePreview]);
+  }, [imageId]);
 
   if (isLoading || !user) {
     return (

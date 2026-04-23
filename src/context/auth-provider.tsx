@@ -20,6 +20,11 @@ interface User {
       roleId: string;
       name: string;
     };
+    attachment?: {
+      picId: string;
+      fileName: string;
+      fileExtension: string;
+    };
   };
   availableAccess?: {
     CreateUser?: boolean;

@@ -20,12 +20,13 @@ import {
   LogoutOutlined,
   ChevronRight,
   LockOutlined,
-  PersonOutlined,
 } from "@mui/icons-material";
 import { useAuthContext } from "@/context/auth-provider";
 import { useRouter } from "next/navigation";
 import { CustomModal as Modal } from "@/components/ui/modal";
 import ChangePassword from "@/app/( protected )/profile/components/ChangePassword";
+
+import { API_URL } from "@/lib/utils/constance";
 
 
 const Header = () => {
@@ -63,7 +64,11 @@ const Header = () => {
           onClick={handleUserMenuOpen}
           sx={{ padding: 0 }}
         >
-          <Avatar alt={user?.firstName || ""} src="/a" sx={{ width: 40, height: 40 }} />
+          <Avatar 
+            alt={user?.firstName || ""} 
+            src={user?.attachment ? `${API_URL}/api/users/attachment/${user.attachment.picId}` : ""} 
+            sx={{ width: 40, height: 40 }} 
+          />
         </IconButton>
 
         <Menu
@@ -96,7 +101,11 @@ const Header = () => {
               sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", "&:hover": { opacity: 0.8 } }}
             >
               <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                <Avatar alt={user?.firstName || ""} src="/default.jpg" sx={{ width: 44, height: 44 }} />
+                <Avatar 
+                  alt={user?.firstName || ""} 
+                  src={user?.attachment ? `${API_URL}/api/users/attachment/${user.attachment.picId}` : ""} 
+                  sx={{ width: 44, height: 44 }} 
+                />
                 <Box>
                   <Typography variant="subtitle2" fontWeight={700} sx={{ fontSize: { xs: "0.8rem", sm: "1rem" } }}>
                     {user?.firstName + " " + user?.lastName}
@@ -113,10 +122,12 @@ const Header = () => {
 
           {/* Settings Section */}
           <Box sx={{ py: 1 }}>
-            <MenuItem sx={{ py: 1.2, px: 2 }} onClick={() => { handleUserMenuClose(); router.push('/my-events'); }}>
-              <ListItemIcon><ShoppingCartOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
-              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Events history</Typography>
-            </MenuItem>
+            {user?.role?.name !== "supervisor" && (
+              <MenuItem sx={{ py: 1.2, px: 2 }} onClick={() => { handleUserMenuClose(); router.push('/my-events'); }}>
+                <ListItemIcon><ShoppingCartOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
+                <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Events history</Typography>
+              </MenuItem>
+            )}
             <MenuItem sx={{ py: 1.2, px: 2 }} onClick={() => { handleUserMenuClose(); setIsChangePasswordOpen(true); }}>
               <ListItemIcon><LockOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
               <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Change password</Typography>

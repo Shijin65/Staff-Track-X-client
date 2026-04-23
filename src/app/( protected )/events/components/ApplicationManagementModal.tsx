@@ -19,12 +19,15 @@ import {
   CheckCircle as CheckCircleIcon,
   Cancel as CancelIcon,
   Person,
+  Star,
 } from "@mui/icons-material";
 import { useToast } from "@/lib/store/useToastStore";
 import { useLoader } from "@/lib/store";
+import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import { useAxios } from "@/lib/hooks";
 import { handleAxiosError } from "@/lib/utils/axiosError";
+import { GroupSkeleton } from "@/components/ui";
 
 interface ApplicationManagementModalProps {
   eventId: string;
@@ -41,6 +44,7 @@ export function ApplicationManagementModal({
   const { setLoading } = useLoader();
   const [activeTab, setActiveTab] = useState(0);
   const axios = useAxios();
+  const router = useRouter();
 
   const { data: applicationsData, isLoading, mutate: mutateApps } = useSWR(
     eventId ? `/api/events/${eventId}/applications` : null
@@ -100,8 +104,8 @@ export function ApplicationManagementModal({
         <Tab label={`Confirmed (${apps.filter((a: { status: string }) => a.status === 'confirmed').length})`} />
         <Tab label={`Rejected (${apps.filter((a: { status: string }) => a.status === 'rejected').length})`} />
       </Tabs>
-      {filteredApplications.length > 0 ? (
-        filteredApplications.map((req: { requestId: string; status: string; user: { firstName: string; lastName: string; mobileNumber: string }; roleId: string }) => (
+      {isLoading ? <GroupSkeleton rowsNum={3} /> : filteredApplications.length > 0 ? (
+        filteredApplications.map((req: { requestId: string; status: string; user: { userId: string; firstName: string; lastName: string; mobileNumber: string; rating?: number }; roleId: string }) => (
           <ListItem
             key={req.requestId}
             sx={{
@@ -117,7 +121,13 @@ export function ApplicationManagementModal({
               </Box>
               <ListItemText
                 primary={
-                  <Typography variant="subtitle1" fontWeight={700} component="span">
+                  <Typography
+                    variant="subtitle1"
+                    fontWeight={700}
+                    component="span"
+                    onClick={() => router.push(`/users/${req.user?.userId}/view`)}
+                    sx={{ cursor: 'pointer', '&:hover': { color: 'primary.main', textDecoration: 'underline' } }}
+                  >
                     {`${req.user?.firstName || "-"} ${req.user?.lastName || ""}`}
                   </Typography>
                 }
@@ -126,9 +136,17 @@ export function ApplicationManagementModal({
                     <Typography component="span" color="primary" sx={{ display: 'block', fontSize: 13, fontWeight: 600, mb: 0.5 }}>
                       {roles.find((r: { roleId: string; name: string }) => String(r.roleId) === String(req.roleId))?.name?.replace(/_/g, " ")?.toUpperCase() || "No Role"}
                     </Typography>
-                    <Typography component="span" sx={{ fontSize: 13, display: 'block' }} color="text.secondary">
-                      Contact: {req.user?.mobileNumber || "N/A"}
-                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Star sx={{ color: '#faaf00', fontSize: '1rem', mr: 0.5 }} />
+                        <Typography variant="caption" fontWeight={700} color="text.primary">
+                          {req.user?.rating?.toFixed(1) || "0.0"}
+                        </Typography>
+                      </Box>
+                      <Typography component="span" sx={{ fontSize: 13 }} color="text.secondary">
+                        • Contact: {req.user?.mobileNumber || "N/A"}
+                      </Typography>
+                    </Box>
                   </React.Fragment>
                 }
               />
@@ -171,7 +189,7 @@ export function ApplicationManagementModal({
           </ListItem>
         ))
       ) : (
-        <Box sx={{ py: 8, textAlign: 'center' }}>
+        <Box sx={{ py: 5, textAlign: 'center' }}>
           <Typography color="text.secondary">No applications found in this category.</Typography>
         </Box>
       )}

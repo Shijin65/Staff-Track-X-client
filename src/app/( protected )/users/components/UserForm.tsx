@@ -40,7 +40,7 @@ import {
   AssignmentInd,
   BadgeOutlined,
 } from "@mui/icons-material";
-import { KERALA_DISTRICTS } from "@/lib/utils/constance";
+import { KERALA_DISTRICTS, API_URL } from "@/lib/utils/constance";
 import { useToast } from "@/lib/store/useToastStore";
 import { useAxios } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
@@ -179,24 +179,11 @@ export const UserForm: React.FC<UserFormProps> = ({
   const router = useRouter();
   const [imageId, setImageId] = useState<string | null>(null);
 
-  const fetcher = (resource: string) =>
-    api.get(resource, { responseType: "blob" }).then((res) => res.data);
-
-  const shouldFetch = imageId ? `/api/users/attachment/${imageId}` : null;
-
-  const { data: imageBlob } = useSWR(shouldFetch, fetcher, {
-    revalidateIfStale: true,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-  });
-
   useEffect(() => {
-    if (imageBlob) {
-      const url = URL.createObjectURL(imageBlob);
-      setProfilePreview(url);
-      return () => URL.revokeObjectURL(url);
+    if (imageId) {
+      setProfilePreview(`${API_URL}/api/users/attachment/${imageId}`);
     }
-  }, [imageBlob]);
+  }, [imageId]);
 
 
   const { data: rolesData, isLoading: rolesLoading } = useSWR("/api/meta/roles");
