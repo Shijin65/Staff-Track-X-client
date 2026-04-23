@@ -203,7 +203,8 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
     try {
       await request;
       setToast({ message: `Event ${isEdit ? "updated" : "created"} successfully.`, type: "success", open: true });
-      router.push("/events");
+      const redirectRoute = isEdit ? `/events/${eId}/view` : "/events";
+      router.push(redirectRoute);
     } catch (err: unknown) {
       const message = handleAxiosError(err, "Failed to create event");
       setToast({ message, type: "error", open: true });

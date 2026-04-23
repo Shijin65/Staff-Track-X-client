@@ -31,8 +31,6 @@ const LoginUser: React.FC = () => {
   const { loading, setLoading } = useLoader();
   const { login } = useAuthContext();
   const [showForm, setShowForm] = React.useState(false);
-  const [forgotEmail, setForgotEmail] = React.useState("");
-  const [forgotSubmitted, setForgotSubmitted] = React.useState(false);
   const { setToast } = useToast();
 
   const [view, setView] = React.useState<'login' | 'forgot-password' | 'verify-otp'>('login');
@@ -87,24 +85,6 @@ const LoginUser: React.FC = () => {
     }
   };
 
-  const handleForgotSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await axiosBase.post("/api/auth/forgot-password", { email: forgotEmail });
-      setForgotSubmitted(true);
-      setToast({ message: "Request processed successfully.", type: "success", open: true });
-    } catch (error: unknown) {
-      const message = handleAxiosError(error, "Failed to process request");
-        setToast({ 
-          message: message, 
-          type: "error", 
-          open: true 
-        });
-    } finally {
-      setLoading(false);
-    }
-  };
 
 
   const LoginForm = (
@@ -256,111 +236,6 @@ const LoginUser: React.FC = () => {
     </>
   );
 
-  const ForgotForm = (
-    <Box sx={{ minHeight: { xs: "auto", md: 350 }, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-      {forgotSubmitted ? (
-        <Box sx={{ textAlign: "center", py: 4 }}>
-          <Box
-            sx={{
-              display: "inline-flex",
-              p: 2,
-              borderRadius: "50%",
-              bgcolor: "rgba(34, 197, 94, 0.1)",
-              color: "success.main",
-              mb: 3,
-            }}
-          >
-            <EmailOutlined sx={{ fontSize: 40 }} />
-          </Box>
-          <Typography variant="h5" fontWeight={800} gutterBottom>
-            Email Sent!
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 4, px: 2 }}>
-            Your temporary password has been successfully sent to your registered email address. Please check your inbox for further instructions.
-          </Typography>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              setView("login");
-              setForgotSubmitted(false);
-            }}
-            sx={{ borderRadius: "12px", fontWeight: 700, px: 4 }}
-          >
-            Back to Login
-          </Button>
-        </Box>
-      ) : (
-        <>
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h4" fontWeight={800} color="primary" sx={{ mb: 1 }}>
-              Recover
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Enter email address to receive a temporary password
-            </Typography>
-          </Box>
-
-          <form onSubmit={handleForgotSubmit}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-              <Box>
-                <Typography variant="body2" fontWeight={600} sx={{ mb: 1, ml: 0.5 }}>
-                  Email
-                </Typography>
-                <TextField
-                  fullWidth
-                  required
-                  value={forgotEmail}
-                  onChange={(e) => setForgotEmail(e.target.value)}
-                  placeholder="name@company.com"
-                  type="email"
-                  variant="outlined"
-                  size="small"
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: "12px",
-                      bgcolor: "rgba(0,0,0,0.02)",
-                    },
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <EmailOutlined sx={{ fontSize: 20, color: "text.secondary" }} />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Box>
-
-              <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                size="small"
-                disabled={loading || !forgotEmail}
-                sx={{
-                  py: 1,
-                  borderRadius: "12px",
-                  fontWeight: 700,
-                  fontSize: "1rem",
-                  boxShadow: "var(--primary-shadow)",
-                  textTransform: "none",
-                }}
-              >
-                {loading ? "Sending..." : "Reset Password"}
-              </Button>
-
-              <Button
-                onClick={() => setView("login")}
-                sx={{ fontWeight: 700, color: "text.secondary", textTransform: "none" }}
-              >
-                Cancel
-              </Button>
-            </Box>
-          </form>
-        </>
-      )}
-    </Box>
-  );
 
   const FormContent = (
     <Box
@@ -382,7 +257,7 @@ const LoginUser: React.FC = () => {
         scrollbarWidth: 'none',
       }}
     >
-      {view === "login" ? LoginForm : ForgotForm}
+      {LoginForm}
 
     </Box>
   );

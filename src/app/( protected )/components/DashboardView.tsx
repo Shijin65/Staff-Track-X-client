@@ -11,11 +11,10 @@ import {
   LocationOn as LocationIcon,
   Today as TodayIcon,
   WorkOutline as WorkOutlineIcon,
-  Close,
   AccessTime,
-  InfoOutlined,
-  Business,
 } from "@mui/icons-material";
+import { EventDetailContent } from "./EventDetailContent";
+import { CustomDialog } from "@/components/ui/custom-dialog";
 import { useAuthContext } from "@/context/auth-provider";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
@@ -38,9 +37,9 @@ import {
 import { SearchInput } from "@/components/ui/search";
 import { useAxios } from "@/lib/hooks";
 import { useToast } from "@/lib/store/useToastStore";
-import { 
-  DialogActions, 
-  CircularProgress 
+import {
+  DialogActions,
+  CircularProgress
 } from "@mui/material";
 import { handleAxiosError } from "@/lib/utils/axiosError";
 
@@ -73,120 +72,18 @@ const SummaryCard = ({ title, value, icon, color }: { title: string; value: numb
   );
 };
 
+
 // --- Event Detail Modal ---
 
-const EventDetailModal = ({ open, onClose, event, roles, onApply, isAdmin, hasApplied }: { 
-  open: boolean; 
-  onClose: () => void; 
-  event: any; 
-  roles: any[]; 
+interface EventDetailModalProps {
+  open: boolean;
+  onClose: () => void;
+  event: any;
+  roles: any[];
   onApply: (event: any) => void;
   isAdmin: boolean;
   hasApplied: boolean;
-}) => {
-  if (!event) return null;
-
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth sx={{ '& .MuiDialog-paper': { borderRadius: 3 } }}>
-      <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography fontWeight={800}>{event.title}</Typography>
-        <IconButton onClick={onClose} size="small"><Close /></IconButton>
-      </DialogTitle>
-      <DialogContent dividers sx={{ p: 4 }}>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 7 }}>
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>Event Details</Typography>
-              <List disablePadding>
-                <ListItem sx={{ px: 0, py: 0.5 }}>
-                  <ListItemIcon sx={{ minWidth: 32 }}><TodayIcon fontSize="small" /></ListItemIcon>
-                  <ListItemText primary="Date" secondary={event.eventDate} />
-                </ListItem>
-                <ListItem sx={{ px: 0, py: 0.5 }}>
-                  <ListItemIcon sx={{ minWidth: 32 }}><AccessTime fontSize="small" /></ListItemIcon>
-                  <ListItemText primary="Time" secondary={`${event.startTime} (Reporting: ${event.reportingTime})`} />
-                </ListItem>
-                <ListItem sx={{ px: 0, py: 0.5 }}>
-                  <ListItemIcon sx={{ minWidth: 32 }}><Business fontSize="small" /></ListItemIcon>
-                  <ListItemText primary="Venue" secondary={event.eventVenue} />
-                </ListItem>
-                <ListItem sx={{ px: 0, py: 0.5 }}>
-                  <ListItemIcon sx={{ minWidth: 32 }}><LocationIcon fontSize="small" /></ListItemIcon>
-                  <ListItemText primary="Address" secondary={`${event.address}, ${event.city}, ${event.district}`} />
-                </ListItem>
-              </List>
-            </Box>
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>Description</Typography>
-              <Typography variant="body2">{event.description || "No description provided."}</Typography>
-            </Box>
-
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>Staff Requirements</Typography>
-              <div className="flex flex-wrap gap-2">
-                {event.staffRequirements?.map((req: any) => {
-                  const role = roles.find(r => r.roleId === req.roleId);
-                  return (
-                    <Chip
-                      key={req.roleId}
-                      label={`${role?.name || req.roleId}: ${req.count}`}
-                      variant="outlined"
-                      size="small"
-                    />
-                  );
-                })}
-              </div>
-            </Box>
-          </Grid>
-          <Grid size={{ xs: 12, md: 5 }}>
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>Location</Typography>
-              <Box sx={{ p: 2, bgcolor: "grey.50", borderRadius: 2, border: "1px solid", borderColor: "divider" }}>
-                <Typography variant="body2" fontWeight={600}>{event.address}</Typography>
-                <Typography variant="caption" color="text.secondary">{event.city}, {event.district}</Typography>
-              </Box>
-            </Box>
-            {event.locationInstructions && (
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle2" color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }} gutterBottom>
-                  <InfoOutlined fontSize="inherit" /> Instructions
-                </Typography>
-                <Typography variant="body2" fontStyle="italic">{event.locationInstructions}</Typography>
-              </Box>
-            )}
-          </Grid>
-        </Grid>
-      </DialogContent>
-      {!isAdmin && !hasApplied && (
-        <DialogActions sx={{ p: 3, borderTop: '1px solid', borderColor: 'divider' }}>
-          <Button 
-            onClick={onClose} 
-            sx={{ fontWeight: 600, textTransform: 'none', color: 'text.secondary' }}
-          >
-            Close
-          </Button>
-          <Button 
-            variant="contained" 
-            onClick={() => {
-              onClose();
-              onApply(event);
-            }}
-            sx={{ 
-              borderRadius: 2.5, 
-              fontWeight: 700, 
-              textTransform: 'none',
-              px: 4,
-              boxShadow: '0 4px 14px rgba(var(--primary-rgb), 0.4)'
-            }}
-          >
-            Apply for Event
-          </Button>
-        </DialogActions>
-      )}
-    </Dialog>
-  );
-};
+}
 
 // --- Main Page Component ---
 
@@ -215,24 +112,23 @@ export function DashboardView() {
   }, [searchQuery]);
 
   const { data: eventsData, isLoading: eventsLoading } = useSWR(`/api/events?isUpcoming=true&SearchQuery=${debouncedQuery}`);
-  const { data: rolesData, isLoading: rolesLoading } = useSWR("/api/meta/roles");
+  const { data: summaryData } = useSWR("/api/dashboard/summary");
 
   const events = eventsData?.payload || [];
-  const roles = rolesData?.payload?.roles || [];
+  const dashboardStats = summaryData?.payload || {};
 
-
-
-  const isAdmin = userRole?.name === "super_admin" || userRole?.name === "admin";
+  const isAdmin = userRole?.name === "super_admin" || userRole?.name === "supervisor";
+  const canViewUsers = (auth as any).user?.availableAccess?.ViewUser;
 
   const summary = isAdmin ? {
-    totalEvents: events.length,
-    activeEvents: events.filter((e: any) => e.status === "Confirmed").length,
-    totalStaff: 0,
-    pendingApps: 0,
+    totalEvents: dashboardStats.totalEvents || 0,
+    activeEvents: dashboardStats.activeEvents || 0,
+    totalStaff: dashboardStats.totalStaff || 0,
+    pendingApps: dashboardStats.pendingApps || 0,
   } : {
-    applied: events.filter((e: any) => e.eventRequests?.some((r: any) => r.userId === user?.userId)).length,
-    approved: events.filter((e: any) => e.eventRequests?.some((r: any) => r.userId === user?.userId && r.status === "Approved")).length,
-    upcoming: events.length,
+    applied: dashboardStats.applied || 0,
+    approved: dashboardStats.approved || 0,
+    upcoming: dashboardStats.upcoming || 0,
   };
 
   const handleEventClick = (event: any) => {
@@ -248,7 +144,6 @@ export function DashboardView() {
 
   const handleApplyClick = (event: any) => {
     setApplyingEvent(event);
-    // Use user's pre-assigned role
     const userRoleId = userRole?.roleId;
     setSelectedRoleId(userRoleId || "");
     setIsApplyDialogOpen(true);
@@ -296,7 +191,9 @@ export function DashboardView() {
             <>
               <SummaryCard title="Total Events" value={summary.totalEvents} icon={<EventIcon fontSize="inherit" />} color="text-indigo-500" />
               <SummaryCard title="Active Events" value={summary.activeEvents} icon={<ScheduleIcon fontSize="inherit" />} color="text-blue-500" />
-              <SummaryCard title="Total Staff" value={summary.totalStaff} icon={<PeopleIcon fontSize="inherit" />} color="text-emerald-500" />
+              {canViewUsers && (
+                <SummaryCard title="Total Staff" value={summary.totalStaff} icon={<PeopleIcon fontSize="inherit" />} color="text-emerald-500" />
+              )}
               <SummaryCard title="Pending Apps" value={summary.pendingApps} icon={<WorkOutlineIcon fontSize="inherit" />} color="text-amber-500" />
             </>
           ) : (
@@ -423,43 +320,70 @@ export function DashboardView() {
           </div>
         </div>
       </div>
-
-      <EventDetailModal
+      <CustomDialog
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        event={selectedEvent}
-        roles={roles}
-        onApply={handleApplyClick}
-        isAdmin={isAdmin}
-        hasApplied={selectedEvent?.eventRequests?.some((r: any) => r.userId === user?.userId)}
-      />
+        title={selectedEvent?.title}
+        maxWidth="md"
+        actions={
+          !isAdmin && !selectedEvent?.eventRequests?.some((r: any) => r.userId === user?.userId) ? (
+            <>
+              <Button
+                onClick={() => setIsModalOpen(false)}
+                sx={{ fontWeight: 600, textTransform: "none", color: "text.secondary" }}
+              >
+                Close
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setIsModalOpen(false);
+                  handleApplyClick(event);
+                }}
+                sx={{
+                  borderRadius: 2.5,
+                  fontWeight: 700,
+                  textTransform: "none",
+                  px: 4,
+                  boxShadow: "0 4px 14px rgba(var(--primary-rgb), 0.4)",
+                }}
+              >
+                Apply for Event
+              </Button>
+            </>
+          ) : null
+        }
+      >
+        <EventDetailContent event={selectedEvent} />
+      </CustomDialog>
 
-      <Dialog 
-        open={isApplyDialogOpen} 
+
+      <Dialog
+        open={isApplyDialogOpen}
         onClose={() => !isSubmitting && setIsApplyDialogOpen(false)}
         maxWidth="xs"
         fullWidth
-        sx={{ 
-          '& .MuiDialog-paper': { 
-            borderRadius: 4, 
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: 4,
             p: 1,
             overflow: 'hidden',
             boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
-          } 
+          }
         }}
       >
-        <DialogTitle sx={{ 
-          pb: 1, 
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'center', 
+        <DialogTitle sx={{
+          pb: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
           gap: 2,
           pt: 3
         }}>
-          <Box sx={{ 
-            p: 1.5, 
-            borderRadius: '50%', 
-            bgcolor: 'primary.main', 
+          <Box sx={{
+            p: 1.5,
+            borderRadius: '50%',
+            bgcolor: 'primary.main',
             color: 'white',
             boxShadow: '0 4px 12px rgba(var(--primary-rgb), 0.3)',
             display: 'flex'
@@ -475,9 +399,9 @@ export function DashboardView() {
             Review the event details before submitting your application.
           </Typography>
 
-          <Box sx={{ 
-            p: 2.5, 
-            borderRadius: 3, 
+          <Box sx={{
+            p: 2.5,
+            borderRadius: 3,
             background: 'linear-gradient(135deg, rgba(var(--primary-rgb), 0.08) 0%, rgba(var(--primary-rgb), 0.02) 100%)',
             border: '1px solid rgba(var(--primary-rgb), 0.1)',
             mb: 3
@@ -488,7 +412,7 @@ export function DashboardView() {
             <Typography variant="h6" fontWeight={800} sx={{ mt: 0.5, mb: 1, lineHeight: 1.2 }}>
               {applyingEvent?.title}
             </Typography>
-            
+
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
                 <TodayIcon sx={{ fontSize: 16 }} />
@@ -510,27 +434,27 @@ export function DashboardView() {
           </Typography>
         </DialogContent>
         <DialogActions sx={{ p: 3, pt: 1, gap: 1.5 }}>
-          <Button 
+          <Button
             fullWidth
-            onClick={() => setIsApplyDialogOpen(false)} 
+            onClick={() => setIsApplyDialogOpen(false)}
             disabled={isSubmitting}
-            sx={{ 
-              fontWeight: 700, 
-              textTransform: 'none', 
+            sx={{
+              fontWeight: 700,
+              textTransform: 'none',
               color: 'text.secondary',
               py: 1.2
             }}
           >
             Cancel
           </Button>
-          <Button 
+          <Button
             fullWidth
-            variant="contained" 
+            variant="contained"
             onClick={handleConfirmApply}
             disabled={isSubmitting || !selectedRoleId}
-            sx={{ 
-              borderRadius: 2.5, 
-              fontWeight: 700, 
+            sx={{
+              borderRadius: 2.5,
+              fontWeight: 700,
               textTransform: 'none',
               boxShadow: '0 4px 14px rgba(var(--primary-rgb), 0.4)',
               py: 1.2,

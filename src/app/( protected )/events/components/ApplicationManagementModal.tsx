@@ -105,8 +105,13 @@ export function ApplicationManagementModal({
         <Tab label={`Rejected (${apps.filter((a: { status: string }) => a.status === 'rejected').length})`} />
       </Tabs>
       {isLoading ? <GroupSkeleton rowsNum={3} /> : filteredApplications.length > 0 ? (
-        filteredApplications.map((req: { requestId: string; status: string; user: { userId: string; firstName: string; lastName: string; mobileNumber: string; rating?: number }; roleId: string }) => (
-          <ListItem
+        filteredApplications.map((req: { requestId: string; status: string; user: { userId: string; firstName: string; lastName: string; mobileNumber: string; rating?: number }; roleId: string }) => {
+          const role = roles.find(
+            (r: { roleId: string; name: string }) =>
+              String(r.roleId) === String(req.roleId)
+          );
+          console.log(req.roleId)
+          return <ListItem
             key={req.requestId}
             sx={{
               px: 1,
@@ -122,7 +127,6 @@ export function ApplicationManagementModal({
               <ListItemText
                 primary={
                   <Typography
-                    variant="subtitle1"
                     fontWeight={700}
                     component="span"
                     onClick={() => router.push(`/users/${req.user?.userId}/view`)}
@@ -149,6 +153,7 @@ export function ApplicationManagementModal({
                     </Box>
                   </React.Fragment>
                 }
+                secondaryTypographyProps={{ component: 'div' }}
               />
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Chip
@@ -187,8 +192,8 @@ export function ApplicationManagementModal({
               </Box>
             </Box>
           </ListItem>
-        ))
-      ) : (
+
+        })) : (
         <Box sx={{ py: 5, textAlign: 'center' }}>
           <Typography color="text.secondary">No applications found in this category.</Typography>
         </Box>
