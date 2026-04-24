@@ -10,6 +10,7 @@ import {
   ListItemIcon,
   ListItemText,
   Chip,
+  Stack,
 } from "@mui/material";
 import {
   Today as TodayIcon,
@@ -17,17 +18,77 @@ import {
   Business,
   LocationOn as LocationIcon,
   InfoOutlined,
+  EventAvailable,
 } from "@mui/icons-material";
 
+export interface Event {
+  eventId: string;
+  title: string;
+  eventDate: string;
+  startTime: string;
+  reportingTime: string;
+  eventVenue: string;
+  address: string;
+  city: string;
+  district: string;
+  description?: string;
+  locationInstructions?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  eventRequests?: any[];
+}
+
 interface EventDetailContentProps {
-  event: any;
+  event: Event | null;
 }
 
 export const EventDetailContent = ({ event }: EventDetailContentProps) => {
   if (!event) return null;
 
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} sx={{ p: 2 }}>
+      {/* Event Banner */}
+      <Grid size={{ xs: 12, md: 12 }}>
+        <Box
+          sx={{
+            borderBottom: "1px solid",
+            borderColor: "divider",
+            position: "relative",
+          }}
+        >
+          <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 1 }}>
+            <Box
+              sx={{
+                p: 1,
+                borderRadius: 2,
+                bgcolor: "primary.main",
+                color: "white",
+                display: "flex",
+                boxShadow: `0 4px 12px rgba(var(--primary-rgb), 0.3)`,
+              }}
+            >
+              <EventAvailable fontSize="small" />
+            </Box>
+            <Chip
+              label="Upcoming Event"
+              size="small"
+              color="primary"
+              sx={{ fontWeight: 600, borderRadius: 1.5 }}
+            />
+          </Stack>
+          <Typography
+            variant="h4"
+            fontWeight={800}
+            sx={{
+              color: "text.primary",
+              letterSpacing: "-0.02em",
+              lineHeight: 1.2,
+              mb: 2,
+            }}
+          >
+            {event.title}
+          </Typography>
+        </Box>
+      </Grid>
       <Grid size={{ xs: 12, md: 7 }}>
         <Box sx={{ mb: 3 }}>
           <Typography variant="subtitle2" color="text.secondary" gutterBottom>

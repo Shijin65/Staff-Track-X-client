@@ -7,7 +7,7 @@ import {
   PersonOutlined,
 } from "@mui/icons-material";
 
-export const API_URL = "http://172.20.10.7:5000";
+export const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const navItems = [
   { label: "Overview", icon: <DashboardOutlined />, path: "/" },

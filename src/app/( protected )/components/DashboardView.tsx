@@ -7,11 +7,11 @@ import {
   People as PeopleIcon,
   CheckCircle as CheckCircleIcon,
   Schedule as ScheduleIcon,
-  WarningAmber as WarningIcon,
   LocationOn as LocationIcon,
   Today as TodayIcon,
   WorkOutline as WorkOutlineIcon,
   AccessTime,
+  Star as StarIcon,
 } from "@mui/icons-material";
 import { EventDetailContent } from "./EventDetailContent";
 import { CustomDialog } from "@/components/ui/custom-dialog";
@@ -23,16 +23,11 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  IconButton,
   Typography,
-  Grid,
   Chip,
   Button,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Skeleton,
+  Stack,
 } from "@mui/material";
 import { SearchInput } from "@/components/ui/search";
 import { useAxios } from "@/lib/hooks";
@@ -43,20 +38,6 @@ import {
 } from "@mui/material";
 import { handleAxiosError } from "@/lib/utils/axiosError";
 
-// --- Reusable Components ---
-
-const StatusBadge = ({ status }: { status: string }) => {
-  let colorClass = "bg-gray-100 text-gray-800";
-  if (status === "Approved") colorClass = "bg-green-100 text-green-700";
-  if (status === "Pending") colorClass = "bg-yellow-100 text-yellow-700";
-  if (status === "Rejected") colorClass = "bg-red-100 text-red-700";
-
-  return (
-    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${colorClass}`}>
-      {status}
-    </span>
-  );
-};
 
 const SummaryCard = ({ title, value, icon, color }: { title: string; value: number | string | undefined; icon: React.ReactNode; color: string }) => {
   return (
@@ -73,17 +54,61 @@ const SummaryCard = ({ title, value, icon, color }: { title: string; value: numb
 };
 
 
-// --- Event Detail Modal ---
+const MajorEventCard = ({ event, onClick }: { event: any; onClick: () => void }) => {
+  const totalRequired = event.staffRequirements?.reduce((sum: number, req: any) => sum + req.count, 0) || 0;
+  return (
+    <Box
+      onClick={onClick}
+      sx={{
+        bgcolor: 'white',
+        borderRadius: 3,
+        p: 2,
+        border: '1px solid',
+        borderColor: 'divider',
+        minWidth: 220,
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        '&:hover': {
+          borderColor: 'primary.main',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+          transform: 'translateY(-2px)'
+        }
+      }}
+    >
+      {/* <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+        <Typography variant="caption" fontWeight={800} color="primary" sx={{ letterSpacing: 0.5, textTransform: 'uppercase' }}>
+          Major Event
+        </Typography>
+        <Chip 
+          label={`${totalRequired} Staff`} 
+          size="small" 
+          sx={{ 
+            height: 18, 
+            fontSize: '0.6rem', 
+            fontWeight: 800, 
+            bgcolor: 'rgba(239, 68, 68, 0.1)', 
+            color: 'rgb(239, 68, 68)',
+            border: 'none'
+          }} 
+        />
+      </Stack> */}
+      <Typography variant="body2" fontWeight={800} noWrap sx={{ mb: 1 }}>
+        {event.title}
+      </Typography>
+      <Stack direction="row" spacing={1.5} alignItems="center">
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
+          <TodayIcon sx={{ fontSize: 12 }} />
+          <Typography variant="caption" fontWeight={600}>{event.eventDate}</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
+          <LocationIcon sx={{ fontSize: 12 }} />
+          <Typography variant="caption" fontWeight={600} noWrap sx={{ maxWidth: 80 }}>{event.city}</Typography>
+        </Box>
+      </Stack>
+    </Box>
+  );
+};
 
-interface EventDetailModalProps {
-  open: boolean;
-  onClose: () => void;
-  event: any;
-  roles: any[];
-  onApply: (event: any) => void;
-  isAdmin: boolean;
-  hasApplied: boolean;
-}
 
 // --- Main Page Component ---
 
@@ -111,14 +136,16 @@ export function DashboardView() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  const isAdmin = userRole?.name === "super_admin" || userRole?.name === "supervisor";
+  const canViewUsers = (auth as any).user?.availableAccess?.ViewUser;
+
   const { data: eventsData, isLoading: eventsLoading } = useSWR(`/api/events?isUpcoming=true&SearchQuery=${debouncedQuery}`);
   const { data: summaryData } = useSWR("/api/dashboard/summary");
+  const { data: highDemandData, mutate: mutateMajor } = useSWR(!isAdmin ? "/api/events/high-demand" : null);
 
   const events = eventsData?.payload || [];
   const dashboardStats = summaryData?.payload || {};
-
-  const isAdmin = userRole?.name === "super_admin" || userRole?.name === "supervisor";
-  const canViewUsers = (auth as any).user?.availableAccess?.ViewUser;
+  const majorEvents = highDemandData?.payload || [];
 
   const summary = isAdmin ? {
     totalEvents: dashboardStats.totalEvents || 0,
@@ -161,11 +188,12 @@ export function DashboardView() {
         roleId: selectedRoleId,
       });
 
-      if (response.status === 200 || response.status === 201) {
-        setToast({ message: "Application submitted successfully!", type: "success", open: true });
-        setIsApplyDialogOpen(false);
-        mutate(); // Refresh the events list
-      }
+        if (response.status === 200 || response.status === 201) {
+          setToast({ message: "Application submitted successfully!", type: "success", open: true });
+          setIsApplyDialogOpen(false);
+          mutate(); // Refresh the events list
+          mutateMajor(); // Refresh high demand events
+        }
     } catch (err: unknown) {
       handleAxiosError(err, "Failed to submit application");
     } finally {
@@ -204,6 +232,19 @@ export function DashboardView() {
             </>
           )}
         </div>
+
+        {!isAdmin && majorEvents.length > 0 && (
+          <Box sx={{ mt: 1, mb: 1 }}>
+            <Typography variant="subtitle2" fontWeight={900} sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1, color: 'text.primary' }}>
+              <StarIcon sx={{ fontSize: 18, color: '#f59e0b' }} /> High-Demand Events
+            </Typography>
+            <div className="flex gap-4 overflow-x-auto py-4 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
+              {majorEvents.map((event: any) => (
+                <MajorEventCard key={event.eventId} event={event} onClick={() => handleEventClick(event)} />
+              ))}
+            </div>
+          </Box>
+        )}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
           {/* Main Events List */}
           <div className="xl:col-span-2 flex flex-col gap-6">
@@ -323,7 +364,6 @@ export function DashboardView() {
       <CustomDialog
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={selectedEvent?.title}
         maxWidth="md"
         actions={
           !isAdmin && !selectedEvent?.eventRequests?.some((r: any) => r.userId === user?.userId) ? (

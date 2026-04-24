@@ -15,7 +15,7 @@ import { Close as CloseIcon } from "@mui/icons-material";
 interface CustomDialogProps {
   open: boolean;
   onClose: () => void;
-  title: string;
+  title?: string;
   children: React.ReactNode;
   actions?: React.ReactNode;
   maxWidth?: "xs" | "sm" | "md" | "lg" | "xl";

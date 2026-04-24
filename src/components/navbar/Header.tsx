@@ -164,31 +164,3 @@ const Header = () => {
 
 export default Header;
 
-{/* <MenuItem sx={{ py: 1.2, px: 2 }}>
-              <ListItemIcon><BrightnessMediumOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
-              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Theme</Typography>
-              <ChevronRight fontSize="small" sx={{ color: "text.secondary" }} />
-            </MenuItem> 
-             <MenuItem sx={{ py: 1.2, px: 2 }}>
-              <ListItemIcon><GridViewOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
-              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500, display: "flex", alignItems: "center", gap: 1 }}>
-                Advanced tools
-                <Box component="span" sx={{ bgcolor: "rgba(0,0,0,0.06)", color: "text.primary", px: 0.8, py: 0.2, borderRadius: "6px", fontSize: "0.65rem", fontWeight: 700 }}>
-                  Beta
-                </Box>
-              </Typography>
-              <ChevronRight fontSize="small" sx={{ color: "text.secondary" }} />
-            </MenuItem> 
-            <MenuItem sx={{ py: 1.2, px: 2 }}>
-              <ListItemIcon><WorkOutline fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
-              <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Plans and pricing</Typography>
-            </MenuItem>
-            
-            Apps Section
-  < Box sx = {{ py: 1 }}>
-    <MenuItem sx={{ py: 1.2, px: 2 }}>
-      <ListItemIcon><MonitorOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
-      <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Get the Canva Apps</Typography>
-    </MenuItem>
-          </Box >
-  <Divider /> */}

@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
   Paper,
   BottomNavigation,
@@ -14,7 +13,7 @@ import { useAuthUser } from "@/lib/hooks";
 export const BottomNav = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const {user}=useAuthUser()
+  const { user } = useAuthUser()
   const availableAccess = user?.availableAccess || {};
   const roleName = user?.user?.role?.name;
   const hasPermission = (path: string) => {
@@ -28,8 +27,11 @@ export const BottomNav = () => {
 
   const filteredItems = navItems.filter((item) => hasPermission(item.path));
 
-  // Determine active value
-  const activeIndex = filteredItems.findIndex(item => item.path === pathname);
+  const activeIndex = filteredItems.findIndex(item =>
+    item.path === "/"
+      ? pathname === "/"
+      : pathname.startsWith(item.path)
+  ); 
   const value = activeIndex === -1 ? 0 : activeIndex;
 
   return (
@@ -62,7 +64,10 @@ export const BottomNav = () => {
         }}
       >
         {filteredItems.map((item, index) => {
-          const isSelected = pathname === item.path;
+          const isSelected =
+            item.path === "/"
+              ? pathname === "/"
+              : pathname.startsWith(item.path);
 
           return (
             <BottomNavigationAction

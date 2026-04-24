@@ -53,8 +53,8 @@ export const CustomModal = ({
             size === "medium"
               ? "w-[95%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%]"
               : size === "small"
-              ? "w-[95%] sm:w-[60%] md:w-[45%] lg:w-[35%] xl:w-[25%]"
-              : "w-[95%] sm:w-[90%] md:w-[80%]"
+                ? "w-[95%] sm:w-[60%] md:w-[45%] lg:w-[35%] xl:w-[25%]"
+                : "w-[95%] sm:w-[90%] md:w-[80%]"
           }
         >
           <div className="bg-white p-4 rounded-2xl pb-5 2xl:py-5 2xl:pb-6">
