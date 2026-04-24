@@ -25,25 +25,33 @@ const commonOverrides = {
 };
 
 export const lightTheme = createTheme({
+  cssVariables: true,
   ...commonOverrides,
-  palette: {
-    mode: "light",
-    primary: {
-      main: "#2563EB",
-      light: "#60A5FA",
-      dark: "#1E40AF",
-      contrastText: "#ffffff",
-    },
-    secondary: {
-      main: "#60A5FA",
-    },
-    background: {
-      default: "#F8FAFC",
-      paper: "#FFFFFF",
-    },
-    text: {
-      primary: "#0F172A",
-      secondary: "#64748B",
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: {
+          main: "var(--primary)",
+          light: "var(--primary-light)",
+          dark: "var(--primary-dark)",
+          contrastText: "var(--primary-contrast)",
+        },
+        secondary: {
+          main: "var(--secondary)",
+          light: "var(--secondary-light)",
+          dark: "var(--secondary-dark)",
+          contrastText: "var(--secondary-contrast)",
+        },
+        background: {
+          default: "var(--background)",
+          paper: "var(--background-paper)",
+        },
+        text: {
+          primary: "var(--text-primary)",
+          secondary: "var(--text-secondary)",
+          disabled: "var(--text-disabled)",
+        },
+      },
     },
   },
 });

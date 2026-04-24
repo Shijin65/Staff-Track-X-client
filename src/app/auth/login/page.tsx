@@ -1,5 +1,5 @@
 'use client'
-import LoginUser from "@/components/auth/login";
+import LoginUser from "@/app/auth/components/login";
 
 export default function LoginPage() {
   return (

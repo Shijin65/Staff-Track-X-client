@@ -11,18 +11,22 @@ interface User {
     isActive: boolean;
     role: {
       roleId: string;
-      roleName: string;
+      name: string;
     };
   };
   availableAccess?: {
     CreateUser?: boolean;
-    CreateUserRole?: boolean;
     DeleteUser?: boolean;
-    DeleteUserRole?: boolean;
     UpdateUser?: boolean;
-    UpdateUserRole?: boolean;
     ViewUser?: boolean;
-    ViewUserRole?: boolean;
+    VerifyUser?: boolean;
+    ViewEvent?: boolean;
+    CreateEvent?: boolean;
+    DeleteEvent?: boolean;
+    UpdateEvent?: boolean;
+    MarkAttendance?: boolean;
+    ViewAttendance?: boolean;
+    ViewClientInfo?: boolean;
   };
 }
 

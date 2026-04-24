@@ -1,15 +1,44 @@
 @import "tailwindcss";
 
-.root {
-  background-color: #F8FAFC;
+:root {
+  --primary: #0055D4;
+  --primary-rgb: 0, 85, 212;
+  --primary-light: #3B82F6;
+  --primary-dark: #003EB3;
+  --primary-contrast: #ffffff;
+  --secondary: #7DD3FC;
+  --secondary-rgb: 125, 211, 252;
+  --secondary-light: #BAE6FD;
+  --secondary-dark: #0EA5E9;
+  --secondary-contrast: #000000;
+  --background: #f3f6fa;
+  --background-paper: #ffffff;
+  --paper: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-disabled: #94a3b8;
+  --primary-gradient: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  --primary-shadow: 0 8px 16px rgba(0, 85, 212, 0.25);
+  --green: 142 71% 45%;
+  --sky : 219 94% 57%;
+  --yellow: 43 100% 53%;
+  --red: 0 84% 60%;
 }
+
+.root, body {
+  background-color: var(--background);
+  color: var(--text-primary);
+  min-height: 100dvh;
+}
+
 /* globals.css */
-input:-webkit-autofill ~ label,
-input:-webkit-autofill:hover ~ label,
-input:-webkit-autofill:focus ~ label {
+input:-webkit-autofill~label,
+input:-webkit-autofill:hover~label,
+input:-webkit-autofill:focus~label {
   transform: translate(14px, -9px) scale(0.75) !important;
   color: rgba(0, 0, 0, 0.6) !important;
 }
+
 @keyframes spinSlow {
   to {
     transform: rotate(360deg);
@@ -30,8 +59,17 @@ input:-webkit-autofill:focus ~ label {
   animation: spinReverse 1s linear infinite;
 }
 
-* {
+/* * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+} */
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
 }

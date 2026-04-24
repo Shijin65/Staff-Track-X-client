@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { useUserStore } from "@/lib/store";
 import Cookies from "js-cookie";
 import { useAxios } from "@/lib/hooks/useAxios";
+import { useToast } from "@/lib/store/useToastStore";
+import { handleAxiosError } from "@/lib/utils/axiosError";
 
-  interface User {
+interface User {
   user: {
     userId: string;
     email: string;
@@ -16,18 +18,26 @@ import { useAxios } from "@/lib/hooks/useAxios";
     isActive: boolean;
     role: {
       roleId: string;
-      roleName: string;
+      name: string;
+    };
+    attachment?: {
+      picId: string;
+      fileName: string;
+      fileExtension: string;
     };
   };
   availableAccess?: {
     CreateUser?: boolean;
-    CreateUserRole?: boolean;
     DeleteUser?: boolean;
-    DeleteUserRole?: boolean;
     UpdateUser?: boolean;
-    UpdateUserRole?: boolean;
     ViewUser?: boolean;
-    ViewUserRole?: boolean;
+    VerifyUser?: boolean;
+    CreateEvent?: boolean;
+    DeleteEvent?: boolean;
+    UpdateEvent?: boolean;
+    ViewEvent?: boolean;
+    MarkAttendance?: boolean;
+    ViewAttendance?: boolean;
   };
 }
 
@@ -43,6 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const axiosBase = useAxios()
   const [loading, setLoading] = useState<boolean>(false);
+  const { setToast } = useToast();
 
   const user = useUserStore((state) => state.user);
   const setUserStore = useUserStore((state) => state.setUser);
@@ -63,9 +74,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUserStore(userData);
       setLoading(false)
       router.push("/");
-    } catch (error) {
-      console.log(error)
-      setLoading(false)
+    } catch (error: unknown) {
+
+      const message = handleAxiosError(error, "Failed to login");
+      setToast({ message: message, type: "error", open: true });
     }
   };
 
