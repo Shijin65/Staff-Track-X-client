@@ -18,6 +18,7 @@ import {
 import { useAuthContext } from "@/context/auth-provider";
 import { useLoader } from "@/lib/store";
 import { PasswordField } from "../../../components/ui/password-input";
+import GradientText from "@/components/ui/GradientText";
 import {
   EmailOutlined,
   LockOutlined,
@@ -75,11 +76,11 @@ const LoginUser: React.FC = () => {
       else if (view === 'verify-otp') handleVerifyOtp(form);
     } catch (error: unknown) {
       const message = handleAxiosError(error, "Invalid User Details.");
-        setToast({ 
-          message: message, 
-          type: "error", 
-          open: true 
-        });
+      setToast({
+        message: message,
+        type: "error",
+        open: true
+      });
     } finally {
       setLoading(false);
     }
@@ -279,25 +280,39 @@ const LoginUser: React.FC = () => {
         }}
       >
         <NextImage
-          src="/cfx_logo.png"
+          src="/ch_logo.svg"
           alt="Logo"
-          width={showForm ? 110 : 140}
-          height={showForm ? 32 : 40}
+          width={showForm ? 220 : 440}
+          height={showForm ? 80 : 200}
           priority
-          style={{ objectFit: "contain", transition: "all 0.3s" }}
+          style={{
+            objectFit: "contain",
+            transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+            filter: showForm
+              ? "drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.2))"
+              : "drop-shadow(0px 12px 24px rgba(0, 0, 0, 0.35))"
+          }}
         />
         <Typography
           variant="h6"
+          component="div"
           sx={{
-            color: "rgba(255, 255, 255, 0.8)",
-            fontWeight: 700,
-            fontSize: showForm ? "1rem" : "1.2rem",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            transition: "all 0.3s",
+            fontWeight: 900,
+            fontSize: showForm ? "1.2rem" : "1.6rem",
+            letterSpacing: "0.15em",
+            // textTransform: "uppercase",
+            transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+            mt: 1,
+            filter: showForm ? "drop-shadow(0 2px 4px rgba(255, 255, 255, 0.33))" : "drop-shadow(0 4px 8px rgba(255, 255, 255, 0.26))",
           }}
         >
-          Caters Hub
+          <GradientText
+            colors={["#4a93ffff", "#ffffff", "#3B82F6"]}
+            animationSpeed={4}
+            showBorder={false}
+          >
+            CatersHub
+          </GradientText>
         </Typography>
       </Box>
 

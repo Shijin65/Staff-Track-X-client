@@ -73,7 +73,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             width: "100%",
           }}
         >
-          <Image src="/next.svg" alt="Logo" width={180} height={80} style={{ marginBottom: 24 }} priority />
+          <Image src="/ch_logo.svg" alt="Logo" width={280} height={80} style={{ marginBottom: 24 }} priority />
           <Typography variant="h3" fontWeight={700} color="white" lineHeight={1.2}>
             Elevate Your Business
             <br />
