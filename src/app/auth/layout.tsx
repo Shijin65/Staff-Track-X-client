@@ -43,7 +43,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
         <Box sx={{ display: { xs: "none", md: "block" }, position: "absolute", inset: 0 }}>
           <Image
-            src="/management_background.svg"
+            src="/blue_modern_abstract_background.svg"
             alt="Desktop Background"
             fill
             priority
@@ -75,7 +75,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         >
           <Image src="/ch_logo.svg" alt="Logo" width={280} height={80} style={{ marginBottom: 24 }} priority />
           <Typography variant="h3" fontWeight={700} color="white" lineHeight={1.2}>
-            Elevate Your Business
+            Caters Hub
             <br />
             Management Experience
           </Typography>

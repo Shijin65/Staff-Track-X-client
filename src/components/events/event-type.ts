@@ -18,3 +18,13 @@ export interface EventPayload {
   longitude?: string;
   latitude?: string;
 }
+
+export type Order = "asc" | "desc";
+
+export interface EventRow {
+  id: string;
+  title: string;
+  eventDate: string;
+  eventVenue: string;
+  status: string;
+}

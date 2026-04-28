@@ -1,7 +1,6 @@
 "use client";
-
-import React, { use } from "react";
-import PasswordSetup from "@/app/auth/components/PasswordSetup";
+import { use } from "react";
+import PasswordSetup from "@/components/auth/PasswordSetup";
 
 export default function PasswordSetupPage({
   params

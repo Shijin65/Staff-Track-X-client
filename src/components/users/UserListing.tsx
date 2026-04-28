@@ -3,15 +3,8 @@
 import React, { useState } from "react";
 import {
   Box,
-  Typography,
-  Paper,
-  Toolbar,
-  Tooltip,
-  Button,
+  Paper
 } from "@mui/material";
-import {
-  Add as AddIcon,
-} from "@mui/icons-material";
 
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
@@ -26,8 +19,6 @@ import { GroupSkeleton, ErrorCard } from "@/components/ui";
 
 
 type Order = "asc" | "desc";
-
-
 
 type Column<T> = {
   id: keyof T;
@@ -50,7 +41,7 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
   limit = height === 0 ? limit : Math.floor((height - 380) / 43);
 
   const { data, error, isLoading, mutate } = useSWR(
-    `/api/users?Page=${page}&Limit=${limit}&Order=${order}&OrderBy=${orderBy}&Search=${encodeURIComponent(
+    `/api/users?Page=${page}&Limit=${limit}&Order=${order}&OrderBy=${orderBy}&SearchQuery=${encodeURIComponent(
       query
     )}`
   );
@@ -61,8 +52,6 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
 
   const router = useRouter();
   const { user } = useAuthUser();
-  console.log(user);
-  const canCreateUser = user?.availableAccess?.CreateUser;
   const canDeleteUser = user?.availableAccess?.DeleteUser;
   const canViewUser = user?.availableAccess?.ViewUser;
 
@@ -122,51 +111,29 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
     />
   );
 
-
-
   return (
     <Box id="user-listing-container" sx={{ width: "100%" }}>
-      <Paper id="main-table-paper" sx={{ width: "100%", mb: 2, borderRadius: 2, overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}>
-        <Toolbar
-          id="user-listing-toolbar"
-          sx={{
-            pl: { sm: 2 },
-            p: { xs: 2, sm: 2 },
-          }}
-        >
-          <Typography sx={{ flex: "1 1 100%", fontWeight: 600, marginLeft: 1 }} variant="h6" component="div">
-            Users Management
-          </Typography>
-
-          {canCreateUser && <Tooltip title="Add">
-            <Button variant="contained" startIcon={<AddIcon />} onClick={() => router.push('/users/create')} sx={{ borderRadius: 2 }}>
-              Add
-            </Button>
-          </Tooltip>}
-        </Toolbar>
-
-        <EnhancedTable
-          rows={parsedData}
-          columns={columns}
-          idField="id"
-          selected={selected}
-          setSelected={setSelected}
-          page={page}
-          setPage={setPage}
-          order={order}
-          orderBy={orderBy}
-          setOrder={setOrder}
-          setOrderBy={setOrderBy}
-          handleOpen={handleOpen}
-          handleViewDetails={handleViewDetails}
-          mainCol="fullName"
-          limit={limit}
-          totalPages={data?.metaData?.totalPages || 1}
-          totalItems={data?.metaData.totalCount || 0}
-          canDelete={canDeleteUser}
-          canView={canViewUser}
-        />
-      </Paper>
+      <EnhancedTable
+        rows={parsedData}
+        columns={columns}
+        idField="id"
+        selected={selected}
+        setSelected={setSelected}
+        page={page}
+        setPage={setPage}
+        order={order}
+        orderBy={orderBy}
+        setOrder={setOrder}
+        setOrderBy={setOrderBy}
+        handleOpen={handleOpen}
+        handleViewDetails={handleViewDetails}
+        mainCol="fullName"
+        limit={limit}
+        totalPages={data?.metaData?.totalPages || 1}
+        totalItems={data?.metaData.totalCount || 0}
+        canDelete={canDeleteUser}
+        canView={canViewUser}
+      />
       {modalInfo?.type === "delete" && (
         <Modal
           isOpen={open}

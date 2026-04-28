@@ -1,34 +1,27 @@
 "use client";
 
-import React from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Container,
-  useTheme,
-  useMediaQuery,
 } from '@mui/material';
-import { UserDetailsContent } from '@/app/( protected )/users/components/UserDetailsContent';
-import { UserData } from '@/lib/mock/users';
+import { UserDetailsContent } from '@/components/users/UserDetailsContent';
 import useSWR from 'swr';
-import { CircularProgress } from '@mui/material';
-import { ErrorCard, ModuleHeader } from '@/components/ui';
+import { ErrorCard, GroupSkeleton, ModuleHeader } from '@/components/ui';
 import { useAuthUser } from '@/lib/hooks';
+import { UserData } from './user-type';
 
-export const UserViewContainer = () => {
-  const { id } = useParams();
+export const UserViewContainer = ({uid}: {uid: string}) => {
   const router = useRouter();
-  const theme = useTheme();
   const { user } = useAuthUser();
   const canUpdateUser = user?.availableAccess?.UpdateUser;
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const { data, error, isLoading } = useSWR(`/api/users/${id}`);
+  const { data, error, isLoading } = useSWR(`/api/users/${uid}`);
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100dvh' }}>
-        <CircularProgress />
+      <Box >
+        <GroupSkeleton rowsNum={3} height={60} />
       </Box>
     );
   }
@@ -75,7 +68,6 @@ export const UserViewContainer = () => {
     executiveBlackShoe: apiUser.uniform?.executiveBlackShoe || false,
     grooming: apiUser.uniform?.grooming || false,
 
-    profilePhoto: '',
     totalEvents: 0,
     successRate: 0,
     dateOfJoining: 'N/A',
@@ -87,7 +79,7 @@ export const UserViewContainer = () => {
     <Box id="user-view-page-root" sx={{ bgcolor: 'background.default', minHeight: '100dvh', pb: 8 }}>
       <ModuleHeader
         title="User Details"
-        onEdit={() => router.push(`/users/${id}/edit`)}
+        onEdit={() => router.push(`/users/${uid}/edit`)}
         onBack={() => router.push('/users')}
         updatePermission={canUpdateUser}
       />

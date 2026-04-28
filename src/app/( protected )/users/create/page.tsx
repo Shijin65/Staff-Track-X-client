@@ -1,15 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { UserForm } from "@/app/( protected )/users/components/UserForm";
+import { UserForm } from "@/components/users/UserForm";
 import { Box } from "@mui/material";
 
-
 export default function UserCreatePage() {
-  const router = useRouter();
-
   return (
-    <Box sx={{ bgcolor: '#f1f5f9', minHeight: '100vh' }}>
+    <Box>
       <UserForm />
     </Box>);
 }

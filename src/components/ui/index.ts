@@ -6,4 +6,4 @@ export * from "./error-card";
 export * from "./module-header";
 export * from "./custom-dialog";
 export { CustomModal } from "./modal";
-
+export * from "./search";

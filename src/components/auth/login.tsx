@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { useAuthContext } from "@/context/auth-provider";
 import { useLoader } from "@/lib/store";
-import { PasswordField } from "../../../components/ui/password-input";
+import { PasswordField } from "../ui/password-input";
 import GradientText from "@/components/ui/GradientText";
 import {
   EmailOutlined,
@@ -300,15 +300,14 @@ const LoginUser: React.FC = () => {
             fontWeight: 900,
             fontSize: showForm ? "1.2rem" : "1.6rem",
             letterSpacing: "0.15em",
-            // textTransform: "uppercase",
             transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
             mt: 1,
-            filter: showForm ? "drop-shadow(0 2px 4px rgba(255, 255, 255, 0.33))" : "drop-shadow(0 4px 8px rgba(255, 255, 255, 0.26))",
+
           }}
         >
           <GradientText
-            colors={["#4a93ffff", "#ffffff", "#3B82F6"]}
-            animationSpeed={4}
+            colors={["#BFC9FF", "#E8EDFF", "#9FB4FF"]}
+            animationSpeed={2}
             showBorder={false}
           >
             CatersHub

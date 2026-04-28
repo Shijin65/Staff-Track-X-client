@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
-import { UserForm } from "../../users/components/UserForm";
+import { UserForm } from "../../../../components/users/UserForm";
 import { useAuthContext } from "@/context/auth-provider";
-import { Box, Container, Skeleton } from "@mui/material";
+import { Box } from "@mui/material";
+import { GroupSkeleton } from "@/components/ui";
 
 export default function ProfileEditPage() {
   const { user } = useAuthContext();
@@ -11,9 +11,7 @@ export default function ProfileEditPage() {
 
   if (!userId) {
     return (
-      <Container maxWidth="xl" sx={{ mt: 4 }}>
-        <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 4 }} />
-      </Container>
+      <GroupSkeleton rowsNum={2} />
     );
   }
 

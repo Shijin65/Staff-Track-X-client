@@ -1,9 +1,8 @@
 "use client";
 
 import React, { FormEvent } from "react";
-import { AxiosError } from "axios";
 import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
-import DeleteConfirmation from "../../../../components/ui/delete-confirmation";
+import DeleteConfirmation from "../ui/delete-confirmation";
 import { useToast } from "@/lib/store/useToastStore";
 import { useAxios } from "@/lib/hooks/useAxios";
 import { handleAxiosError } from "@/lib/utils/axiosError";
@@ -12,10 +11,6 @@ interface UserDeleteProps {
     uid: string[];
     handleClose: () => void;
     mutate: () => void;
-}
-
-interface ApiError {
-    message: string;
 }
 
 const UserDelete = ({ uid, handleClose, mutate }: UserDeleteProps) => {
@@ -52,13 +47,13 @@ const UserDelete = ({ uid, handleClose, mutate }: UserDeleteProps) => {
                 });
             }
         } catch (error: unknown) {
-              const message = handleAxiosError(error, "Invalid User Details.");
-                setToast({ 
-                  message: message, 
-                  type: "error", 
-                  open: true 
-                });
-            } 
+            const message = handleAxiosError(error, "Invalid User Details.");
+            setToast({
+                message: message,
+                type: "error",
+                open: true
+            });
+        }
     };
 
     return (

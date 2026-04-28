@@ -20,7 +20,6 @@ import {
   useMediaQuery,
   Grid,
   Paper,
-  Chip,
   Skeleton,
   Container,
 } from "@mui/material";
@@ -45,10 +44,9 @@ import { useToast } from "@/lib/store/useToastStore";
 import { useAxios } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useAuthContext } from "@/context/auth-provider";
 import { schema } from "./user-schema";
-import { MainLoader } from "../../../../components/ui/main-loader";
+import { MainLoader } from "../ui/main-loader";
 import { handleAxiosError } from "@/lib/utils/axiosError";
 import { ModuleHeader } from "@/components/ui";
 
@@ -253,10 +251,10 @@ export const UserForm: React.FC<UserFormProps> = ({
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (formData: Record<string, any>) => {
     const data = new FormData();
 
-    // Append all form fields to FormData
     Object.keys(formData).forEach((key) => {
       if (formData[key] !== undefined && formData[key] !== null) {
         data.append(key, formData[key] as string);

@@ -1,17 +1,19 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { UserForm } from "@/app/( protected )/users/components/UserForm";
+import { use } from "react";
+import { UserForm } from "@/components/users/UserForm";
 import { Box } from "@mui/material";
 
 
-export default function UserEditPage() {
-  const params = useParams();
-  const uid = params.id as string;
-
+export default function UserEditPage({
+  params
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const uid = use(params).id;
 
   return (
-    <Box sx={{ bgcolor: '#f1f5f9', minHeight: '100vh' }}>
+    <Box>
       <UserForm uid={uid} />
     </Box>
   );

@@ -24,7 +24,7 @@ import {
 import { useAuthContext } from "@/context/auth-provider";
 import { useRouter } from "next/navigation";
 import { CustomModal as Modal } from "@/components/ui/modal";
-import ChangePassword from "@/app/( protected )/profile/components/ChangePassword";
+import ChangePassword from "@/components/profile/ChangePassword";
 
 import { API_URL } from "@/lib/utils/constance";
 

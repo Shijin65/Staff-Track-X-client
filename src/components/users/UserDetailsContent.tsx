@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -14,7 +14,6 @@ import {
   Tab,
   useTheme,
   useMediaQuery,
-  CircularProgress
 } from '@mui/material';
 import {
   Verified as VerifiedIcon,
@@ -28,9 +27,9 @@ import {
   CheckCircle as CheckCircleIcon,
   Cancel as CancelIcon,
 } from '@mui/icons-material';
-import { UserData } from '@/lib/mock/users';
-import { useAxios } from '@/lib/hooks';
+// import { useAxios } from '@/lib/hooks';
 import { API_URL } from '@/lib/utils/constance';
+import { UserData } from './user-type';
 
 interface UserDetailsContentProps {
   user: UserData;
@@ -60,30 +59,16 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [tabValue, setTabValue] = useState(0);
-  const [mounted, setMounted] = useState(false);
 
-  const api = useAxios();
   const profileUrl = user.attachment?.picId 
     ? `${API_URL}/api/users/attachment/${user.attachment.picId}` 
     : user.profilePhoto;
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const userEvents = user.recentEvents || [];
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
-
-  if (!mounted) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 8 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   const renderPersonal = () => (
     <Stack id="personal-section-stack" spacing={2.5}>

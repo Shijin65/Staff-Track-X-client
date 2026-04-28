@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Container, Typography } from "@mui/material";
-import { EventCreateForm } from "@/app/( protected )/events/components/EventCreateForm";
+import { EventCreateForm } from "@/components/events/EventCreateForm";
 
 export default function CreateEventPage() {
   return (

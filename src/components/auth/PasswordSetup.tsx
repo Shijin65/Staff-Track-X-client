@@ -9,7 +9,7 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { useLoader } from "@/lib/store";
-import { PasswordField } from "../../../components/ui/password-input";
+import { PasswordField } from "../ui/password-input";
 import { LockOutlined, ArrowBackIosNew } from "@mui/icons-material";
 import { useToast } from "@/lib/store/useToastStore";
 import { useAxios } from "@/lib/hooks";

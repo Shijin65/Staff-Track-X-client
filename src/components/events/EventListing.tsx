@@ -3,37 +3,22 @@
 import React, { useState } from "react";
 import {
   Box,
-  Typography,
   Paper,
-  Toolbar,
-  Tooltip,
-  Button,
   CircularProgress,
 } from "@mui/material";
-import { Add as AddIcon } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { EnhancedTable, Column } from "@/components/table/EnhancedTable";
-import { useAuthUser, useWindowSize } from "@/lib/hooks";
+import { useWindowSize } from "@/lib/hooks";
 import { ErrorCard } from "@/components/ui";
+import { EventPayload, EventRow, Order } from "./event-type";
 
 interface EventListingProps {
+  order: "asc" | "desc";
+  orderBy: string;
+  setOrder: React.Dispatch<React.SetStateAction<Order>>;
+  setOrderBy: React.Dispatch<React.SetStateAction<keyof EventRow>>
   query: string;
-}
-interface Event {
-  eventId: string;
-  title: string;
-  eventDate: string;
-  eventVenue: string;
-  status: string;
-}
-
-export interface EventRow {
-  id: string;
-  title: string;
-  eventDate: string;
-  eventVenue: string;
-  status: string;
 }
 
 const columns: Column<EventRow>[] = [
@@ -43,21 +28,23 @@ const columns: Column<EventRow>[] = [
   { id: "status", label: "Status" },
 ];
 
-export const EventListing = ({ query }: EventListingProps) => {
+export const EventListing = ({
+  order,
+  orderBy,
+  setOrder,
+  setOrderBy,
+  query,
+}: EventListingProps) => {
   const [selected, setSelected] = useState<string[]>([]);
   const [page, setPage] = useState(1);
 
   const router = useRouter();
-  const { user } = useAuthUser();
-  const canCreateEvent = user?.availableAccess?.CreateEvent;
   const { height } = useWindowSize();
   const limit = height === 0 ? 10 : Math.floor((height - 240) / 41);
 
+  const { data, error, isLoading, mutate } = useSWR(`/api/events?Page=${page}&Limit=${limit}&Search=${encodeURIComponent(query)}&SortBy=${orderBy}&SortOrder=${order}`);
 
-
-  const { data, error, isLoading, mutate } = useSWR(`/api/events?Page=${page}&Limit=${limit}&Search=${encodeURIComponent(query)}`);
-
-  const parsedData: EventRow[] = data?.payload?.map((item: Event) => ({
+  const parsedData: EventRow[] = data?.payload?.map((item: EventPayload) => ({
     id: item.eventId,
     title: item.title,
     eventDate: item.eventDate,
@@ -86,22 +73,6 @@ export const EventListing = ({ query }: EventListingProps) => {
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2, borderRadius: 2, overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}>
-        <Toolbar sx={{ pl: { sm: 2 }, p: { xs: 2, sm: 2 } }}>
-          <Typography sx={{ flex: "1 1 100%", fontWeight: 600 }} variant="h6">
-            Events Management
-          </Typography>
-          {canCreateEvent && <Tooltip title="Add Event">
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => router.push('/events/create')}
-              sx={{ borderRadius: 2 }}
-            >
-              Add
-            </Button>
-          </Tooltip>}
-        </Toolbar>
-
         <EnhancedTable
           rows={parsedData}
           columns={columns}
@@ -115,9 +86,11 @@ export const EventListing = ({ query }: EventListingProps) => {
           limit={limit}
           totalPages={data?.metaData?.totalPages || 1}
           totalItems={data?.metaData?.totalCount || 0}
-          setOrder={() => { }}
-          setOrderBy={() => { }}
-          hasSelection={false}
+          setOrder={setOrder}
+          setOrderBy={setOrderBy}
+          hasSelection={true}
+          orderBy={orderBy as keyof EventRow}
+          order={order}
         />
       </Paper>
     </Box>
