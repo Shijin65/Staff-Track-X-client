@@ -90,7 +90,7 @@ const LoginUser: React.FC = () => {
 
   const LoginForm = (
     <>
-      <Box sx={{ mb: { xs: 2.5, md: 4 }, textAlign: { xs: "center", md: "left" } }}>
+      <Box sx={{ mb: { xs:4, md: 4 }, textAlign: { xs: "center", md: "left" } }}>
         <Typography variant="h4" fontWeight={800} color="primary" sx={{ mb: 1, fontSize: { xs: "1.75rem", md: "2.125rem" } }}>
           {view === 'login' ? "Welcome back" : view === 'forgot-password' ? "Forgot Password" : "Verify OTP"}
         </Typography>
@@ -100,7 +100,7 @@ const LoginUser: React.FC = () => {
       </Box>
 
       <form onSubmit={handleLoginSubmit} suppressHydrationWarning>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: { xs: 2, md: 3 } }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: { xs: 3, md: 3 } }}>
           {view !== 'verify-otp' && (
             <Box>
               <Typography variant="body2" fontWeight={600} sx={{ mb: 1, ml: 0.5 }}>
@@ -191,11 +191,7 @@ const LoginUser: React.FC = () => {
           )}
 
           {view === 'login' && (
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: -1 }}>
-              <FormControlLabel
-                control={<Checkbox size="small" sx={{ color: "primary.main" }} inputProps={{ suppressHydrationWarning: true }} />}
-                label={<Typography variant="caption" color="text.secondary">Remember me</Typography>}
-              />
+            <Box sx={{ display: "flex", justifyContent: "end", alignItems: "center", mt: -1 }}>
               <Link href="#" onClick={(e) => { e.preventDefault(); setView('forgot-password'); }} variant="caption" underline="hover" color="primary" fontWeight={600} sx={{ cursor: 'pointer' }}>
                 Forgot password?
               </Link>
@@ -242,9 +238,9 @@ const LoginUser: React.FC = () => {
     <Box
       sx={{
         width: "100%",
-        height: { xs: "50dvh", md: "auto" },
+        height: { xs: "60dvh", md: "auto" },
         overflowY: { xs: "auto", md: "visible" },
-        bgcolor: { xs: "white", md: "transparent" },
+        bgcolor: { xs: "var(--background)", md: "transparent" },
         borderTopLeftRadius: { xs: "30px", md: 0 },
         borderTopRightRadius: { xs: "30px", md: 0 },
         p: { xs: 3, md: 0 },

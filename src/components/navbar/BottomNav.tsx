@@ -44,7 +44,7 @@ export const BottomNav = () => {
         right: 0,
         borderRadius: "25px",
         backdropFilter: "blur(12px)",
-        background: "rgba(255,255,255,0.7)",
+        // background: "rgba(255,255,255,0.7)",
         boxShadow: "0 -4px 12px rgba(0,0,0,0.05)",
         display: { xs: "block", md: "none" },
         zIndex: (theme) => theme.zIndex.appBar,

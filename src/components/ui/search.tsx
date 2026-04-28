@@ -20,9 +20,9 @@ const Search = styled("div")({
   },
 });
 
-const StyledInputBase = styled(InputBase)<{ fullWidth?: boolean }>(({ theme, fullWidth }) => ({
+const StyledInputBase = styled(InputBase)<{ fullWidth?: boolean }>(({ fullWidth }) => ({
   transition: "width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-  color: theme.palette.mode === "dark" ? "white" : "#4b5563",
+  color: "var(--text-primary)",
   marginLeft: 5,
   width: "100%",
   minWidth: "100px",
@@ -30,10 +30,11 @@ const StyledInputBase = styled(InputBase)<{ fullWidth?: boolean }>(({ theme, ful
   "& .MuiInputBase-input": {
     width: "100%",
     padding: 0,
-    fontSize: 14,
+    fontSize: 16, // Changed to 16px to prevent iOS Safari auto-zoom on focus
   },
   "& ::placeholder": {
-    color: theme.palette.mode === "dark" ? "white" : "#000",
+    color: "var(--text-secondary)",
+    opacity: 1,
   },
 }));
 

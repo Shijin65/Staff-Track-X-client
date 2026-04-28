@@ -49,6 +49,7 @@ export function EventView({ eventId }: EventViewProps) {
   const canViewClientInfo = user?.availableAccess?.ViewClientInfo;
   const { data, isLoading, error } = useSWR(`/api/events/${eventId}`);
   const { data: rolesData } = useSWR("/api/meta/roles");
+  const { data: requirementsResponse } = useSWR(canViewUsers ? `/api/events/${eventId}/requirements` : null);
 
   if (isLoading) {
     return <GroupSkeleton rowsNum={2} />;
@@ -162,7 +163,74 @@ export function EventView({ eventId }: EventViewProps) {
               </Grid>
             </Grid>
           </Paper>
+        </Grid>
 
+        {/* Right Column: Location & Map */}
+        <Grid size={{ xs: 12, md: 5, lg: 4 }}>
+          <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: "1px solid", borderColor: "divider", height: "100%", display: "flex", flexDirection: "column" }}>
+            <Typography variant="h6" fontWeight={700} sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1 }}>
+              <LocationOn color="primary" /> Location
+            </Typography>
+
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                Address
+              </Typography>
+              <Typography variant="body1" fontWeight={500} gutterBottom>
+                {event.address || "Address not provided"}
+              </Typography>
+              {(event.city || event.district) && (
+                <Typography variant="body2" color="text.secondary">
+                  {event.city}{event.city && event.district ? ", " : ""}{event.district}
+                </Typography>
+              )}
+            </Box>
+
+            {event.locationInstructions && (
+              <Box sx={{ mb: 4, p: 2, bgcolor: "rgba(var(--primary-rgb), 0.05)", borderRadius: 2 }}>
+                <Typography variant="subtitle2" color="primary" gutterBottom sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                  <InfoOutlined fontSize="small" /> Instructions
+                </Typography>
+                <Typography variant="body2">
+                  {event.locationInstructions}
+                </Typography>
+              </Box>
+            )}
+
+            <Divider sx={{ my: 2 }} />
+
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+              <Typography variant="subtitle2" fontWeight={700}>
+                Map View
+              </Typography>
+              <Button size="small" variant="outlined" onClick={handleOpenGoogleMaps}>
+                Open in Google Maps
+              </Button>
+            </Box>
+            <Box sx={{ flexGrow: 1, minHeight: 300, borderRadius: 2, overflow: "hidden", position: "relative" }}>
+              {(event.latitude && event.longitude) ? (
+                <EventLocationPickerWrapper
+                  readOnly
+                  location={{ lat: event.latitude, lng: event.longitude, name: event.address }}
+                />
+              ) : (
+                <iframe
+                  title="Event Location Map"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0, position: "absolute", top: 0, left: 0 }}
+                  loading="lazy"
+                  allowFullScreen
+                  src={`https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`}
+                />
+              )}
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={4} sx={{ mt: 4 }}>
+        <Grid size={{ xs: 12 }}>
           {canViewClientInfo && <Paper elevation={0} sx={{ mb: 4, p: 4, borderRadius: 3, border: "1px solid", borderColor: "divider" }}>
             <Typography variant="h6" fontWeight={700} sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1 }}>
               <Person color="primary" /> Client Information
@@ -195,14 +263,12 @@ export function EventView({ eventId }: EventViewProps) {
                   <Group color="primary" /> Requirements
                 </Typography>
                 <List disablePadding>
-                  {event.staffRequirements && event.staffRequirements.length > 0 ? (
-                    event.staffRequirements.map((req: any) => {
+                  {requirementsResponse?.payload && requirementsResponse.payload.length > 0 ? (
+                    requirementsResponse.payload.map((req: any) => {
                       const roleObj = roles.find((r: any) => String(r.roleId) === String(req.roleId));
                       const roleName = roleObj ? (roleObj.name.charAt(0).toUpperCase() + roleObj.name.slice(1).replace(/_/g, " ")) : `Role ${req.roleId}`;
 
-                      const confirmedCount = event.eventRequests?.filter((er: any) =>
-                        String(er.roleId) === String(req.roleId) && er.status === 'confirmed'
-                      ).length || 0;
+                      const confirmedCount = req.confirmedCount || 0;
 
                       return (
                         <ListItem key={req.requirementId} sx={{ px: 0, py: 1, borderBottom: '1px solid #f0f0f0' }}>
@@ -290,70 +356,8 @@ export function EventView({ eventId }: EventViewProps) {
             </Grid>
           </Grid>}
         </Grid>
-
-        {/* Right Column: Location & Map */}
-        <Grid size={{ xs: 12, md: 5, lg: 4 }}>
-          <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: "1px solid", borderColor: "divider", height: "100%", display: "flex", flexDirection: "column" }}>
-            <Typography variant="h6" fontWeight={700} sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1 }}>
-              <LocationOn color="primary" /> Location
-            </Typography>
-
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                Address
-              </Typography>
-              <Typography variant="body1" fontWeight={500} gutterBottom>
-                {event.address || "Address not provided"}
-              </Typography>
-              {(event.city || event.district) && (
-                <Typography variant="body2" color="text.secondary">
-                  {event.city}{event.city && event.district ? ", " : ""}{event.district}
-                </Typography>
-              )}
-            </Box>
-
-            {event.locationInstructions && (
-              <Box sx={{ mb: 4, p: 2, bgcolor: "rgba(var(--primary-rgb), 0.05)", borderRadius: 2 }}>
-                <Typography variant="subtitle2" color="primary" gutterBottom sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-                  <InfoOutlined fontSize="small" /> Instructions
-                </Typography>
-                <Typography variant="body2">
-                  {event.locationInstructions}
-                </Typography>
-              </Box>
-            )}
-
-            <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-              <Typography variant="subtitle2" fontWeight={700}>
-                Map View
-              </Typography>
-              <Button size="small" variant="outlined" onClick={handleOpenGoogleMaps}>
-                Open in Google Maps
-              </Button>
-            </Box>
-            <Box sx={{ flexGrow: 1, minHeight: 300, borderRadius: 2, overflow: "hidden", position: "relative" }}>
-              {(event.latitude && event.longitude) ? (
-                <EventLocationPickerWrapper
-                  readOnly
-                  location={{ lat: event.latitude, lng: event.longitude, name: event.address }}
-                />
-              ) : (
-                <iframe
-                  title="Event Location Map"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0, position: "absolute", top: 0, left: 0 }}
-                  loading="lazy"
-                  allowFullScreen
-                  src={`https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`}
-                />
-              )}
-            </Box>
-          </Paper>
-        </Grid>
       </Grid>
+
       <CustomDialog
         open={isManageModalOpen}
         onClose={() => setIsManageModalOpen(false)}

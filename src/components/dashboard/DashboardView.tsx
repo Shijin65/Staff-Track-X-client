@@ -114,7 +114,6 @@ export function DashboardView() {
 
   const api = useAxios();
   const { setToast } = useToast();
-  const { mutate } = useSWR(`/api/events?isUpcoming=true&SearchQuery=${debouncedQuery}`);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedQuery(searchQuery), 500);
@@ -124,7 +123,11 @@ export function DashboardView() {
   const isAdmin = userRole?.name === "super_admin" || userRole?.name === "supervisor";
   const canViewUsers = (auth as any).user?.availableAccess?.ViewUser;
 
-  const { data: eventsData, isLoading: eventsLoading } = useSWR(`/api/events?isUpcoming=true&SearchQuery=${debouncedQuery}`);
+  const eventsEndpoint = isAdmin
+    ? `/api/events?isUpcoming=true&SearchQuery=${debouncedQuery}`
+    : `/api/events/available?SearchQuery=${debouncedQuery}`;
+
+  const { data: eventsData, isLoading: eventsLoading, mutate } = useSWR(eventsEndpoint);
   const { data: summaryData } = useSWR("/api/dashboard/summary");
   const { data: highDemandData, mutate: mutateMajor } = useSWR(!isAdmin ? "/api/events/high-demand" : null);
 

@@ -364,7 +364,7 @@ export const UserDetailsContent: React.FC<UserDetailsContentProps> = ({ user }) 
             flexDirection: 'column',
             alignItems: 'center',
             gap: 3,
-            background: 'rgba(255, 255, 255, 0.9)',
+            // background: 'rgba(255, 255, 255, 0.9)',
             backdropFilter: 'blur(20px)',
             boxShadow: '0 24px 48px rgba(0,0,0,0.06)',
             position: 'relative',

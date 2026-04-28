@@ -61,7 +61,7 @@ export function ApplicationManagementModal({
         message: `Application ${status} successfully`,
         type: "success",
       });
-      mutate(`/api/events/${eventId}`);
+      mutate(`/api/events/${eventId}/requirements`);
       mutateApps();
     } catch (error: unknown) {
       const err = handleAxiosError(error)

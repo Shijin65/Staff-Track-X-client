@@ -152,7 +152,7 @@ export function ProfileView() {
               borderRadius: 4,
               border: `1px solid ${theme.palette.divider}`,
               textAlign: "center",
-              background: "linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)",
+                // background: "linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)",
               boxShadow: "0 20px 40px rgba(0,0,0,0.04)",
               display: 'flex',
               flexDirection: 'column',
@@ -174,8 +174,8 @@ export function ProfileView() {
                   <QRCodeSVG
                     value={qrValue}
                     size={180}
-                    bgColor={"#ffffff"}
-                    fgColor={"#000000"}
+                    // bgColor={"#ffffff"}
+                    // fgColor={"#000000"}
                     level={"H"}
                     includeMargin={false}
                     style={{ maxWidth: '100%', height: 'auto' }}
