@@ -136,15 +136,14 @@ export function ProfileView() {
               />
               <Chip
                 icon={<CheckCircleOutline sx={{ fontSize: '0.9rem' }} />}
-                label={profileData.isActive ? "Verified" : "Inactive"}
-                color={profileData.isActive ? "success" : "default"}
+                label={profileData.isVerified ? "Verified" : "Not Verified"}
+                color={profileData.isVerified ? "success" : "error"}
                 variant="filled"
                 sx={{ fontWeight: 600 }}
               />
             </Box>
           </Box>
         </Grid>
-
         <Grid size={{ xs: 12, lg: 4 }} sx={{ order: { xs: 2, lg: 3 } }}>
           <Box sx={{ position: { lg: "sticky" }, top: 24, mb: { xs: 2, lg: 0 } }}>
             <Paper elevation={0} sx={{

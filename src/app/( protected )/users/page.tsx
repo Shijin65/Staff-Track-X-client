@@ -25,7 +25,7 @@ export default function UserPage() {
 
   return (
     <Box sx={{ mt: 2 }}>
-      <Paper id="main-table-paper" sx={{ width: "100%", mb: 2, borderRadius: 2, overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}>
+      {/* <Paper id="main-table-paper" sx={{ width: "100%", mb: 2, borderRadius: 2, overflow: "hidden", }}> */}
         <Box sx={{ p: 2, mb: 1 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: { xs: 2, sm: 0 } }}>
             <Typography variant="h5" fontWeight={700}>
@@ -72,7 +72,6 @@ export default function UserPage() {
           setOrderBy={setOrderBy}
           query={debouncedQuery}
         />
-      </Paper>
     </Box>
 
   );

@@ -33,8 +33,8 @@ const Header = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
-  const auth = useAuthContext();
-  const user = auth?.user?.user;
+  const { logout, user: userState } = useAuthContext();
+  const user = userState?.user;
   const theme = useTheme();
   const router = useRouter();
 
@@ -43,7 +43,7 @@ const Header = () => {
 
   const handleLogout = () => {
     handleUserMenuClose();
-    if (auth?.logout) auth.logout();
+    if (logout) logout();
   };
 
   return (

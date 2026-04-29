@@ -4,6 +4,9 @@ export type UserRow = {
   email: string;
   isActive: boolean;
   isVerified: boolean;
+  attachment?: {
+    picId: string;
+  };
 };
 
 export type ApiUser = {
@@ -14,6 +17,9 @@ export type ApiUser = {
   isActive: boolean;
   isVerified: boolean;
   updatedAt: string;
+  attachment?: {
+    picId: string;
+  };
 };
 
 export interface UserData {

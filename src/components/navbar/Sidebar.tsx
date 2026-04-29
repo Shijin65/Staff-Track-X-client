@@ -21,6 +21,7 @@ export const Sidebar = () => {
     if (path === "/my-events") return !["supervisor", "super_admin"].includes(roleName as string);
     if (path === "/events") return availableAccess.ViewEvent;
     if (path === "/users") return availableAccess.ViewUser;
+    if (path === "/live-events") return availableAccess?.MarkAttendance || availableAccess?.ViewAttendance || ["supervisor", "super_admin"].includes(roleName as string);
     return false;
   };
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { ClipboardDocumentCheckIcon } from "@heroicons/react/24/outline";
 import {
   DashboardOutlined,
   EventOutlined,
@@ -13,6 +14,7 @@ export const navItems = [
   { label: "Overview", icon: <DashboardOutlined />, path: "/" },
   { label: "My Events", icon: <EventOutlined />, path: "/my-events" },
   { label: "Events", icon: <EventOutlined />, path: "/events" },
+  { label: "Live Events", icon: <ClipboardDocumentCheckIcon className="h-6 w-6"/>, path: "/live-events" },
   { label: "Users", icon: <PeopleAltOutlined />, path: "/users" },
   { label: "Profile", icon: <PersonOutlined />, path: "/profile" },
 ];
