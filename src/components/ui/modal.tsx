@@ -33,7 +33,8 @@ export const CustomModal = ({
     transform: "translate(-50%, -50%)",
     maxWidth: "98%",
     maxHeight: "98%",
-    bgcolor: "transparent",
+    bgcolor: "background.paper",
+    borderRadius: 4,
     boxShadow: 24,
     overflowX: "hidden",
     ...boxProps,
@@ -57,9 +58,9 @@ export const CustomModal = ({
                 : "w-[95%] sm:w-[90%] md:w-[80%]"
           }
         >
-          <div className="bg-white p-4 rounded-2xl pb-5 2xl:py-5 2xl:pb-6">
+          <div className="p-4 pb-5 2xl:py-5 2xl:pb-6">
             <header className="flex items-center justify-between mb-3">
-              <h1 className="w-[90%] font-semibold text-lg 2xl:text-xl text-ellipsis text-gray-500 pl-0 sm:pl-3">
+              <h1 className="w-[90%] font-semibold text-lg 2xl:text-xl text-ellipsis text-[var(--mui-palette-text-primary)] pl-0 sm:pl-3">
                 {title || ""}
               </h1>
 

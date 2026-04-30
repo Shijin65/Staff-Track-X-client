@@ -7,6 +7,10 @@ export type UserRow = {
   attachment?: {
     picId: string;
   };
+  role?: {
+    roleId: string;
+    title: string;
+  };
 };
 
 export type ApiUser = {
@@ -19,6 +23,10 @@ export type ApiUser = {
   updatedAt: string;
   attachment?: {
     picId: string;
+  };
+  role?: {
+    roleId: string;
+    title: string;
   };
 };
 

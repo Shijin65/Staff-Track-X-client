@@ -230,6 +230,12 @@ export const UserForm: React.FC<UserFormProps> = ({
             case "grooming":
               setValue(field as keyof FormData, data.uniform?.grooming || false);
               break;
+            case "isActive":
+              setValue(field as keyof FormData, data.isActive ?? true);
+              break;
+            case "isVerified":
+              setValue(field as keyof FormData, data.isVerified ?? false);
+              break;
             default:
               setValue(field as keyof FormData, data[field] || "");
               break;
@@ -257,6 +263,10 @@ export const UserForm: React.FC<UserFormProps> = ({
 
     Object.keys(formData).forEach((key) => {
       if (formData[key] !== undefined && formData[key] !== null) {
+        // Prevent sending empty string for dateOfBirth to avoid Invalid Date error on the backend
+        if (key === "dateOfBirth" && formData[key] === "") {
+          return;
+        }
         data.append(key, formData[key] as string);
       }
     });

@@ -27,7 +27,6 @@ import {
   Chip,
   Button,
   Skeleton,
-  Stack,
 } from "@mui/material";
 import { SearchInput } from "@/components/ui/search";
 import { useAxios } from "@/lib/hooks";
@@ -37,7 +36,76 @@ import {
   CircularProgress
 } from "@mui/material";
 import { handleAxiosError } from "@/lib/utils/axiosError";
+const renderDateBadge = (dateStr: string) => {
+  if (!dateStr) return null;
+  const date = new Date(dateStr);
+  const day = date.getDate();
+  const month = date.toLocaleString('default', { month: 'short' });
 
+  // Check if event is today or past
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const eventDate = new Date(date);
+  eventDate.setHours(0, 0, 0, 0);
+
+  let isToday = false;
+  let bgcolor = "rgba(var(--primary-rgb), 0.1)";
+  let color = "primary.main";
+  let border = "1px solid rgba(var(--primary-rgb), 0.2)";
+
+  if (eventDate.getTime() === today.getTime()) {
+    isToday = true;
+    bgcolor = "primary.main";
+    color = "primary.contrastText";
+    border = "none";
+  } else if (eventDate.getTime() < today.getTime()) {
+    bgcolor = "rgba(0,0,0,0.05)";
+    color = "text.secondary";
+    border = "1px solid rgba(0,0,0,0.1)";
+  }
+
+  return (
+    <Box sx={{ position: 'relative', flexShrink: 0 }}>
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        bgcolor,
+        color,
+        border,
+        borderRadius: 2,
+        minWidth: 50,
+        height: 56,
+        boxShadow: isToday ? '0 4px 12px rgba(var(--primary-rgb), 0.3)' : 'none',
+      }}>
+        <Typography variant="h6" fontWeight={800} lineHeight={1}>{day}</Typography>
+        <Typography variant="caption" fontWeight={600} sx={{ textTransform: 'uppercase', fontSize: '0.65rem' }}>{month}</Typography>
+      </Box>
+      {isToday && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: -4,
+            right: -4,
+            width: 14,
+            height: 14,
+            bgcolor: 'error.main',
+            borderRadius: '50%',
+            border: '2px solid',
+            borderColor: 'background.paper',
+            animation: 'pulse 1.5s infinite',
+            '@keyframes pulse': {
+              '0%': { boxShadow: '0 0 0 0 rgba(239, 68, 68, 0.7)' },
+              '70%': { boxShadow: '0 0 0 6px rgba(239, 68, 68, 0)' },
+              '100%': { boxShadow: '0 0 0 0 rgba(239, 68, 68, 0)' },
+            }
+          }}
+        />
+      )}
+    </Box>
+  );
+};
 
 const SummaryCard = ({ title, value, icon, color }: { title: string; value: number | string | undefined; icon: React.ReactNode; color: string }) => {
   return (
@@ -55,7 +123,6 @@ const SummaryCard = ({ title, value, icon, color }: { title: string; value: numb
 
 
 const MajorEventCard = ({ event, onClick }: { event: any; onClick: () => void }) => {
-  const totalRequired = event.staffRequirements?.reduce((sum: number, req: any) => sum + req.count, 0) || 0;
   return (
     <Box
       onClick={onClick}
@@ -65,8 +132,11 @@ const MajorEventCard = ({ event, onClick }: { event: any; onClick: () => void })
         p: 2,
         border: '1px solid',
         borderColor: 'divider',
-        minWidth: 220,
+        minWidth: 260,
         cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 2,
         transition: 'all 0.2s',
         '&:hover': {
           borderColor: 'primary.main',
@@ -77,19 +147,16 @@ const MajorEventCard = ({ event, onClick }: { event: any; onClick: () => void })
         }
       }}
     >
-      <Typography variant="body2" fontWeight={800} noWrap sx={{ mb: 1, color: 'text.primary' }}>
-        {event.title}
-      </Typography>
-      <Stack direction="row" spacing={1.5} alignItems="center">
+      {renderDateBadge(event.eventDate)}
+      <Box sx={{ flex: 1, minWidth: 0 }}>
+        <Typography variant="body2" fontWeight={800} noWrap sx={{ mb: 0.5, color: 'text.primary' }}>
+          {event.title}
+        </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
-          <TodayIcon sx={{ fontSize: 12 }} />
-          <Typography variant="caption" fontWeight={600}>{event.eventDate}</Typography>
+          <LocationIcon sx={{ fontSize: 14 }} />
+          <Typography variant="caption" fontWeight={600} noWrap sx={{ maxWidth: 130 }}>{event.city}</Typography>
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
-          <LocationIcon sx={{ fontSize: 12 }} />
-          <Typography variant="caption" fontWeight={600} noWrap sx={{ maxWidth: 80 }}>{event.city}</Typography>
-        </Box>
-      </Stack>
+      </Box>
     </Box>
   );
 };
@@ -124,7 +191,7 @@ export function DashboardView() {
   const canViewUsers = (auth as any).user?.availableAccess?.ViewUser;
 
   const eventsEndpoint = isAdmin
-    ? `/api/events?isUpcoming=true&SearchQuery=${debouncedQuery}`
+    ? `/api/events?type=upcoming&SearchQuery=${debouncedQuery}`
     : `/api/events/available?SearchQuery=${debouncedQuery}`;
 
   const { data: eventsData, isLoading: eventsLoading, mutate } = useSWR(eventsEndpoint);
@@ -270,6 +337,10 @@ export function DashboardView() {
                 <div className="flex flex-col gap-4">
                   {events.map((event: any) => {
                     const hasApplied = event.eventRequests?.some((r: any) => r.userId === user?.userId);
+                    
+                    // Staff shouldn't see events they've already applied to in this list
+                    if (!isAdmin && hasApplied) return null;
+
                     const required = event.staffRequirements?.reduce((sum: number, req: any) => sum + req.count, 0) || 0;
                     const assigned = event.eventRequests?.filter((r: any) => r.status === "Approved").length || 0;
                     const staffingRatio = required > 0 ? (assigned / required) : 1;
@@ -278,21 +349,36 @@ export function DashboardView() {
                     if (staffingRatio < 0.5) barColor = "bg-red-500";
                     else if (staffingRatio < 1) barColor = "bg-yellow-500";
 
+                    let isToday = false;
+                    if (event.eventDate) {
+                        const today = new Date();
+                        today.setHours(0,0,0,0);
+                        const ed = new Date(event.eventDate);
+                        ed.setHours(0,0,0,0);
+                        isToday = ed.getTime() === today.getTime();
+                    }
+
                     return (
                       <div
                         key={event.eventId}
-                        className="p-5 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors flex flex-col md:flex-row justify-between md:items-center gap-4 cursor-pointer"
+                        className={`p-4 border rounded-xl transition-colors flex flex-col md:flex-row justify-between md:items-center gap-4 cursor-pointer ${
+                          isToday 
+                            ? "bg-blue-50/40 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800 hover:bg-blue-50/80 dark:hover:bg-blue-900/20" 
+                            : "bg-white dark:bg-slate-900 border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50"
+                        }`}
                         onClick={() => handleEventClick(event)}
                       >
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-bold text-gray-800 dark:text-white text-lg">{event.title}</h3>
-                            {hasApplied && <Chip label="Applied" size="small" color="success" variant="outlined" />}
-                          </div>
-                          <div className="flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400 gap-x-4 gap-y-1">
-                            <span className="flex items-center gap-1"><TodayIcon fontSize="small" /> {event.eventDate}</span>
-                            <span className="flex items-center gap-1"><LocationIcon fontSize="small" /> {event.eventVenue || event.city}{event.district ? `, ${event.district}` : ""}</span>
-                            <span className="flex items-center gap-1 text-primary-dark dark:text-primary-light font-medium"><AccessTime fontSize="small" /> {event.reportingTime}</span>
+                        <div className="flex-1 flex flex-row items-center gap-4">
+                          {renderDateBadge(event.eventDate)}
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-bold text-gray-800 dark:text-white text-lg truncate">{event.title}</h3>
+                              {hasApplied && <Chip label="Applied" size="small" color="success" variant="outlined" />}
+                            </div>
+                            <div className="flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400 gap-x-4 gap-y-1">
+                              <span className="flex items-center gap-1"><LocationIcon fontSize="small" /> {event.eventVenue || event.city}{event.district ? `, ${event.district}` : ""}</span>
+                              <span className="flex items-center gap-1 text-primary-dark dark:text-primary-light font-medium"><AccessTime fontSize="small" /> {event.reportingTime}</span>
+                            </div>
                           </div>
                         </div>
 
@@ -306,40 +392,24 @@ export function DashboardView() {
                               <div className={`h-2 rounded-full ${barColor}`} style={{ width: `${Math.min(staffingRatio * 100, 100)}%` }}></div>
                             </div>
                           </div>
-                        ) : (
-                          <Box sx={{ display: "flex", gap: 1 }}>
-                            <Button
-                              variant="outlined"
-                              size="small"
-                              sx={{ borderRadius: 2, textTransform: "none", px: 2 }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleEventClick(event);
-                              }}
-                            >
-                              View Details
-                            </Button>
-                            {!hasApplied && (
-                              <Button
-                                variant="contained"
-                                size="small"
-                                sx={{
-                                  borderRadius: 2,
-                                  textTransform: "none",
-                                  px: 2,
-                                  boxShadow: "none",
-                                  "&:hover": { boxShadow: "none" }
-                                }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleApplyClick(event);
-                                }}
-                              >
-                                Apply
-                              </Button>
-                            )}
-                          </Box>
-                        )}
+                        ) : (!hasApplied && (
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                              borderRadius: 2,
+                              textTransform: "none",
+                              px: 2,
+                              fontWeight: 600,
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEventClick(event);
+                            }}
+                          >
+                            View Details
+                          </Button>
+                        ))}
                       </div>
                     );
                   })}
@@ -366,7 +436,7 @@ export function DashboardView() {
                 variant="contained"
                 onClick={() => {
                   setIsModalOpen(false);
-                  handleApplyClick(event);
+                  handleApplyClick(selectedEvent);
                 }}
                 sx={{
                   borderRadius: 2.5,

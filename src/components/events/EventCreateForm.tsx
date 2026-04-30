@@ -160,7 +160,6 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
       staffRequirements: [],
     }
   });
-  console.log(errors)
   const { fields: staffFields, append: appendStaff, remove: removeStaff } = useFieldArray({
     control,
     name: "staffRequirements",
@@ -199,12 +198,13 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
   }
 
   const onSubmit = async (data: Record<string, unknown>) => {
-    const request = isEdit ? api.put(`/api/events/${eId}`, data) : api.post("/api/events", data);
     try {
-      await request;
+      if (isEdit) {
+        await api.put(`/api/events/${eId}`, data)
+      } else {
+        await api.post("/api/events", data);
+      }
       setToast({ message: `Event ${isEdit ? "updated" : "created"} successfully.`, type: "success", open: true });
-      const redirectRoute = isEdit ? `/events/${eId}/view` : "/events";
-      router.push(redirectRoute);
     } catch (err: unknown) {
       const message = handleAxiosError(err, "Failed to create event");
       setToast({ message, type: "error", open: true });
@@ -522,6 +522,6 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
           {isSubmitting ? "Saving..." : (isEdit ? "Update Event" : "Create Event")}
         </Button>
       </Stack>
-        </Box>
+    </Box>
   );
 };
