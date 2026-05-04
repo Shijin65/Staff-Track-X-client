@@ -10,8 +10,7 @@ import {
 } from "@mui/icons-material";
 
 import { useAxios } from "@/lib/hooks";
-import { Button as CustomButton } from "@/components/ui/button";
-import { PasswordField } from "@/components/ui";
+import { CustomButton, PasswordField } from "@/components/ui";
 import { useToast } from "@/lib/store/useToastStore";
 
 interface ChangePasswordProps {

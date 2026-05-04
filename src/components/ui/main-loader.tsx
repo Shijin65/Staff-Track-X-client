@@ -1,5 +1,5 @@
 import React from "react";
-import { Backdrop, Box, Typography, CircularProgress } from "@mui/material";
+import { Backdrop, Box, CircularProgress } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import { keyframes } from "@mui/system";
 

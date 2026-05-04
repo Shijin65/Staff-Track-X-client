@@ -9,7 +9,7 @@ interface ButtonProps extends MuiButtonProps {
   isLoading?: boolean;
 }
 
-function Button({ isLoading = false, disabled, children, ...props }: ButtonProps) {
+export const CustomButton = ({ isLoading = false, disabled, children, ...props }: ButtonProps) => {
   return (
     <MuiButton
       {...props}
@@ -21,4 +21,3 @@ function Button({ isLoading = false, disabled, children, ...props }: ButtonProps
   );
 }
 
-export { Button };

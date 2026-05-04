@@ -2,7 +2,7 @@
 
 import React, { FormEvent } from "react";
 import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
-import DeleteConfirmation from "../ui/delete-confirmation";
+import { DeleteConfirmation } from "@/components/ui";
 import { useToast } from "@/lib/store/useToastStore";
 import { useAxios } from "@/lib/hooks/useAxios";
 import { handleAxiosError } from "@/lib/utils/axiosError";

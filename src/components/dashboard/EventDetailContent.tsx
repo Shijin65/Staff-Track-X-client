@@ -161,7 +161,7 @@ export const EventDetailContent = ({ event }: EventDetailContentProps) => {
           </Box>
         </Box>
         {event.locationInstructions && (
-          <Box sx={{ mb: 3 }}>
+          <Box  >
             <Typography
               variant="subtitle2"
               color="primary"

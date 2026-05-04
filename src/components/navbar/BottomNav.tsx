@@ -22,7 +22,7 @@ export const BottomNav = () => {
     if (path === "/my-events") return !["supervisor", "super_admin"].includes(roleName as string);
     if (path === "/events") return availableAccess?.ViewEvent;
     if (path === "/users") return availableAccess?.ViewUser;
-    if (path === "/live-events") return availableAccess?.MarkAttendance || availableAccess?.ViewAttendance || ["supervisor", "super_admin"].includes(roleName as string);
+    if (path === "/mark-attendance") return availableAccess?.MarkAttendance || availableAccess?.ViewAttendance || ["supervisor", "super_admin"].includes(roleName as string);
     return false;
   };
 
@@ -32,7 +32,7 @@ export const BottomNav = () => {
     item.path === "/"
       ? pathname === "/"
       : pathname.startsWith(item.path)
-  ); 
+  );
   const value = activeIndex === -1 ? 0 : activeIndex;
 
   return (
@@ -75,7 +75,7 @@ export const BottomNav = () => {
               key={item.label}
               label={item.label}
               disableRipple
-              
+
               icon={
                 <Box
                   sx={{
@@ -98,8 +98,8 @@ export const BottomNav = () => {
               sx={{
                 minWidth: "auto",
                 color: "text.secondary",
-                height:isSelected ? 70 : 50,
-                width:isSelected ? 70 : 50,
+                height: isSelected ? 70 : 50,
+                width: isSelected ? 70 : 50,
                 "& .MuiBottomNavigationAction-label": {
                   fontSize: 11,
                   transition: "0.3s",

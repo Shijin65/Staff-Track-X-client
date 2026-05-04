@@ -12,13 +12,11 @@ import {
   TextField,
   InputAdornment,
   Slide,
-  FormControlLabel,
-  Checkbox,
+
 } from "@mui/material";
 import { useAuthContext } from "@/context/auth-provider";
 import { useLoader } from "@/lib/store";
-import { PasswordField } from "../ui/password-input";
-import GradientText from "@/components/ui/GradientText";
+import { PasswordField, GradientText } from "@/components/ui";
 import {
   EmailOutlined,
   LockOutlined,

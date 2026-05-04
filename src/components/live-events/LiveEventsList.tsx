@@ -3,7 +3,7 @@ import { Box, Typography, Grid, Paper, Chip, Skeleton } from "@mui/material";
 import { AccessTime, LocationOn, Group } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
-import { SearchInput } from "@/components/ui/search";
+import { SearchInput } from "@/components/ui";
 
 
 export const LiveEventsList = () => {
@@ -26,7 +26,7 @@ export const LiveEventsList = () => {
           <SearchInput
             value={searchQuery}
             setValue={setSearchQuery}
-            placeholder="Search today's events..."
+            placeholder="Search today's events"
           />
         </Box>
       </Box>
@@ -56,7 +56,7 @@ export const LiveEventsList = () => {
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={event.eventId}>
                 <Paper
                   elevation={0}
-                  onClick={() => router.push(`/live-events/${event.eventId}`)}
+                  onClick={() => router.push(`/mark-attendance/${event.eventId}`)}
                   sx={{
                     p: 3,
                     borderRadius: 4,

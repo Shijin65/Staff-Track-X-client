@@ -19,9 +19,8 @@ import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
 import { EnhancedTable, Column } from "@/components/table/EnhancedTable";
-import { CustomModal as Modal } from "@/components/ui/modal";
+import { CustomModal as Modal, GroupSkeleton, ErrorCard } from "@/components/ui";
 import { useAuthUser, useWindowSize } from "@/lib/hooks";
-import { GroupSkeleton, ErrorCard } from "@/components/ui";
 import { EventPayload, EventRow, Order } from "./event-type";
 import EventDelete from "./EventDelete";
 

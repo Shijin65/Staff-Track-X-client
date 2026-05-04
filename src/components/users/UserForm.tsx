@@ -46,9 +46,8 @@ import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import { useAuthContext } from "@/context/auth-provider";
 import { schema } from "./user-schema";
-import { MainLoader } from "../ui/main-loader";
 import { handleAxiosError } from "@/lib/utils/axiosError";
-import { ModuleHeader } from "@/components/ui";
+import { ModuleHeader, MainLoader } from "@/components/ui";
 
 
 
@@ -262,12 +261,16 @@ export const UserForm: React.FC<UserFormProps> = ({
     const data = new FormData();
 
     Object.keys(formData).forEach((key) => {
-      if (formData[key] !== undefined && formData[key] !== null) {
-        // Prevent sending empty string for dateOfBirth to avoid Invalid Date error on the backend
-        if (key === "dateOfBirth" && formData[key] === "") {
+      let value = formData[key];
+      if (value !== undefined && value !== null) {
+        if (key === "dateOfBirth" && value === "") {
           return;
         }
-        data.append(key, formData[key] as string);
+        // Normalize email to lowercase and trim whitespace
+        if (key === "email" && typeof value === "string") {
+          value = value.toLowerCase().trim();
+        }
+        data.append(key, value as string);
       }
     });
 

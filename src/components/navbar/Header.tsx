@@ -23,7 +23,7 @@ import {
 } from "@mui/icons-material";
 import { useAuthContext } from "@/context/auth-provider";
 import { useRouter } from "next/navigation";
-import { CustomModal as Modal } from "@/components/ui/modal";
+import { CustomModal as Modal } from "@/components/ui";
 import ChangePassword from "@/components/profile/ChangePassword";
 
 import { API_URL } from "@/lib/utils/constance";

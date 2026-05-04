@@ -12,9 +12,10 @@ import {
   WorkOutline as WorkOutlineIcon,
   AccessTime,
   Star as StarIcon,
+  EventOutlined,
+  DashboardOutlined,
 } from "@mui/icons-material";
 import { EventDetailContent } from "./EventDetailContent";
-import { CustomDialog } from "@/components/ui/custom-dialog";
 import { useAuthContext } from "@/context/auth-provider";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
@@ -27,8 +28,9 @@ import {
   Chip,
   Button,
   Skeleton,
+  Divider,
 } from "@mui/material";
-import { SearchInput } from "@/components/ui/search";
+import { CustomDialog, ModuleTitle, SearchInput} from "../ui";
 import { useAxios } from "@/lib/hooks";
 import { useToast } from "@/lib/store/useToastStore";
 import {
@@ -36,6 +38,7 @@ import {
   CircularProgress
 } from "@mui/material";
 import { handleAxiosError } from "@/lib/utils/axiosError";
+
 const renderDateBadge = (dateStr: string) => {
   if (!dateStr) return null;
   const date = new Date(dateStr);
@@ -144,8 +147,8 @@ const MajorEventCard = ({ event, onClick }: { event: any; onClick: () => void })
         transition: 'all 0.2s',
         '&:hover': {
           borderColor: 'primary.main',
-          boxShadow: (theme) => theme.palette.mode === 'dark' 
-            ? '0 4px 20px rgba(0,0,0,0.4)' 
+          boxShadow: (theme) => theme.palette.mode === 'dark'
+            ? '0 4px 20px rgba(0,0,0,0.4)'
             : '0 4px 12px rgba(0,0,0,0.05)',
           transform: 'translateY(-2px)'
         }
@@ -255,12 +258,12 @@ export function DashboardView() {
         roleId: selectedRoleId,
       });
 
-        if (response.status === 200 || response.status === 201) {
-          setToast({ message: "Application submitted successfully!", type: "success", open: true });
-          setIsApplyDialogOpen(false);
-          mutate(); // Refresh the events list
-          mutateMajor(); // Refresh high demand events
-        }
+      if (response.status === 200 || response.status === 201) {
+        setToast({ message: "Application submitted successfully!", type: "success", open: true });
+        setIsApplyDialogOpen(false);
+        mutate(); // Refresh the events list
+        mutateMajor(); // Refresh high demand events
+      }
     } catch (err: unknown) {
       handleAxiosError(err, "Failed to submit application");
     } finally {
@@ -270,21 +273,14 @@ export function DashboardView() {
 
   return (
     <div className="min-h-screen pb-12 w-full px-4 md:px-4">
-      <Box sx={{ mb: { xs: 3, md: 4 }, display: 'flex', alignItems: 'center', gap: { xs: 1.5, md: 2 } }}>
-        <Box sx={{ p: { xs: 1.25, md: 1.5 }, borderRadius: 2, bgcolor: "rgba(var(--primary-rgb), 0.1)", color: "primary.main", display: 'flex' }}>
-          <EventIcon sx={{ fontSize: { xs: 28, md: 35 } }} />
-        </Box>
-        <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Overview Dashboard</h1>
-        </div>
-      </Box>
-
+      <ModuleTitle title="Overview Dashboard" icon={<DashboardOutlined />} />
+      <Divider sx={{ mb: 2 }} />
       <div className="flex flex-col gap-4">
         {/* Unified Summary Cards */}
         <div className="flex flex-row md:grid md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 overflow-x-auto md:overflow-x-visible pb-4 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 hide-scrollbar">
           {isAdmin ? (
             <>
-              <SummaryCard title="Total Events" value={summary.totalEvents} icon={<EventIcon fontSize="inherit" />} color="text-indigo-500" />
+              <SummaryCard title="Total Events" value={summary.totalEvents} icon={<EventOutlined fontSize="inherit" />} color="text-indigo-500" />
               <SummaryCard title="Active Events" value={summary.activeEvents} icon={<ScheduleIcon fontSize="inherit" />} color="text-blue-500" />
               {canViewUsers && (
                 <SummaryCard title="Total Staff" value={summary.totalStaff} icon={<PeopleIcon fontSize="inherit" />} color="text-emerald-500" />
@@ -349,7 +345,7 @@ export function DashboardView() {
                 <div className="flex flex-col gap-4">
                   {events.map((event: any) => {
                     const hasApplied = event.eventRequests?.some((r: any) => r.userId === user?.userId);
-                    
+
                     // Staff shouldn't see events they've already applied to in this list
                     if (!isAdmin && hasApplied) return null;
 
@@ -363,21 +359,20 @@ export function DashboardView() {
 
                     let isToday = false;
                     if (event.eventDate) {
-                        const today = new Date();
-                        today.setHours(0,0,0,0);
-                        const ed = new Date(event.eventDate);
-                        ed.setHours(0,0,0,0);
-                        isToday = ed.getTime() === today.getTime();
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      const ed = new Date(event.eventDate);
+                      ed.setHours(0, 0, 0, 0);
+                      isToday = ed.getTime() === today.getTime();
                     }
 
                     return (
                       <div
                         key={event.eventId}
-                        className={`p-4 border rounded-xl transition-colors flex flex-col md:flex-row justify-between md:items-center gap-4 cursor-pointer ${
-                          isToday 
-                            ? "bg-blue-50/40 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800 hover:bg-blue-50/80 dark:hover:bg-blue-900/20" 
-                            : "bg-white dark:bg-slate-900 border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50"
-                        }`}
+                        className={`p-4 border rounded-xl transition-colors flex flex-col md:flex-row justify-between md:items-center gap-4 cursor-pointer ${isToday
+                          ? "bg-blue-50/40 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800 hover:bg-blue-50/80 dark:hover:bg-blue-900/20"
+                          : "bg-white dark:bg-slate-900 border-gray-100 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800/50"
+                          }`}
                         onClick={() => handleEventClick(event)}
                       >
                         <div className="flex-1 flex flex-row items-center gap-4">

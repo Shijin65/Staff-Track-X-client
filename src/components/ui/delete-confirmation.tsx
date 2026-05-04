@@ -14,7 +14,7 @@ interface DeleteConfirmationProps {
     buttonLabels?: [string, string]; // [confirm, cancel]
 }
 
-const DeleteConfirmation = ({
+export const DeleteConfirmation = ({
     title,
     subtitle,
     icon,
@@ -114,4 +114,3 @@ const DeleteConfirmation = ({
     );
 };
 
-export default DeleteConfirmation;

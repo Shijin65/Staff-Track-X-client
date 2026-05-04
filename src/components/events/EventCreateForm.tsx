@@ -205,6 +205,9 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
         await api.post("/api/events", data);
       }
       setToast({ message: `Event ${isEdit ? "updated" : "created"} successfully.`, type: "success", open: true });
+      if (!isEdit) {
+        router.push("/events");
+      }
     } catch (err: unknown) {
       const message = handleAxiosError(err, "Failed to create event");
       setToast({ message, type: "error", open: true });
@@ -305,7 +308,15 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
               )}
             />
           </Grid>
-
+          <Grid size={{ xs: 12 }}>
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <TextField {...field} fullWidth size={fieldSize} label="Description" multiline rows={3} error={!!errors.description} helperText={errors.description?.message ?? ""} />
+              )}
+            />
+          </Grid>
         </Grid>
       </SectionCard>
 
@@ -489,21 +500,6 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
               )}
             />
           </Grid>
-
-        </Grid>
-      </SectionCard>
-
-      <SectionCard icon={Info} title="Additional Information" subtitle="Extra details and instructions">
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12 }}>
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => (
-                <TextField {...field} fullWidth size={fieldSize} label="Description" multiline rows={3} error={!!errors.description} helperText={errors.description?.message ?? ""} />
-              )}
-            />
-          </Grid>
           <Grid size={{ xs: 12 }}>
             <Controller
               name="locationInstructions"
@@ -515,6 +511,7 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
           </Grid>
         </Grid>
       </SectionCard>
+
 
       <Stack direction="row" spacing={2} justifyContent="flex-end">
         <Button onClick={() => router.push("/events")} variant="outlined">Cancel</Button>

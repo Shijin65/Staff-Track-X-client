@@ -1,9 +1,16 @@
 export * from "./global-loader";
 export { PasswordField } from "./password-input";
 export * from "./global-toast";
+export * from "./main-loader";
 export * from "./table-skelton";
 export * from "./error-card";
 export * from "./module-header";
 export * from "./custom-dialog";
 export { CustomModal } from "./modal";
 export * from "./search";
+export * from "./page-header";
+export * from "./delete-confirmation";
+export {GradientText} from "./GradientText";
+export {GroupSkeleton} from "./table-skelton";
+export {CustomButton} from "./button";
+

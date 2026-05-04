@@ -13,7 +13,7 @@ interface GradientTextProps {
   yoyo?: boolean;
 }
 
-export default function GradientText({
+export const GradientText = ({
   children,
   className = '',
   colors = ['#5227FF', '#FF9FFC', '#B497CF'],
@@ -22,7 +22,7 @@ export default function GradientText({
   direction = 'horizontal',
   pauseOnHover = false,
   yoyo = true
-}: GradientTextProps) {
+}: GradientTextProps) => {
   const [isPaused, setIsPaused] = useState(false);
   const progress = useMotionValue(0);
   const elapsedRef = useRef(0);

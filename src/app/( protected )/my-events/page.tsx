@@ -9,22 +9,18 @@ import {
   CardContent,
   Chip,
   Button,
-  Stack,
   useTheme,
   Paper,
 } from "@mui/material";
 import {
-  Event as EventIcon,
   LocationOn,
   AccessTime,
-  CalendarMonth,
-  ChevronRight,
   HelpOutline,
+  EventOutlined,
 } from "@mui/icons-material";
 import useSWR from "swr";
-import { MainLoader } from "@/components/ui/main-loader";
-import { ErrorCard } from "@/components/ui";
 import { useRouter } from "next/navigation";
+import { MainLoader, ErrorCard, ModuleTitle } from "@/components/ui";
 
 export default function MyEventsPage() {
   const theme = useTheme();
@@ -74,19 +70,7 @@ export default function MyEventsPage() {
   return (
     <Box sx={{ width: "100%", maxWidth: 1536, px: { xs: 1, sm: 2, xl: 4 }, margin: "0 auto", pb: 10 }}>
 
-      {/* Header */}
-      <Box sx={{ mb: { xs: 3, md: 4 }, display: 'flex', alignItems: 'center', gap: { xs: 1.5, md: 2 } }}>
-        <Box sx={{ p: { xs: 1.25, md: 1.5 }, borderRadius: 2, bgcolor: "rgba(var(--primary-rgb), 0.1)", color: "primary.main", display: 'flex' }}>
-          <EventIcon sx={{ fontSize: { xs: 28, md: 35 } }} />
-        </Box>
-        <Box>
-          <Typography variant="h4" fontWeight={800} sx={{ fontSize: { xs: '1.5rem', md: '2.125rem' } }}>
-            My Events
-          </Typography>
-        </Box>
-      </Box>
-
-      {/* Events Grid */}
+      <ModuleTitle title="My Events" icon={<EventOutlined />} />
       {requests.length === 0 ? (
         <Paper
           elevation={0}

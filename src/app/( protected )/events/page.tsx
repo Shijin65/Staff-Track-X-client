@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, Typography, Button, Tooltip, Paper } from "@mui/material";
-import { Add as AddIcon } from "@mui/icons-material";
+import { Box, Button, Tooltip } from "@mui/material";
+import { Add as AddIcon, EventOutlined } from "@mui/icons-material";
 import { EventListing } from "@/components/events/EventListing";
 import { useDebounce } from "@/lib/hooks/useDebounce";
 import { useRouter } from "next/navigation";
-import { SearchInput } from "@/components/ui/search";
+import { SearchInput, ModuleTitle} from "@/components/ui";
 import { useAuthUser } from "@/lib/hooks";
 import { EventRow } from "../../../components/events/event-type";
 
@@ -26,9 +26,7 @@ export default function EventsPage() {
     <Box sx={{ mt: 2 }}>
         <Box sx={{ p: 2, mb: 1 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: { xs: 2, sm: 0 } }}>
-            <Typography variant="h5" fontWeight={700}>
-              Events Management
-            </Typography>
+            <ModuleTitle title="Events Management" icon={<EventOutlined />} />
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
               <Box sx={{ display: { xs: 'none', sm: 'block' }, minWidth: 250 }}>
                 <SearchInput

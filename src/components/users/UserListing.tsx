@@ -23,13 +23,12 @@ import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
 import { EnhancedTable } from "@/components/table/EnhancedTable";
-
-import { CustomModal as Modal } from "@/components/ui/modal";
 import UserDelete from "./UserDelete";
+
+import { CustomModal as Modal, GroupSkeleton, ErrorCard } from "@/components/ui";
 import { ApiUser, UserRow } from "./user-type";
 import { useAuthUser, useWindowSize } from "@/lib/hooks";
 import { useTablePageReset } from "@/lib/hooks/useTablePageReset";
-import { GroupSkeleton, ErrorCard } from "@/components/ui";
 
 
 type Order = "asc" | "desc";
@@ -55,7 +54,7 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
 
   let limit = 12;
   const { height } = useWindowSize();
-  limit = height === 0 ? limit : Math.floor((height - 380) / 43);
+  limit = height === 0 ? limit : Math.floor((height - 380) / 48);
 
   const [selected, setSelected] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
@@ -195,7 +194,7 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
       ) : (
         <Box sx={{ pb: 2, px: 1 }}>
           {canDeleteUser && (
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
               {isSelectionMode ? (
                 <>
                   <Typography variant="subtitle2">{selected.length} selected</Typography>

@@ -2,10 +2,10 @@
 
 import React, { FormEvent } from "react";
 import EventBusyOutlinedIcon from "@mui/icons-material/EventBusyOutlined";
-import DeleteConfirmation from "../ui/delete-confirmation";
 import { useToast } from "@/lib/store/useToastStore";
 import { useAxios } from "@/lib/hooks/useAxios";
 import { handleAxiosError } from "@/lib/utils/axiosError";
+import { DeleteConfirmation } from "../ui";
 
 interface EventDeleteProps {
     uid: string[];

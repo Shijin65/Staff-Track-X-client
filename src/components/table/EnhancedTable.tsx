@@ -12,10 +12,11 @@ import {
   Chip,
   alpha,
   IconButton,
+  Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { EnhancedTableHead } from "./EnhancedTableHeader";
-import { Button } from "../ui/button";
+import { CustomButton } from "@/components/ui";
 
 type Order = "asc" | "desc";
 
@@ -87,14 +88,12 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
   // ── Select all on current page ──────────────────────────────────────────────
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     const pageIds = rows.map((row) => row[idField]);
-    const unselectedOnPage = pageIds.filter((id) => !selected.includes(id));
-
-    if (unselectedOnPage.length === 0) {
-      setSelected(selected.filter((id) => !pageIds.includes(id)));
-    } else if (event.target.checked) {
+    if (event.target.checked) {
+      // Select all on current page: combine existing selection with current page IDs
       setSelected(Array.from(new Set([...selected, ...pageIds])));
     } else {
-      setSelected([]);
+      // Deselect all on current page: remove current page IDs from global selection
+      setSelected(selected.filter((id) => !pageIds.includes(id)));
     }
   };
 
@@ -143,7 +142,8 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
             hasSelection={hasSelection}
             order={order}
             orderBy={orderBy}
-            numSelected={selected.length}
+            numSelected={rows.filter((row) => selected.includes(row[idField])).length}
+            totalSelected={selected.length}
             rowCount={rows.length}
             totalItems={rows.length}
             handleSelectAllClick={handleSelectAllClick}
@@ -326,18 +326,25 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
           mt: "auto",
         }}
       >
-        {selected?.length > 0 && canDelete && (
-          <div className="text-white justify-between">
-            <Button
-              variant="contained"
-              color="error"
-              size="small"
-              onClick={(e) => handleOpen?.(e, "delete", selected)}
-              startIcon={<DeleteIcon className="w-5 h-5 text-white " />}
-            >
-              Delete
-            </Button>
-          </div>
+        {selected?.length > 0 && (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Typography variant="body2" fontWeight={600} color="text.secondary">
+              {selected.length} selected
+            </Typography>
+            {canDelete && (
+              <div className="text-white justify-between">
+                <CustomButton
+                  variant="contained"
+                  color="error"
+                  size="small"
+                  onClick={(e) => handleOpen?.(e, "delete", selected)}
+                  startIcon={<DeleteIcon className="w-5 h-5 text-white " />}
+                >
+                  Delete
+                </CustomButton>
+              </div>
+            )}
+          </Box>
         )}
 
         {page && <Pagination
