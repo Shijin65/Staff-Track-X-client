@@ -123,6 +123,10 @@ const SummaryCard = ({ title, value, icon, color }: { title: string; value: numb
 
 
 const MajorEventCard = ({ event, onClick }: { event: any; onClick: () => void }) => {
+  const required = event.staffRequirementCount || 0;
+  const confirmed = event.confirmedStaffCount || 0;
+  const isFilled = required > 0 && confirmed >= required;
+
   return (
     <Box
       onClick={onClick}
@@ -152,9 +156,17 @@ const MajorEventCard = ({ event, onClick }: { event: any; onClick: () => void })
         <Typography variant="body2" fontWeight={800} noWrap sx={{ mb: 0.5, color: 'text.primary' }}>
           {event.title}
         </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
-          <LocationIcon sx={{ fontSize: 14 }} />
-          <Typography variant="caption" fontWeight={600} noWrap sx={{ maxWidth: 130 }}>{event.city}</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
+            <LocationIcon sx={{ fontSize: 14 }} />
+            <Typography variant="caption" fontWeight={600} noWrap sx={{ maxWidth: 100 }}>{event.city}</Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <PeopleIcon sx={{ fontSize: 14, color: isFilled ? 'success.main' : 'primary.main' }} />
+            <Typography variant="caption" fontWeight={700} color={isFilled ? 'success.main' : 'primary.main'}>
+              {confirmed}/{required}
+            </Typography>
+          </Box>
         </Box>
       </Box>
     </Box>
@@ -341,8 +353,8 @@ export function DashboardView() {
                     // Staff shouldn't see events they've already applied to in this list
                     if (!isAdmin && hasApplied) return null;
 
-                    const required = event.staffRequirements?.reduce((sum: number, req: any) => sum + req.count, 0) || 0;
-                    const assigned = event.eventRequests?.filter((r: any) => r.status === "Approved").length || 0;
+                    const required = event.staffRequirementCount || 0;
+                    const assigned = event.confirmedStaffCount || 0;
                     const staffingRatio = required > 0 ? (assigned / required) : 1;
 
                     let barColor = "bg-green-500";

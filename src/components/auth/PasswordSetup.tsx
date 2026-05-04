@@ -55,7 +55,7 @@ const PasswordSetup: React.FC<PasswordSetupProps> = ({ token }) => {
     <Box
       sx={{
         width: "100%",
-        bgcolor: { xs: "white", md: "transparent" },
+        bgcolor: { xs: "background.paper", md: "transparent" },
         borderTopLeftRadius: { xs: "30px", md: 0 },
         borderTopRightRadius: { xs: "30px", md: 0 },
         p: { xs: 3, md: 0 },

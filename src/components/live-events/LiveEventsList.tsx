@@ -47,8 +47,8 @@ export const LiveEventsList = () => {
       ) : (
         <Grid container spacing={3}>
           {events.map((event: any) => {
-            const totalRequired = event.staffRequirements?.reduce((sum: number, req: any) => sum + req.count, 0) || 0;
-            const reportedStaff = event.eventRequests?.filter((r: any) => r.status === "Approved").length || 0;
+            const totalRequired = event.staffRequirementCount || 0;
+            const reportedStaff = event.confirmedStaffCount || 0;
             const progress = totalRequired > 0 ? (reportedStaff / totalRequired) * 100 : 0;
             const isComplete = reportedStaff === totalRequired && totalRequired > 0;
 

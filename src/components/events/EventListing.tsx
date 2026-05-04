@@ -38,6 +38,31 @@ const columns: Column<EventRow>[] = [
   { id: "eventDate", label: "Date" },
   { id: "eventVenue", label: "Venue" },
   { id: "status", label: "Status" },
+  {
+    id: "id" as any,
+    label: "Staffing",
+    render: (row) => {
+      const required = row.staffRequirementCount || 0;
+      const confirmed = row.confirmedStaffCount || 0;
+      const progress = required > 0 ? (confirmed / required) * 100 : 0;
+      return (
+        <Box sx={{ width: "100%", minWidth: 100 }}>
+          <Typography variant="caption" fontWeight={700} sx={{ mb: 0.5, display: "block" }}>
+            {confirmed} / {required}
+          </Typography>
+          <Box sx={{ width: "100%", height: 4, bgcolor: "divider", borderRadius: 2, overflow: "hidden" }}>
+            <Box
+              sx={{
+                width: `${Math.min(progress, 100)}%`,
+                height: "100%",
+                bgcolor: progress >= 100 ? "success.main" : "primary.main",
+              }}
+            />
+          </Box>
+        </Box>
+      );
+    }
+  },
 ];
 
 export const EventListing = ({
@@ -110,6 +135,8 @@ export const EventListing = ({
     eventDate: item.eventDate || "",
     eventVenue: item.eventVenue || "",
     status: item.status || "",
+    staffRequirementCount: item.staffRequirementCount,
+    confirmedStaffCount: item.confirmedStaffCount,
   });
 
   const parsedData: EventRow[] = !isMobile
@@ -350,6 +377,20 @@ export const EventListing = ({
                   <Typography variant="caption" color="text.secondary" noWrap display="flex" alignItems="center" gap={0.5}>
                     {eventRow.eventVenue}
                   </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                    <Box sx={{ flexGrow: 1, height: 4, bgcolor: "divider", borderRadius: 2, overflow: "hidden", maxWidth: 100 }}>
+                      <Box
+                        sx={{
+                          width: `${Math.min(((eventRow.confirmedStaffCount || 0) / (eventRow.staffRequirementCount || 1)) * 100, 100)}%`,
+                          height: "100%",
+                          bgcolor: (eventRow.confirmedStaffCount || 0) >= (eventRow.staffRequirementCount || 0) && (eventRow.staffRequirementCount || 0) > 0 ? "success.main" : "primary.main",
+                        }}
+                      />
+                    </Box>
+                    <Typography variant="caption" fontWeight={700} color="text.secondary">
+                      {eventRow.confirmedStaffCount || 0}/{eventRow.staffRequirementCount || 0}
+                    </Typography>
+                  </Box>
                 </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, pr: isSelectionMode ? 2 : 0 }}>

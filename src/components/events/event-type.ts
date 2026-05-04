@@ -17,6 +17,8 @@ export interface EventPayload {
   locationInstructions?: string;
   longitude?: string;
   latitude?: string;
+  staffRequirementCount?: number;
+  confirmedStaffCount?: number;
 }
 
 export type Order = "asc" | "desc";
@@ -27,4 +29,6 @@ export interface EventRow {
   eventDate: string;
   eventVenue: string;
   status: string;
+  staffRequirementCount?: number;
+  confirmedStaffCount?: number;
 }
