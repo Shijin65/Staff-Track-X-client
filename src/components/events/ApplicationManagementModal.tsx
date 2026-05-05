@@ -106,11 +106,6 @@ export function ApplicationManagementModal({
       </Tabs>
       {isLoading ? <GroupSkeleton rowsNum={3} /> : filteredApplications.length > 0 ? (
         filteredApplications.map((req: { requestId: string; status: string; user: { userId: string; firstName: string; lastName: string; mobileNumber: string; rating?: number }; roleId: string }) => {
-          const role = roles.find(
-            (r: { roleId: string; name: string }) =>
-              String(r.roleId) === String(req.roleId)
-          );
-          console.log(req.roleId)
           return <ListItem
             key={req.requestId}
             sx={{

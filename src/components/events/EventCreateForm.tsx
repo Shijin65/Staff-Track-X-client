@@ -22,7 +22,6 @@ import {
   Event,
   LocationOn,
   Person,
-  Info,
   GroupAdd,
   Add,
   Delete,

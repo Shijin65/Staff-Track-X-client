@@ -11,6 +11,7 @@ export default function EventCheckInPage({
 }: {
   params: Promise<{ eventId: string }>
 }) {
+
   const eventId = use(params).eventId;
   const router = useRouter();
 

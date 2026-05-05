@@ -149,20 +149,20 @@ export default function MyEventsPage() {
                         </Box>
                         <Box>
                           <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ display: 'block', lineHeight: 1, mb: 0.5, textTransform: 'uppercase' }}>
-                            Start Time
+                            Reporting
                           </Typography>
                           <Typography variant="body2" fontWeight={800}>
-                            {request.event?.startTime || "N/A"}
+                            {request.event?.reportingTime || "N/A"}
                           </Typography>
                         </Box>
                       </Box>
 
                       <Box sx={{ textAlign: 'right' }}>
                         <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ display: 'block', lineHeight: 1, mb: 0.5, textTransform: 'uppercase' }}>
-                          Reporting
+                          Start Time
                         </Typography>
                         <Typography variant="body2" fontWeight={800} color="primary.main">
-                          {request.event?.reportingTime || "N/A"}
+                          {request.event?.startTime || "N/A"}
                         </Typography>
                       </Box>
                     </Box>
