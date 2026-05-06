@@ -39,7 +39,7 @@ const LoginUser: React.FC = () => {
   const axiosBase = useAxios();
 
   const handleLogin = async (form: HTMLFormElement) => {
-    const email = (form.elements.namedItem("user_email") as HTMLInputElement).value;
+    const email = (form.elements.namedItem("user_email") as HTMLInputElement).value.toLowerCase();
     const password = (form.elements.namedItem("user_password") as HTMLInputElement).value;
     await login({ email, password });
   }

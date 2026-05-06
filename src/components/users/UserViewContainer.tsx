@@ -80,7 +80,7 @@ export const UserViewContainer = ({uid}: {uid: string}) => {
       <ModuleHeader
         title="User Details"
         onEdit={() => router.push(`/users/${uid}/edit`)}
-        onBack={() => router.push('/users')}
+        onBack={() => router.back()}
         updatePermission={canUpdateUser}
       />
       <Container id="user-details-view-container" maxWidth={false} sx={{ mt: { xs: 0 }, px: { xs: 2, md: 4 } }}>

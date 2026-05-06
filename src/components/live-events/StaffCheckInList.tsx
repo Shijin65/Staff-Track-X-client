@@ -35,9 +35,10 @@ interface StaffCheckInListProps {
   eventId: string;
   search: string;
   statusFilter: "all" | "reported" | "not_reported";
+  mutateEvents: () => void;
 }
 
-export const StaffCheckInList = ({ eventId, search, statusFilter }: StaffCheckInListProps) => {
+export const StaffCheckInList = ({ eventId, search, statusFilter, mutateEvents }: StaffCheckInListProps) => {
   const observerTarget = useRef<HTMLDivElement | null>(null);
   const api = useAxios()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -89,6 +90,7 @@ export const StaffCheckInList = ({ eventId, search, statusFilter }: StaffCheckIn
   const handleStatusChange = async (staffId: string, newStatus: string) => {
     try {
       await api.put(`/api/events/${eventId}/staffs/${staffId}`, { status: newStatus });
+      mutateEvents();
       mutate();
     } catch (err) {
       console.error("Failed to update attendance status:", err);

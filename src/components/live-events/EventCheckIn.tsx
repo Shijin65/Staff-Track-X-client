@@ -24,7 +24,7 @@ export const EventCheckIn = ({ eventId }: { eventId: string }) => {
   const [search, setSearch] = useState("");
 
   // Fetch event data for the header
-  const { data: summaryData, isLoading, error } = useSWR(`/api/events/${eventId}/summary`);
+  const { data: summaryData, isLoading, error , mutate} = useSWR(`/api/events/${eventId}/summary`);
 
   const event = summaryData?.payload;
 
@@ -111,7 +111,7 @@ export const EventCheckIn = ({ eventId }: { eventId: string }) => {
           </Box>
         </Box>
       </Box>
-      <StaffCheckInList eventId={eventId} search={search} statusFilter={statusFilter} />
+      <StaffCheckInList eventId={eventId} search={search} statusFilter={statusFilter}  mutateEvents={mutate}/>
     </Box>
   );
 };
