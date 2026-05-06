@@ -192,7 +192,7 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
           canView={canViewUser}
         />
       ) : (
-        <Box sx={{ pb: 2, px: 1 }}>
+        <Box sx={{ pb: 2 }}>
           {canDeleteUser && (
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
               {isSelectionMode ? (

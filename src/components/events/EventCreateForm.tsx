@@ -230,7 +230,7 @@ export const EventCreateForm: React.FC<eventFormProps> = ({
     <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ width: "100%" }}>
       <ModuleHeader
         title={isEdit ? "Update Event" : "Create Event"}
-        onBack={() => router.push("/events")}
+        onBack={() => router.back()}
       />
       <SectionCard icon={Event} title="Event Details" subtitle="Main information and schedule">
         <Grid container spacing={3}>

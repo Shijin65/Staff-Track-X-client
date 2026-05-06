@@ -273,7 +273,9 @@ export function DashboardView() {
 
   return (
     <div className="min-h-screen pb-12 w-full px-4 md:px-4">
-      <ModuleTitle title="Overview Dashboard" icon={<DashboardOutlined />} />
+      <Box sx={{ mb: 2 }}>
+        <ModuleTitle title="Overview Dashboard" icon={<DashboardOutlined />} />
+      </Box>
       <Divider sx={{ mb: 2 }} />
       <div className="flex flex-col gap-4">
         {/* Unified Summary Cards */}

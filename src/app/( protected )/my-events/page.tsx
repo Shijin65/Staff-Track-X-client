@@ -68,9 +68,12 @@ export default function MyEventsPage() {
   };
 
   return (
-    <Box sx={{ width: "100%", maxWidth: 1536, px: { xs: 1, sm: 2, xl: 4 }, margin: "0 auto", pb: 10 }}>
+    <Box sx={{ width: "100%", maxWidth: 1536, px: { xs: 2, xl: 4 }, margin: "0 auto", pb: 10 }}>
 
-      <ModuleTitle title="My Events" icon={<EventOutlined />} />
+      <Box sx={{ mb: 2 }}>
+        <ModuleTitle title="My Events" icon={<EventOutlined />} />
+      </Box>
+
       {requests.length === 0 ? (
         <Paper
           elevation={0}

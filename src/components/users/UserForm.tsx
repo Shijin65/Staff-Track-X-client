@@ -288,8 +288,6 @@ export const UserForm: React.FC<UserFormProps> = ({
         });
         if (!isEdit) {
           router.push("/users");
-        } else if (isProfile) {
-          router.push("/profile");
         }
       })
       .catch((error) => {

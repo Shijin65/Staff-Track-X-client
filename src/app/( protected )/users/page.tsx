@@ -24,10 +24,9 @@ export default function UserPage() {
   const debouncedQuery = useDebounce(query, 500);
 
   return (
-    <Box sx={{ mt: 2 }}>
-      {/* <Paper id="main-table-paper" sx={{ width: "100%", mb: 2, borderRadius: 2, overflow: "hidden", }}> */}
-      <Box sx={{ p: 2, mb: 1 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: { xs: 2, sm: 0 } }}>
+    <Box sx={{ px: { xs: 2, xl: 4 } }}>
+      <Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <ModuleTitle title="Users Management" icon={<People />} />
 
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -55,7 +54,7 @@ export default function UserPage() {
           </Box>
         </Box>
 
-        <Box sx={{ display: { xs: 'block', sm: 'none' }, mt: 1 }}>
+        <Box sx={{ display: { xs: 'block', sm: 'none' }, mb: 2 }}>
           <SearchInput
             value={query}
             setValue={setQuery}

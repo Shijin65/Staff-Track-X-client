@@ -8,7 +8,7 @@ interface ModuleTitleProps {
 
 export const ModuleTitle: React.FC<ModuleTitleProps> = ({ title, icon }) => {
   return (
-    <Box sx={{ mb:  3 , display: 'flex', alignItems: 'center', gap: { xs: 1.5, md: 2 } }}>
+    <Box sx={{display: 'flex', alignItems: 'center',alignSelf:"center", gap: { xs: 1.5, md: 2 } }}>
       <Box sx={{ 
         p: { xs: 1.25, md: 1.5 }, 
         borderRadius: 2, 

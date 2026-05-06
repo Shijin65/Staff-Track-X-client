@@ -11,7 +11,7 @@ const Search = styled("div")({
   backgroundColor: "hsl(var(--ash-light, 214 32% 91%) / 0.60)",
   transition: "background-color ease 200ms",
   display: "flex",
-  padding: "1px",
+  padding: "4px",
   "&:hover": {
     backgroundColor: "hsl(var(--ash-light, 214 32% 91%) / 0.80)",
   },
@@ -32,10 +32,7 @@ const StyledInputBase = styled(InputBase)<{ fullWidth?: boolean }>(({ fullWidth 
     padding: 0,
     fontSize: 16, // Changed to 16px to prevent iOS Safari auto-zoom on focus
   },
-  "& ::placeholder": {
-    color: "var(--text-secondary)",
-    opacity: 1,
-  },
+
 }));
 
 interface SearchInputProps extends Omit<InputBaseProps, 'value' | 'onChange'> {

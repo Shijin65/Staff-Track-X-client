@@ -7,11 +7,11 @@ import { LiveEventsList } from "@/components/live-events/LiveEventsList";
 
 export default function LiveEventsPage() {
   return (
-    <Container maxWidth="xl" sx={{ mt: 3, mb: 4 }}>
+    <Box sx={{ px: { xs: 2, xl: 4 } }}>
       <Box sx={{ mb: 3 }}>
         <ModuleTitle title="Events Check-In" icon={<Schedule />} />
       </Box>
       <LiveEventsList />
-    </Container>
+    </Box>
   );
 }
