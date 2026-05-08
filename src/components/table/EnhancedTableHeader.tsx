@@ -4,6 +4,7 @@ import {
   TableCell,
   TableSortLabel,
   Checkbox,
+  Typography,
 } from "@mui/material";
 
 type Order = "asc" | "desc";
@@ -25,6 +26,7 @@ interface TableHeadProps<T> {
   numSelected: number;
   rowCount: number;
   totalItems: number;
+  totalSelected?: number;
   handleSelectAllClick?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -37,6 +39,7 @@ export function EnhancedTableHead<T>({
   numSelected,
   rowCount,
   totalItems,
+  totalSelected,
   handleSelectAllClick,
 }: TableHeadProps<T>) {
   return (
@@ -69,7 +72,13 @@ export function EnhancedTableHead<T>({
           </TableCell>
         ))}
 
-        <TableCell align="right"></TableCell>
+        <TableCell align="right">
+          {(totalSelected ?? numSelected) > 0 && (
+            <Typography variant="caption" sx={{ fontWeight: 700, color: "primary.main", whiteSpace: "nowrap" }}>
+              {totalSelected ?? numSelected} SELECTED
+            </Typography>
+          )}
+        </TableCell>
       </TableRow>
     </TableHead>
   );

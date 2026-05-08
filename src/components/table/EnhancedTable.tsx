@@ -12,10 +12,11 @@ import {
   Chip,
   alpha,
   IconButton,
+  Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { EnhancedTableHead } from "./EnhancedTableHeader";
-import { Button } from "../ui/button";
+import { CustomButton } from "@/components/ui";
 
 type Order = "asc" | "desc";
 
@@ -40,9 +41,9 @@ interface EnhancedTableProps<T, K extends keyof T = keyof T> {
 
   // Sorting
   order?: Order;
-  setOrder: React.Dispatch<React.SetStateAction<Order>>;
+  setOrder?: React.Dispatch<React.SetStateAction<Order>>;
   orderBy?: keyof T;
-  setOrderBy: React.Dispatch<React.SetStateAction<keyof T>>;
+  setOrderBy?: React.Dispatch<React.SetStateAction<keyof T>>;
 
   handleOpen?: (event: React.MouseEvent<HTMLButtonElement>, type: string, uid: Array<T[K]>) => void;
   handleViewDetails: (userId: string) => void;
@@ -54,6 +55,13 @@ interface EnhancedTableProps<T, K extends keyof T = keyof T> {
   canDelete?: boolean;
   canView?: boolean;
 }
+
+const lineClamp = {
+  display: "-webkit-box",
+  overflow: "hidden",
+  WebkitBoxOrient: "vertical" as const,
+  WebkitLineClamp: 4,
+};
 
 export function EnhancedTable<T, K extends keyof T = keyof T>({
   rows,
@@ -80,14 +88,12 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
   // ── Select all on current page ──────────────────────────────────────────────
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     const pageIds = rows.map((row) => row[idField]);
-    const unselectedOnPage = pageIds.filter((id) => !selected.includes(id));
-
-    if (unselectedOnPage.length === 0) {
-      setSelected(selected.filter((id) => !pageIds.includes(id)));
-    } else if (event.target.checked) {
+    if (event.target.checked) {
+      // Select all on current page: combine existing selection with current page IDs
       setSelected(Array.from(new Set([...selected, ...pageIds])));
     } else {
-      setSelected([]);
+      // Deselect all on current page: remove current page IDs from global selection
+      setSelected(selected.filter((id) => !pageIds.includes(id)));
     }
   };
 
@@ -136,7 +142,8 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
             hasSelection={hasSelection}
             order={order}
             orderBy={orderBy}
-            numSelected={selected.length}
+            numSelected={rows.filter((row) => selected.includes(row[idField])).length}
+            totalSelected={selected.length}
             rowCount={rows.length}
             totalItems={rows.length}
             handleSelectAllClick={handleSelectAllClick}
@@ -168,7 +175,7 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
                   key={String(id)}
                   hover
                   selected={checked}
-                  sx={{ cursor: "pointer", backgroundColor: checked ? "var(--background)" : "white" }}
+                  sx={{ cursor: "pointer", backgroundColor: checked ? "var(--background)" : "" }}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleClick(e, id)
@@ -185,86 +192,103 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
                   )}
 
                   {/* Data columns */}
-                  {columns.map((col) => {
+                  {columns.map((col, index) => {
                     const value = row[col.id];
-                    let content: React.ReactNode;
+                    const isExpanded = checked && selected.length === 1;
+                    const isMain = col.id === mainCol && canView;
+                    const commonProps = {
+
+                      onClick: (e: React.MouseEvent) => {
+                        if (isMain) {
+                          e.stopPropagation();
+                          handleViewDetails(id as string);
+                        }
+                      },
+                      sx: isMain
+                        ? {
+                          fontWeight: 600,
+                          textTransform: "capitalize" as const,
+                          whiteSpace: "nowrap" as const,
+                          color: "primary.main",
+                          cursor: "pointer",
+                        }
+                        : { color: "text.primary", py: 1 },
+                    };
 
                     if (col.render) {
-                      content = col.render(row);
-                    }
-                    else if (col.id === "status") {
-                      const statusStr = String(value).toLowerCase();
-                      let config = { bg: "#f5f5f5", color: "#9e9e9e" };
-                      if (statusStr === "pending") config = { bg: alpha("#ff9800", 0.1), color: "#ed6c02" };
-                      else if (statusStr === "confirmed") config = { bg: alpha("#4caf50", 0.1), color: "#2e7d32" };
-                      else if (statusStr === "completed") config = { bg: alpha("#2196f3", 0.1), color: "#1976d2" };
-                      else if (statusStr === "cancelled") config = { bg: alpha("#f44336", 0.1), color: "#d32f2f" };
-                      content = (
-                        <Chip
-                          label={statusStr}
-                          size="small"
-                          sx={{
-                            bgcolor: config.bg,
-                            color: config.color,
-                            fontWeight: 600,
-                            borderRadius: "6px",
-                            height: 24,
-                            "& .MuiChip-label": { px: 1 }
-                          }}
-                        />
+                      return (
+                        <TableCell key={index} {...commonProps}>
+                          {col.render(row)}
+                        </TableCell>
                       );
-                    } else if (col.id === "isActive") {
-                      content = (
-                        <Chip
-                          label={value ? "Active" : "Inactive"}
-                          size="small"
-                          sx={{
-                            bgcolor: value ? alpha("#4caf50", 0.1) : alpha("#f44336", 0.1),
-                            color: value ? "#2e7d32" : "#d32f2f",
-                            fontWeight: 600,
-                            borderRadius: "6px",
-                            height: 24,
-                            "& .MuiChip-label": { px: 1 }
-                          }}
-                        />
+                    } else if (col.id === "status" || col.id === "isActive" || col.id === "isVerified") {
+                      return (
+                        <TableCell key={index} {...commonProps}>
+                          <Chip
+                            label={
+                              col.id === "isActive"
+                                ? value ? "Active" : "Inactive"
+                                : col.id === "isVerified"
+                                  ? value ? "Verified" : "Pending"
+                                  : String(value ?? "")
+                            }
+                            size="small"
+                            sx={{
+                              bgcolor: (() => {
+                                const s = String(value ?? "").toLowerCase();
+                                if (col.id === "isActive") return value ? alpha("#4caf50", 0.1) : alpha("#f44336", 0.1);
+                                if (col.id === "isVerified") return value ? alpha("#2196f3", 0.1) : alpha("#ff9800", 0.1);
+                                if (s === "pending") return alpha("#ff9800", 0.1);
+                                if (s === "confirmed") return alpha("#4caf50", 0.1);
+                                if (s === "completed") return alpha("#2196f3", 0.1);
+                                if (s === "cancelled") return alpha("#f44336", 0.1);
+                                return "#f5f5f5";
+                              })(),
+                              color: (() => {
+                                const s = String(value ?? "").toLowerCase();
+                                if (col.id === "isActive") return value ? "#2e7d32" : "#d32f2f";
+                                if (col.id === "isVerified") return value ? "#1976d2" : "#ed6c02";
+                                if (s === "pending") return "#ed6c02";
+                                if (s === "confirmed") return "#2e7d32";
+                                if (s === "completed") return "#1976d2";
+                                if (s === "cancelled") return "#d32f2f";
+                                return "#9e9e9e";
+                              })(),
+                              fontWeight: 600,
+                              borderRadius: "6px",
+                              height: 24,
+                              textTransform: "capitalize",
+                              "& .MuiChip-label": { px: 1 },
+                            }}
+                          />
+                        </TableCell>
                       );
-                    } else if (col.id === "isVerified") {
-                      content = (
-                        <Chip
-                          label={value ? "Verified" : "Pending"}
-                          size="small"
-                          sx={{
-                            bgcolor: value ? alpha("#2196f3", 0.1) : alpha("#ff9800", 0.1),
-                            color: value ? "#1976d2" : "#ed6c02",
-                            fontWeight: 600,
-                            borderRadius: "6px",
-                            height: 24,
-                            "& .MuiChip-label": { px: 1 }
-                          }}
-                        />
-                      );
-                    } else {
-                      content = String(value ?? "");
                     }
 
-                    return (
-                      <TableCell
-                        onClick={(e) => {
-                          if (col.id === mainCol && canView) {
-                            e.stopPropagation();
-                            handleViewDetails(id as string)
-                          }
-                        }}
-                        key={String(col.id)}
-                        sx={
-                          col.id === mainCol && canView
-                            ? { fontWeight: 600, textTransform: "capitalize", whiteSpace: "nowrap", color: "primary.main" }
-                            : { color: "text.primary" }
-                        }
-                      >
-                        {content}
-                      </TableCell>
-                    );
+                    else {
+                      return (
+                        <TableCell key={index} {...commonProps}>
+                          <span
+                            className={`text-[12px] 2xl:text-[13px] ${hasSelection ? "my-1" : "my-2"
+                              } min-w-32 ${isMain ? "font-semibold hover:underline" : "font-normal"}`}
+                            style={{
+                              ...lineClamp,
+                              WebkitLineClamp:
+                                isExpanded
+                                  ? "unset"
+                                  : 1,
+                            }}
+                          >
+                            {typeof value === "object" && value !== null
+                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                              ? (value as any).name ?? ""
+                              : typeof value === "string"
+                                ? value.trim()
+                                : String(value ?? "")}
+                          </span>
+                        </TableCell>
+                      )
+                    };
                   })}
 
                   {/* Actions */}
@@ -302,18 +326,25 @@ export function EnhancedTable<T, K extends keyof T = keyof T>({
           mt: "auto",
         }}
       >
-        {selected?.length > 0 && canDelete && (
-          <div className="text-white justify-between">
-            <Button
-              variant="contained"
-              color="error"
-              size="small"
-              onClick={(e) => handleOpen?.(e, "delete", selected)}
-              startIcon={<DeleteIcon className="w-5 h-5 text-white " />}
-            >
-              Delete
-            </Button>
-          </div>
+        {selected?.length > 0 && (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Typography variant="body2" fontWeight={600} color="text.secondary">
+              {selected.length} selected
+            </Typography>
+            {canDelete && (
+              <div className="text-white justify-between">
+                <CustomButton
+                  variant="contained"
+                  color="error"
+                  size="small"
+                  onClick={(e) => handleOpen?.(e, "delete", selected)}
+                  startIcon={<DeleteIcon className="w-5 h-5 text-white " />}
+                >
+                  Delete
+                </CustomButton>
+              </div>
+            )}
+          </Box>
         )}
 
         {page && <Pagination

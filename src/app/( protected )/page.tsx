@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import { DashboardView } from "./components/DashboardView";
+import { DashboardView } from "../../components/dashboard/DashboardView";
 
 export default function OverviewDashboard() {
   return <DashboardView />;

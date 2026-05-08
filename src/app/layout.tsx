@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import AppProvider from "../lib/provider/app-provider";
 import { AuthProvider } from "@/context/auth-provider";
+import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,6 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <InitColorSchemeScript defaultMode="system" />
+      </head>
       <body className={inter.className}>
         <AuthProvider>
           <AppProvider>

@@ -1,33 +1,28 @@
+"use client";
+
 import { styled } from "@mui/material/styles";
 import InputBase, { InputBaseProps } from "@mui/material/InputBase";
+import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { IconButton, InputAdornment } from "@mui/material";
-import { Close, Search as SearchIcon } from "@mui/icons-material";
 
-const Search = styled("div")(({ theme }) => ({
+const Search = styled("div")({
   position: "relative",
-  borderRadius: "100px",
-  backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.05)" : "#f1f5f9",
-  border: "1px solid",
-  borderColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.1)" : "#e2e8f0",
-  transition: "all 0.2s ease-in-out",
+  borderRadius: 12,
+  backgroundColor: "hsl(var(--ash-light, 214 32% 91%) / 0.60)",
+  transition: "background-color ease 200ms",
   display: "flex",
-  alignItems: "center",
-  paddingLeft: "12px",
-  paddingRight: "4px",
+  padding: "4px",
   "&:hover": {
-    backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.08)" : "#f8fafc",
-    borderColor: theme.palette.primary.main,
+    backgroundColor: "hsl(var(--ash-light, 214 32% 91%) / 0.80)",
   },
   "&:focus-within": {
-    backgroundColor: "#ffffff",
-    borderColor: theme.palette.primary.main,
-    boxShadow: `0 0 0 3px ${theme.palette.mode === "dark" ? "rgba(var(--primary-rgb), 0.2)" : "rgba(var(--primary-rgb), 0.1)"}`,
+    backgroundColor: "hsl(var(--ash-light, 214 32% 91%) / 0.60)",
   },
-}));
+});
 
-const StyledInputBase = styled(InputBase)<{ fullWidth?: boolean }>(({ theme, fullWidth }) => ({
+const StyledInputBase = styled(InputBase)<{ fullWidth?: boolean }>(({ fullWidth }) => ({
   transition: "width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-  color: theme.palette.mode === "dark" ? "white" : "#4b5563",
+  color: "var(--text-primary)",
   marginLeft: 5,
   width: "100%",
   minWidth: "100px",
@@ -35,14 +30,12 @@ const StyledInputBase = styled(InputBase)<{ fullWidth?: boolean }>(({ theme, ful
   "& .MuiInputBase-input": {
     width: "100%",
     padding: 0,
-    fontSize: 14,
+    fontSize: 16, // Changed to 16px to prevent iOS Safari auto-zoom on focus
   },
-  "& ::placeholder": {
-    color: theme.palette.mode === "dark" ? "white" : "#000",
-  },
+
 }));
 
-interface SearchInputProps extends Omit<InputBaseProps, 'value' | 'onChange' | 'onSelect'> {
+interface SearchInputProps extends Omit<InputBaseProps, 'value' | 'onChange'> {
   value: string;
   setValue: (value: string) => void;
   placeholder?: string;
@@ -79,9 +72,9 @@ export const SearchInput: React.FC<SearchInputProps> = ({
               sx={{ p: "7px !important" }}
             >
               {!value ? (
-                <SearchIcon className="w-5 h-5 text-ash" />
+                <MagnifyingGlassIcon style={{ width: 20, height: 20 }} />
               ) : (
-                <Close className="w-5 h-5 text-ash" />
+                <XMarkIcon style={{ width: 20, height: 20 }} />
               )}
             </IconButton>
           </InputAdornment>
@@ -92,3 +85,4 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     </Search>
   );
 };
+

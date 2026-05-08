@@ -1,9 +1,9 @@
 "use client";
 
-import React, { ReactNode, FormEvent } from "react";
+import { ReactNode, FormEvent } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
-import { Button, IconButton, useMediaQuery, useTheme, Box, Typography } from "@mui/material";
+import { Button, useMediaQuery, useTheme, Box, Typography } from "@mui/material";
 
 interface DeleteConfirmationProps {
     title: string;
@@ -14,7 +14,7 @@ interface DeleteConfirmationProps {
     buttonLabels?: [string, string]; // [confirm, cancel]
 }
 
-const DeleteConfirmation = ({
+export const DeleteConfirmation = ({
     title,
     subtitle,
     icon,
@@ -27,7 +27,7 @@ const DeleteConfirmation = ({
 
     return (
         <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-6 items-center justify-center ">
+            <div className="flex flex-col gap-4 items-center justify-center ">
                 <Box
                     sx={{
                         display: "flex",
@@ -37,7 +37,6 @@ const DeleteConfirmation = ({
                         borderRadius: "50%",
                         bgcolor: "rgba(239, 68, 68, 0.08)",
                         color: "error.main",
-                        mb: 2,
                         "& > svg": { fontSize: { xs: 32, sm: 44 } }
                     }}
                 >
@@ -115,4 +114,3 @@ const DeleteConfirmation = ({
     );
 };
 
-export default DeleteConfirmation;

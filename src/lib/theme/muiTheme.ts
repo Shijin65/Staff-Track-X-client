@@ -24,11 +24,36 @@ const commonOverrides = {
   },
 };
 
-export const lightTheme = createTheme({
+export const theme = createTheme({
   cssVariables: true,
   ...commonOverrides,
   colorSchemes: {
     light: {
+      palette: {
+        primary: {
+          main: "var(--primary)",
+          light: "var(--primary-light)",
+          dark: "var(--primary-dark)",
+          contrastText: "var(--primary-contrast)",
+        },
+        secondary: {
+          main: "var(--secondary)",
+          light: "var(--secondary-light)",
+          dark: "var(--secondary-dark)",
+          contrastText: "var(--secondary-contrast)",
+        },
+        background: {
+          default: "var(--background)",
+          paper: "var(--background-paper)",
+        },
+        text: {
+          primary: "var(--text-primary)",
+          secondary: "var(--text-secondary)",
+          disabled: "var(--text-disabled)",
+        },
+      },
+    },
+    dark: {
       palette: {
         primary: {
           main: "var(--primary)",

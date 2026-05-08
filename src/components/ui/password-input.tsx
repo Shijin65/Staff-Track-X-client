@@ -57,6 +57,7 @@ function PasswordField({
         size={size}
         autoComplete={autoComplete}
         startAdornment={startAdornment}
+        inputProps={{ suppressHydrationWarning: true }}
         {...rest}
         endAdornment={
           <InputAdornment position="end">

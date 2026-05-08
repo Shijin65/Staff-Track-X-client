@@ -23,6 +23,24 @@
   --sky : 219 94% 57%;
   --yellow: 43 100% 53%;
   --red: 0 84% 60%;
+  --ash: 215 16% 47%;
+  --ash-light: 214 32% 91%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #3B82F6;
+    --primary-light: #60A5FA;
+    --primary-dark: #2563EB;
+    --background: #0f172a;
+    --background-paper: #1e293b;
+    --paper: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-disabled: #64748b;
+    --ash: 214 32% 91%;
+    --ash-light: 215 16% 47%;
+  }
 }
 
 .root, body {

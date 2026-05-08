@@ -23,8 +23,8 @@ import {
 } from "@mui/icons-material";
 import { useAuthContext } from "@/context/auth-provider";
 import { useRouter } from "next/navigation";
-import { CustomModal as Modal } from "@/components/ui/modal";
-import ChangePassword from "@/app/( protected )/profile/components/ChangePassword";
+import { CustomModal as Modal } from "@/components/ui";
+import ChangePassword from "@/components/profile/ChangePassword";
 
 import { API_URL } from "@/lib/utils/constance";
 
@@ -33,8 +33,8 @@ const Header = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
-  const auth = useAuthContext();
-  const user = auth?.user?.user;
+  const { logout, user: userState } = useAuthContext();
+  const user = userState?.user;
   const theme = useTheme();
   const router = useRouter();
 
@@ -43,7 +43,7 @@ const Header = () => {
 
   const handleLogout = () => {
     handleUserMenuClose();
-    if (auth?.logout) auth.logout();
+    if (logout) logout();
   };
 
   return (

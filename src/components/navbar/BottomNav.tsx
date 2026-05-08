@@ -22,6 +22,7 @@ export const BottomNav = () => {
     if (path === "/my-events") return !["supervisor", "super_admin"].includes(roleName as string);
     if (path === "/events") return availableAccess?.ViewEvent;
     if (path === "/users") return availableAccess?.ViewUser;
+    if (path === "/mark-attendance") return availableAccess?.MarkAttendance || availableAccess?.ViewAttendance || ["supervisor", "super_admin"].includes(roleName as string);
     return false;
   };
 
@@ -31,7 +32,7 @@ export const BottomNav = () => {
     item.path === "/"
       ? pathname === "/"
       : pathname.startsWith(item.path)
-  ); 
+  );
   const value = activeIndex === -1 ? 0 : activeIndex;
 
   return (
@@ -44,7 +45,7 @@ export const BottomNav = () => {
         right: 0,
         borderRadius: "25px",
         backdropFilter: "blur(12px)",
-        background: "rgba(255,255,255,0.7)",
+        // background: "rgba(255,255,255,0.7)",
         boxShadow: "0 -4px 12px rgba(0,0,0,0.05)",
         display: { xs: "block", md: "none" },
         zIndex: (theme) => theme.zIndex.appBar,
@@ -74,14 +75,15 @@ export const BottomNav = () => {
               key={item.label}
               label={item.label}
               disableRipple
+
               icon={
                 <Box
                   sx={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    width: isSelected ? 42 : 32,
-                    height: isSelected ? 42 : 32,
+                    width: isSelected ? 42 : 30,
+                    height: isSelected ? 42 : 30,
                     borderRadius: "12px",
                     transition: "all 0.3s ease",
                     background: isSelected
@@ -96,6 +98,8 @@ export const BottomNav = () => {
               sx={{
                 minWidth: "auto",
                 color: "text.secondary",
+                height: isSelected ? 70 : 50,
+                width: isSelected ? 70 : 50,
                 "& .MuiBottomNavigationAction-label": {
                   fontSize: 11,
                   transition: "0.3s",

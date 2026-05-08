@@ -57,10 +57,18 @@ export const useAxios = () => {
           await memorizedRefresh();
           return instance(config);
         } catch (err) {
+          clearUser();
           router.push("/auth/login");
           return Promise.reject(err);
         }
       }
+
+      // Handle inactive user (405 status code)
+      if (response?.status === 405) {
+        clearUser();
+        router.push("/auth/login");
+      }
+
       return Promise.reject(error);
     }
   );
