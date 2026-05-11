@@ -7,11 +7,10 @@ import { IconButton, InputAdornment } from "@mui/material";
 
 const Search = styled("div")({
   position: "relative",
-  borderRadius: 12,
+  borderRadius: 10,
   backgroundColor: "hsl(var(--ash-light, 214 32% 91%) / 0.60)",
   transition: "background-color ease 200ms",
   display: "flex",
-  padding: "4px",
   "&:hover": {
     backgroundColor: "hsl(var(--ash-light, 214 32% 91%) / 0.80)",
   },
@@ -23,7 +22,7 @@ const Search = styled("div")({
 const StyledInputBase = styled(InputBase)<{ fullWidth?: boolean }>(({ fullWidth }) => ({
   transition: "width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
   color: "var(--text-primary)",
-  marginLeft: 5,
+  marginLeft: 10,
   width: "100%",
   minWidth: "100px",
   flexGrow: fullWidth ? 1 : 0,

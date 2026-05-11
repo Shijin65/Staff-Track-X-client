@@ -212,7 +212,7 @@ export function EventView({ eventId }: EventViewProps) {
               transition: "all 0.2s ease",
             }}
           >
-            Manage Applications
+          Applications
           </Button>
         )}
       </Box>
@@ -516,7 +516,7 @@ export function EventView({ eventId }: EventViewProps) {
       <CustomDialog
         open={isManageModalOpen}
         onClose={() => setIsManageModalOpen(false)}
-        title="Manage Applications"
+        title="Applications"
         maxWidth="md"
         actions={
           <Button onClick={() => setIsManageModalOpen(false)} variant="outlined" sx={{ borderRadius: 2 }}>Close</Button>

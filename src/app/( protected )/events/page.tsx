@@ -49,7 +49,7 @@ export default function EventsPage() {
               <SearchInput
                 value={query}
                 setValue={setQuery}
-                placeholder="Search Event"
+                placeholder="Search event"
                 fullWidth
               />
             </Box>
@@ -57,7 +57,7 @@ export default function EventsPage() {
             {canCreateEvent && (
               <Tooltip title="Add Event">
                 <Button
-                size="small"
+                  size="small"
                   variant="contained"
                   startIcon={<AddIcon />}
                   onClick={() => router.push("/events/create")}
@@ -73,7 +73,7 @@ export default function EventsPage() {
           <SearchInput
             value={query}
             setValue={setQuery}
-            placeholder="Search Event"
+            placeholder="Search event"
             fullWidth
           />
         </Box>

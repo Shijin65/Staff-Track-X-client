@@ -272,7 +272,7 @@ export function DashboardView() {
   };
 
   return (
-    <div className="min-h-screen pb-12 w-full px-4 md:px-4">
+    <div className="w-full px-4 md:px-4 pb-8">
       <Box sx={{ mb: 2 }}>
         <ModuleTitle title="Overview Dashboard" icon={<DashboardOutlined />} />
       </Box>
@@ -313,13 +313,13 @@ export function DashboardView() {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
           {/* Main Events List */}
           <div className="xl:col-span-2 flex flex-col gap-6">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl">
               <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
                 <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
                   <EventIcon className="text-primary" /> Upcoming Events
                 </h2>
                 <div className="w-full md:w-72">
-                  <SearchInput value={searchQuery} setValue={setSearchQuery} placeholder="Search events..." fullWidth />
+                  <SearchInput value={searchQuery} setValue={setSearchQuery} placeholder="Search events" fullWidth />
                 </div>
               </div>
 

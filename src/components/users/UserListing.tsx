@@ -193,7 +193,13 @@ export const UserListing = ({ order, orderBy, setOrder, setOrderBy, query }: Use
         />
       ) : (
         <Box sx={{ pb: 2 }}>
-          {canDeleteUser && (
+          {parsedData.length === 0 ? (
+            <Box sx={{ py: 8, textAlign: 'center' }}>
+              <Typography color="text.secondary" fontWeight={500}>
+                No Users found.
+              </Typography>
+            </Box>
+          ) : canDeleteUser && (
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
               {isSelectionMode ? (
                 <>

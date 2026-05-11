@@ -21,10 +21,10 @@ export const ModuleTitle: React.FC<ModuleTitleProps> = ({ title, icon }) => {
         {icon}
       </Box>
       <Typography 
-        variant="h4" 
+
         fontWeight={700}
         sx={{ 
-          fontSize: { xs: '1.5rem', md: '2rem' },
+          fontSize: { xs: '1rem',sm:'1.6rem', md: '2rem' },
           color: 'text.primary',
           letterSpacing: '-0.02em'
         }}

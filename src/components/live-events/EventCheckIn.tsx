@@ -13,10 +13,9 @@ import {
   LocationOn,
   Schedule,
 } from "@mui/icons-material";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import { StaffCheckInList } from "./StaffCheckInList";
 import { useState } from "react";
-import { formatTime } from "@/lib/utils/formateDate";
 
 
 export const EventCheckIn = ({ eventId }: { eventId: string }) => {
@@ -84,7 +83,7 @@ export const EventCheckIn = ({ eventId }: { eventId: string }) => {
       <Box sx={{ position: "sticky", top: { xs: 56, md: 64 }, zIndex: 10, bgcolor: "background.default", py: 2, mb: 1, borderBottom: "1px solid", borderColor: "divider" }}>
         <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 2, alignItems: "center" }}>
           <Box sx={{ flexGrow: 1, width: { xs: "100%", sm: "70%" } }}>
-            <SearchInput value={search} setValue={setSearch} placeholder="Search staff name" fullWidth />
+            <SearchInput value={search} setValue={setSearch} placeholder="Search staff" fullWidth />
           </Box>
           <Box sx={{ display: "flex", gap: 1, width: { xs: "100%", sm: "auto" }, overflowX: "auto", pb: { xs: 1, sm: 0 }, "&::-webkit-scrollbar": { display: "none" } }}>
             <Chip

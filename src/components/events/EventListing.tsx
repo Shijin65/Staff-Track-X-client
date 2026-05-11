@@ -23,6 +23,7 @@ import { CustomModal as Modal, GroupSkeleton, ErrorCard } from "@/components/ui"
 import { useAuthUser, useWindowSize } from "@/lib/hooks";
 import { EventPayload, EventRow, Order } from "./event-type";
 import EventDelete from "./EventDelete";
+import { EventCard } from "./EventCard";
 
 interface EventListingProps {
   order: "asc" | "desc";
@@ -142,7 +143,7 @@ export const EventListing = ({
     ? (tableData?.payload?.map(mapEventToRow) || [])
     : (infiniteData ? infiniteData.flatMap(pageData => pageData?.payload?.map(mapEventToRow) || []) : []);
 
-  const handleOpen = async (_event: React.MouseEvent<HTMLButtonElement>, type: string, id: string[]) => {
+  const handleOpen = (_event: React.MouseEvent<HTMLButtonElement>, type: string, id: string[]) => {
     if (type === "edit") {
       router.push(`/events/${id[0]}/edit`);
     } else {
@@ -167,86 +168,6 @@ export const EventListing = ({
   };
 
   // Helper function to format the Date badge
-  const renderDateBadge = (dateStr: string) => {
-    if (!dateStr) return null;
-    const date = new Date(dateStr);
-    const day = date.getDate();
-    const month = date.toLocaleString('default', { month: 'short' });
-
-    // Check if event is today or past
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const eventDate = new Date(date);
-    eventDate.setHours(0, 0, 0, 0);
-
-    let isToday = false;
-    let bgcolor = "rgba(var(--primary-rgb), 0.1)";
-    let color = "primary.main";
-    let border = "1px solid rgba(var(--primary-rgb), 0.2)";
-
-    if (eventDate.getTime() === today.getTime()) {
-      isToday = true;
-      bgcolor = "primary.main";
-      color = "primary.contrastText";
-      border = "none";
-    } else if (eventDate.getTime() < today.getTime()) {
-      bgcolor = "rgba(0,0,0,0.05)";
-      color = "text.secondary";
-      border = "1px solid rgba(0,0,0,0.1)";
-    }
-
-    return (
-      <Box sx={{ position: 'relative' }}>
-        <Box sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          bgcolor,
-          color,
-          border,
-          borderRadius: 2,
-          minWidth: 50,
-          height: 56,
-          boxShadow: isToday ? '0 4px 12px rgba(var(--primary-rgb), 0.3)' : 'none',
-        }}>
-          <Typography variant="h6" fontWeight={800} lineHeight={1}>{day}</Typography>
-          <Typography variant="caption" fontWeight={600} sx={{ textTransform: 'uppercase', fontSize: '0.65rem' }}>{month}</Typography>
-        </Box>
-        {isToday && (
-          <Box
-            sx={{
-              position: 'absolute',
-              top: -4,
-              right: -4,
-              width: 14,
-              height: 14,
-              bgcolor: 'error.main',
-              borderRadius: '50%',
-              border: '2px solid',
-              borderColor: 'background.paper',
-              animation: 'pulse 1.5s infinite',
-              '@keyframes pulse': {
-                '0%': { boxShadow: '0 0 0 0 rgba(239, 68, 68, 0.7)' },
-                '70%': { boxShadow: '0 0 0 6px rgba(239, 68, 68, 0)' },
-                '100%': { boxShadow: '0 0 0 0 rgba(239, 68, 68, 0)' },
-              }
-            }}
-          />
-        )}
-      </Box>
-    );
-  };
-
-  // Status mapping
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'completed': return 'success';
-      case 'cancelled': return 'error';
-      case 'upcoming': return 'primary';
-      default: return 'default';
-    }
-  };
 
   if (isLoading) return (
     <GroupSkeleton rowsNum={3} />
@@ -260,32 +181,11 @@ export const EventListing = ({
   );
 
   return (
-    <Box id="event-listing-container" sx={{ width: "100%", px: 2 }}>
-      {!isMobile ? (
-        <EnhancedTable
-          rows={parsedData}
-          columns={columns}
-          idField="id"
-          selected={selected}
-          setSelected={setSelected}
-          page={page}
-          setPage={setPage}
-          handleViewDetails={handleViewDetails}
-          mainCol="title"
-          limit={limit}
-          totalPages={data?.metaData?.totalPages || 1}
-          totalItems={data?.metaData?.totalCount || 0}
-          setOrder={setOrder}
-          setOrderBy={setOrderBy as any}
-          hasSelection={true}
-          orderBy={orderBy as keyof EventRow}
-          order={order}
-        />
-      ) : (
+    <Box id="event-listing-container" sx={{ width: "100%" }}>
+      {isMobile ? (
         <Box sx={{ width: "100%" }}>
-          {/* Mobile Actions Header */}
           {parsedData.length > 0 && (
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, px: 0.5 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", my: 1 }}>
               {!isSelectionMode && <Typography variant="subtitle1" fontWeight={600} color="text.secondary" sx={{ fontSize: "14px", whiteSpace: "nowrap" }}>
                 {data?.metaData?.totalCount || 0} Events Found
               </Typography>}
@@ -332,89 +232,26 @@ export const EventListing = ({
           )}
 
           <Stack spacing={2} sx={{ mb: 2 }}>
+            {parsedData.length === 0 && !isValidating && (
+              <Box sx={{ py: 8, textAlign: 'center' }}>
+                <Typography color="text.secondary" fontWeight={500}>
+                  No events found.
+                </Typography>
+              </Box>
+            )}
             {parsedData.map((eventRow) => (
-              <Card
+              <EventCard
                 key={eventRow.id}
-                onClick={() => handleViewDetails(eventRow.id)}
-                sx={{
-                  p: .80,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: isSelectionMode ? 1 : 2,
-                  cursor: "pointer",
-                  borderRadius: 3,
-                  boxShadow: selected.includes(eventRow.id) ? "0 4px 12px rgba(var(--primary-rgb), 0.15)" : "0 2px 10px rgba(0,0,0,0.04)",
-                  border: "1px solid",
-                  borderColor: selected.includes(eventRow.id) ? "primary.main" : "divider",
-                  bgcolor: selected.includes(eventRow.id) ? "rgba(25, 118, 210, 0.04)" : "background.paper",
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    borderColor: "primary.main",
-                    bgcolor: selected.includes(eventRow.id) ? "rgba(25, 118, 210, 0.08)" : "rgba(25, 118, 210, 0.02)",
-                  }
+                eventRow={eventRow}
+                isSelectionMode={isSelectionMode}
+                selected={selected}
+                onSelect={(id, checked) => {
+                  setSelected(prev => checked ? [...prev, id] : prev.filter(item => item !== id));
                 }}
-              >
-                {canDeleteEvent && isSelectionMode && (
-                  <Checkbox
-                    size="small"
-                    checked={selected.includes(eventRow.id)}
-                    onChange={(e) => {
-                      e.stopPropagation();
-                      setSelected(prev => e.target.checked ? [...prev, eventRow.id] : prev.filter(id => id !== eventRow.id));
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                    sx={{ p: 0.5 }}
-                  />
-                )}
-
-                {renderDateBadge(eventRow.eventDate)}
-
-                <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                  <Typography variant="subtitle2" fontWeight={700} noWrap sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                    {eventRow.title}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary" noWrap display="flex" alignItems="center" gap={0.5}>
-                    {eventRow.eventVenue}
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
-                    <Box sx={{ flexGrow: 1, height: 4, bgcolor: "divider", borderRadius: 2, overflow: "hidden", maxWidth: 100 }}>
-                      <Box
-                        sx={{
-                          width: `${Math.min(((eventRow.confirmedStaffCount || 0) / (eventRow.staffRequirementCount || 1)) * 100, 100)}%`,
-                          height: "100%",
-                          bgcolor: (eventRow.confirmedStaffCount || 0) >= (eventRow.staffRequirementCount || 0) && (eventRow.staffRequirementCount || 0) > 0 ? "success.main" : "primary.main",
-                        }}
-                      />
-                    </Box>
-                    <Typography variant="caption" fontWeight={700} color="text.secondary">
-                      {eventRow.confirmedStaffCount || 0}/{eventRow.staffRequirementCount || 0}
-                    </Typography>
-                  </Box>
-                </Box>
-
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, pr: isSelectionMode ? 2 : 0 }}>
-                  {eventRow.status && (
-                    <Chip
-                      size="small"
-                      label={eventRow.status}
-                      color={getStatusColor(eventRow.status) as any}
-                      sx={{ fontSize: "0.65rem", height: 20, textTransform: 'capitalize' }}
-                    />
-                  )}
-                  {canDeleteEvent && !isSelectionMode && (
-                    <IconButton
-                      color="error"
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOpen(e as any, "delete", [eventRow.id]);
-                      }}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  )}
-                </Box>
-              </Card>
+                onViewDetails={handleViewDetails}
+                onOpenModal={handleOpen}
+                canDeleteEvent={canDeleteEvent}
+              />
             ))}
           </Stack>
           <div ref={observerTarget} style={{ height: "20px" }}></div>
@@ -424,6 +261,26 @@ export const EventListing = ({
             </Typography>
           )}
         </Box>
+      ) : (
+        <EnhancedTable
+          rows={parsedData}
+          columns={columns}
+          idField="id"
+          selected={selected}
+          setSelected={setSelected}
+          page={page}
+          setPage={setPage}
+          handleViewDetails={handleViewDetails}
+          mainCol="title"
+          limit={limit}
+          totalPages={data?.metaData?.totalPages || 1}
+          totalItems={data?.metaData?.totalCount || 0}
+          setOrder={setOrder}
+          setOrderBy={setOrderBy as any}
+          hasSelection={true}
+          orderBy={orderBy as keyof EventRow}
+          order={order}
+        />
       )}
 
       {modalInfo?.type === "delete" && (
