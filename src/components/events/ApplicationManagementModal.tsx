@@ -1,33 +1,25 @@
-"use client";
-
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
-
-  List,
-  ListItem,
-  ListItemText,
   Typography,
   Box,
   Chip,
-  IconButton,
-  Tooltip,
   Stack,
-  Tab,
-  Tabs,
+  Button,
+  Grid,
 } from "@mui/material";
 import {
   CheckCircle as CheckCircleIcon,
   Cancel as CancelIcon,
-  Person,
   Star,
+  Call,
 } from "@mui/icons-material";
 import { useToast } from "@/lib/store/useToastStore";
 import { useLoader } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
-import { useAxios } from "@/lib/hooks";
+import { useAxios, useDebounce } from "@/lib/hooks";
 import { handleAxiosError } from "@/lib/utils/axiosError";
-import { GroupSkeleton } from "@/components/ui";
+import { GroupSkeleton, SearchInput } from "@/components/ui";
 
 interface ApplicationManagementModalProps {
   eventId: string;
@@ -37,17 +29,18 @@ interface ApplicationManagementModalProps {
 
 export function ApplicationManagementModal({
   eventId,
-  roles,
   canEdit,
 }: ApplicationManagementModalProps) {
   const { setToast } = useToast();
   const { setLoading } = useLoader();
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 500);
   const axios = useAxios();
   const router = useRouter();
 
   const { data: applicationsData, isLoading, mutate: mutateApps } = useSWR(
-    eventId ? `/api/events/${eventId}/applications` : null
+    eventId ? `/api/events/${eventId}/applications?SearchQuery=${encodeURIComponent(debouncedSearch)}` : null
   );
 
   const apps = applicationsData?.payload || [];
@@ -75,124 +68,220 @@ export function ApplicationManagementModal({
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "confirmed":
-        return "success";
+  const filteredApplications = useMemo(() => {
+    return apps.filter((app: any) => {
+      if (activeTab === "all") return true;
+      return app.status === activeTab;
+    });
+  }, [apps, activeTab]);
+
+  const getPillStyles = (type: string) => {
+    const isActive = activeTab === type;
+    const baseStyles = {
+      px: 2,
+      py: 0.5,
+      borderRadius: 10,
+      cursor: "pointer",
+      fontWeight: 700,
+      fontSize: "0.85rem",
+      display: "flex",
+      alignItems: "center",
+      gap: 1,
+      transition: "all 0.2s ease",
+      border: "1px solid transparent",
+      "&:hover": {
+        bgcolor: isActive ? "" : "rgba(255, 255, 255, 0.05)",
+      }
+    };
+
+    switch (type) {
+      case "all":
+        return {
+          ...baseStyles,
+          bgcolor: isActive ? "rgba(37, 99, 235, 0.15)" : "transparent",
+          color: isActive ? "#60a5fa" : "text.secondary",
+          borderColor: isActive ? "rgba(37, 99, 235, 0.3)" : "transparent",
+        };
       case "pending":
-        return "warning";
+        return {
+          ...baseStyles,
+          bgcolor: isActive ? "rgba(245, 158, 11, 0.15)" : "transparent",
+          color: isActive ? "#fbbf24" : "text.secondary",
+          borderColor: isActive ? "rgba(245, 158, 11, 0.3)" : "transparent",
+        };
+      case "confirmed":
+        return {
+          ...baseStyles,
+          bgcolor: isActive ? "rgba(34, 197, 94, 0.15)" : "transparent",
+          color: isActive ? "#4ade80" : "text.secondary",
+          borderColor: isActive ? "rgba(34, 197, 94, 0.3)" : "transparent",
+        };
       case "rejected":
-        return "error";
-      case "cancelled":
-        return "default";
+        return {
+          ...baseStyles,
+          bgcolor: isActive ? "rgba(239, 68, 68, 0.15)" : "transparent",
+          color: isActive ? "#f87171" : "text.secondary",
+          borderColor: isActive ? "rgba(239, 68, 68, 0.3)" : "transparent",
+        };
       default:
-        return "default";
+        return baseStyles;
     }
   };
 
-  const filteredApplications = apps.filter((app: { status: string }) => {
-    if (activeTab === 0) return app.status === "pending";
-    if (activeTab === 1) return app.status === "confirmed";
-    if (activeTab === 2) return app.status === "rejected";
-    return true;
-  });
-
   return (
-    <List disablePadding>
-      <Tabs value={activeTab} onChange={(_, val) => setActiveTab(val)} aria-label="application status tabs">
-        <Tab label={`Pending (${apps.filter((a: { status: string }) => a.status === 'pending').length})`} />
-        <Tab label={`Confirmed (${apps.filter((a: { status: string }) => a.status === 'confirmed').length})`} />
-        <Tab label={`Rejected (${apps.filter((a: { status: string }) => a.status === 'rejected').length})`} />
-      </Tabs>
-      {isLoading ? <GroupSkeleton rowsNum={3} /> : filteredApplications.length > 0 ? (
-        filteredApplications.map((req: { requestId: string; status: string; user: { userId: string; firstName: string; lastName: string; mobileNumber: string; rating?: number }; roleId: string }) => {
-          return <ListItem
-            key={req.requestId}
-            sx={{
-              px: 1,
-              py: 2,
-              borderBottom: '1px solid #f0f0f0',
-              '&:last-child': { borderBottom: 'none' }
-            }}
-          >
-            <Box sx={{ display: 'flex', width: '100%', alignItems: 'center' }}>
-              <Box sx={{ mr: 2, p: 1, bgcolor: 'rgba(0,0,0,0.04)', borderRadius: '50%', display: 'flex' }}>
-                <Person color="action" />
-              </Box>
-              <ListItemText
-                primary={
-                  <Typography
-                    fontWeight={700}
-                    component="span"
-                    onClick={() => router.push(`/users/${req.user?.userId}/view`)}
-                    sx={{ cursor: 'pointer', '&:hover': { color: 'primary.main', textDecoration: 'underline' } }}
-                  >
-                    {`${req.user?.firstName || "-"} ${req.user?.lastName || ""}`}
-                  </Typography>
+    <Box sx={{ width: "100%" }}>
+      {/* Search and Filter Section */}
+      <Stack spacing={3} sx={{ mb: 4 }}>
+        <SearchInput
+          placeholder="Search application by name..."
+          value={searchQuery}
+          setValue={setSearchQuery}
+          fullWidth
+        />
+        <Box sx={{ display: "flex" }}>
+          <Box onClick={() => setActiveTab("all")} sx={getPillStyles("all")}>
+            All
+          </Box>
+          <Box onClick={() => setActiveTab("pending")} sx={getPillStyles("pending")}>
+            Pending
+          </Box>
+          <Box onClick={() => setActiveTab("confirmed")} sx={getPillStyles("confirmed")}>
+            Confirmed
+          </Box>
+          <Box onClick={() => setActiveTab("rejected")} sx={getPillStyles("rejected")}>
+            Rejected
+          </Box>
+        </Box>
+      </Stack>
+
+      {/* Applications List */}
+      <Stack spacing={2.5}>
+        {isLoading ? (
+          <GroupSkeleton rowsNum={3} />
+        ) : filteredApplications.length > 0 ? (
+          filteredApplications.map((req: any) => (
+            <Box
+              key={req.requestId}
+              sx={{
+                p: 2.5,
+                borderRadius: 4,
+                border: "1px solid",
+                borderColor: "divider",
+                bgcolor: "rgba(255, 255, 255, 0.02)",
+                position: "relative",
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                "&:hover": {
+                  borderColor: "rgba(37, 99, 235, 0.2)",
+                  bgcolor: "rgba(255, 255, 255, 0.04)",
+                  transform: "translateY(-2px)",
+                  boxShadow: "0 12px 30px rgba(0,0,0,0.3)"
                 }
-                secondary={
-                  <React.Fragment>
-                    <Typography component="span" color="primary" sx={{ display: 'block', fontSize: 13, fontWeight: 600, mb: 0.5 }}>
-                      {roles.find((r: { roleId: string; name: string }) => String(r.roleId) === String(req.roleId))?.name?.replace(/_/g, " ")?.toUpperCase() || "No Role"}
+              }}
+            >
+              {/* Card Header: User Info & Status */}
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
+                <Box sx={{ display: "flex", gap: 2 }}>
+                  <Box>
+                    <Typography
+                      variant="h6"
+                      fontWeight={800}
+                      onClick={() => router.push(`/users/${req.user?.userId}/view`)}
+                      sx={{ cursor: 'pointer', '&:hover': { color: 'primary.main' }, mb: 0.2 }}
+                    >
+                      {req.user?.firstName} {req.user?.lastName}
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Star sx={{ color: '#faaf00', fontSize: '1rem', mr: 0.5 }} />
-                        <Typography variant="caption" fontWeight={700} color="text.primary">
-                          {req.user?.rating?.toFixed(1) || "0.0"}
-                        </Typography>
+                    <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 1.5, color: "text.secondary" }}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                        <Call sx={{ fontSize: "1rem" }} />
+                        <Typography variant="body2" fontWeight={700}>{req.user?.mobileNumber || "N/A"}</Typography>
                       </Box>
-                      <Typography component="span" sx={{ fontSize: 13 }} color="text.secondary">
-                        • Contact: {req.user?.mobileNumber || "N/A"}
+                      <Typography variant="body2" fontWeight={800} sx={{ color: "primary.main", fontSize: "0.75rem", letterSpacing: "0.05em" }}>
+                        • {req.roleName?.replace(/_/g, " ").toUpperCase()}
                       </Typography>
                     </Box>
-                  </React.Fragment>
-                }
-                secondaryTypographyProps={{ component: 'div' }}
-              />
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Chip
-                  label={req.status}
-                  size="small"
-                  color={getStatusColor(req.status)}
-                  variant="outlined"
-                  sx={{ textTransform: 'capitalize', fontWeight: 600 }}
-                />
-                {canEdit && (
-                  <Stack direction="row" spacing={0.5}>
-                    {req.status !== 'confirmed' && (
-                      <Tooltip title="Approve">
-                        <IconButton
-                          size="small"
-                          color="success"
-                          onClick={() => handleUpdateStatus(req.requestId, 'confirmed')}
-                        >
-                          <CheckCircleIcon />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                    {req.status !== 'rejected' && (
-                      <Tooltip title="Reject">
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={() => handleUpdateStatus(req.requestId, 'rejected')}
-                        >
-                          <CancelIcon />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                  </Stack>
-                )}
-              </Box>
-            </Box>
-          </ListItem>
+                  </Box>
+                </Box>
 
-        })) : (
-        <Box sx={{ py: 5, textAlign: 'center' }}>
-          <Typography color="text.secondary">No applications found in this category.</Typography>
-        </Box>
-      )}
-    </List>
+                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 1 }}>
+                  <Chip
+                    label={req.status}
+                    size="small"
+                    sx={{
+                      bgcolor: req.status === "confirmed" ? "rgba(34, 197, 94, 0.1)" : req.status === "rejected" ? "rgba(239, 68, 68, 0.1)" : "rgba(245, 158, 11, 0.1)",
+                      color: req.status === "confirmed" ? "#4ade80" : req.status === "rejected" ? "#f87171" : "#fbbf24",
+                      fontWeight: 800,
+                      fontSize: "0.7rem",
+                      textTransform: "capitalize",
+                      borderRadius: 1.5,
+                      px: 0.5
+                    }}
+                  />
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                    <Star sx={{ color: "#fbbf24", fontSize: "1.1rem" }} />
+                    <Typography variant="body2" fontWeight={800}>{req.user?.rating?.toFixed(1) || "0.0"}</Typography>
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* Actions */}
+              {canEdit && (
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 6 }}>
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<CheckCircleIcon />}
+                      onClick={() => handleUpdateStatus(req.requestId, "confirmed")}
+                      disabled={req.status === "confirmed"}
+                      sx={{
+                        borderRadius: 3,
+                        py: 1,
+                        textTransform: "none",
+                        fontWeight: 800,
+                        borderColor: "divider",
+                        color: "text.primary",
+                        transition: "all 0.2s ease",
+                        "&:hover": { 
+                          borderColor: "primary.main", 
+                          bgcolor: "rgba(37, 99, 235, 0.08)",
+                          boxShadow: "0 4px 12px rgba(37, 99, 235, 0.15)",
+                          transform: "translateY(-1px)"
+                        }
+                      }}
+                    >
+                      Approve
+                    </Button>
+                  </Grid>
+                  <Grid size={{ xs: 6 }}>
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<CancelIcon />}
+                      onClick={() => handleUpdateStatus(req.requestId, "rejected")}
+                      disabled={req.status === "rejected"}
+                      sx={{
+                        borderRadius: 3,
+                        py: 1,
+                        textTransform: "none",
+                        fontWeight: 800,
+                        borderColor: "divider",
+                        color: "text.",
+                        transition: "all 0.2s ease",
+                      }}
+                    >
+                      Reject
+                    </Button>
+                  </Grid>
+                </Grid>
+              )}
+            </Box>
+          ))
+        ) : (
+          <Box sx={{ py: 8, textAlign: 'center', borderRadius: 4, bgcolor: "rgba(255,255,255,0.01)", border: "1px dashed", borderColor: "divider" }}>
+            <Typography color="text.secondary" fontWeight={600}>No applications found</Typography>
+          </Box>
+        )}
+      </Stack>
+    </Box>
   );
 }

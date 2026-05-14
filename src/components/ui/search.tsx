@@ -2,9 +2,9 @@
 
 import { styled } from "@mui/material/styles";
 import InputBase, { InputBaseProps } from "@mui/material/InputBase";
-import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { IconButton, InputAdornment } from "@mui/material";
-
+import SearchIcon from '@mui/icons-material/Search';
+import ClearIcon from '@mui/icons-material/Clear';
 const Search = styled("div")({
   position: "relative",
   borderRadius: 10,
@@ -71,9 +71,9 @@ export const SearchInput: React.FC<SearchInputProps> = ({
               sx={{ p: "7px !important" }}
             >
               {!value ? (
-                <MagnifyingGlassIcon style={{ width: 20, height: 20 }} />
+                <SearchIcon />
               ) : (
-                <XMarkIcon style={{ width: 20, height: 20 }} />
+                <ClearIcon />
               )}
             </IconButton>
           </InputAdornment>

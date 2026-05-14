@@ -13,4 +13,5 @@ export * from "./delete-confirmation";
 export {GradientText} from "./GradientText";
 export {GroupSkeleton} from "./table-skelton";
 export {CustomButton} from "./button";
+export * from "./empty-state";
 

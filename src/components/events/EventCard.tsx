@@ -150,8 +150,8 @@ export const EventCard = ({
           {eventRow.eventVenue}
         </Typography>
       </Box>
-
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, pr: isSelectionMode ? 2 : 0 }}>
+<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, pr: isSelectionMode ? 2 : 0 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0.5, pr: isSelectionMode ? 2 : 0 }}>
         {eventRow.status && (
           <Chip
             size="small"
@@ -160,6 +160,24 @@ export const EventCard = ({
             sx={{ fontSize: "0.65rem", height: 20, textTransform: 'capitalize' }}
           />
         )}
+        {eventRow.eventType && (
+          <Chip
+            size="small"
+            label={eventRow.eventType}
+            variant="outlined"
+            sx={{ 
+              fontSize: "0.6rem", 
+              height: 18, 
+              bgcolor: "rgba(var(--primary-rgb), 0.08)", 
+              color: "primary.main",
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '0.02em',
+              borderColor: 'transparent'
+            }}
+          />
+        )}
+      </Box>
         {canDeleteEvent && !isSelectionMode && (
           <IconButton
             color="error"

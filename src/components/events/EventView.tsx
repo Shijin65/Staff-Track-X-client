@@ -16,6 +16,7 @@ import {
   ListItemText,
   Container,
   Stack,
+  Avatar,
 } from "@mui/material";
 import {
   Event as EventIcon,
@@ -111,18 +112,7 @@ export function EventView({ eventId }: EventViewProps) {
       px: { xs: 2, md: 3, lg: 4 },
       position: "relative"
     }}>
-      {/* Background Glow */}
-      <Box sx={{
-        position: "fixed",
-        top: -100,
-        right: -100,
-        width: 400,
-        height: 400,
-        borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(var(--primary-rgb), 0.08) 0%, transparent 70%)",
-        zIndex: -1,
-        pointerEvents: "none"
-      }} />
+
 
       <ModuleHeader
         title="Event Details"
@@ -133,384 +123,364 @@ export function EventView({ eventId }: EventViewProps) {
 
       <Box
         sx={{
-          mt: 2,
-          mb: 5,
+          mb: 4,
           display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          alignContent: "center",
-          gap: 3,
+          flexDirection: "column",
+          gap: 1.5,
         }}
       >
+        {/* Chips at the top */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
+            flexWrap: "wrap",
+          }}
+        >
+          <Chip
+            label={event.eventType?.toUpperCase() || "EVENT"}
+            size="small"
+            sx={{
+              bgcolor: "rgba(37, 99, 235, 0.15)",
+              color: "#60a5fa",
+              fontWeight: 700,
+              borderRadius: "6px",
+              fontSize: "0.7rem",
+              letterSpacing: "0.05em",
+            }}
+          />
 
-        {/* Title */}
-        <Box><Typography
+          <Chip
+            label={event.status?.toUpperCase() || "PENDING"}
+            size="small"
+            sx={{
+              bgcolor: event.status === 'Cancelled' ? "rgba(239, 68, 68, 0.15)" : "rgba(var(--primary-rgb), 0.12)",
+              color: getStatusColor(event.status),
+              fontWeight: 700,
+              borderRadius: "6px",
+              fontSize: "0.7rem",
+              letterSpacing: "0.05em",
+            }}
+          />
+        </Box>
+
+        {/* Title below chips */}
+        <Typography
           variant="h3"
           sx={{
             fontWeight: 800,
             fontSize: { xs: "1.8rem", md: "2.4rem" },
-            letterSpacing: "-0.02em",
-            lineHeight: 1.2,
+            letterSpacing: "-0.01em",
+            lineHeight: 1.1,
           }}
         >
           {event.title}
         </Typography>
-          {/* Chips */}
+
+        {/* Action Button below title */}
+        {canEditEvent && (
+          <Box>
+            <Button
+              variant="outlined"
+              onClick={() => setIsManageModalOpen(true)}
+              size="medium"
+              startIcon={<Assignment />}
+              sx={{
+                borderRadius: "8px",
+                px: 2,
+                py: 0.8,
+                textTransform: "none",
+                fontWeight: 600,
+                borderColor: "divider",
+                color: "text.primary",
+                "&:hover": {
+                  borderColor: "text.secondary",
+                  bgcolor: "rgba(255,255,255,0.05)",
+                },
+                transition: "all 0.2s ease",
+              }}
+            >
+              Applications
+            </Button>
+          </Box>
+        )}
+
+        {/* Status Banner if cancelled */}
+        {event.status === 'Cancelled' && (
           <Box
             sx={{
+              mt: 2,
+              p: 2,
+              borderRadius: 2,
+              bgcolor: "rgba(239, 68, 68, 0.1)",
+              border: "1px solid rgba(239, 68, 68, 0.2)",
               display: "flex",
+              justifyContent: "space-between",
               alignItems: "center",
-              gap: 1,
-              mb: 1.5,
-              flexWrap: "wrap",
             }}
           >
-            <Chip
-              label={event.eventType || "General Event"}
-              size="small"
-              sx={{
-                bgcolor: "rgba(var(--primary-rgb), 0.12)",
-                color: "primary.main",
-                fontWeight: 600,
-                borderRadius: "6px",
-              }}
-            />
-
-            <Chip
-              label={event.status || "Pending"}
-              color={getStatusColor(event.status) as any}
-              size="small"
-              sx={{
-                fontWeight: 600,
-                borderRadius: "6px",
-              }}
-            />
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+              <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "#ef4444" }} />
+              <Typography variant="body2" sx={{ color: "#f87171", fontWeight: 600 }}>
+                This event has been cancelled
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-
-        {/* Action Button */}
-        {canEditEvent && (
-          <Button
-            variant="contained"
-            onClick={() => setIsManageModalOpen(true)}
-            size="small"
-            startIcon={<Assignment />}
-            sx={{
-              borderRadius: "999px",
-              px: 1.5,
-              textTransform: "none",
-              fontWeight: 700,
-              alignSelf: "center",
-              boxShadow: "0 8px 18px rgba(var(--primary-rgb), 0.25)",
-
-              "&:hover": {
-                transform: "translateY(-2px)",
-                boxShadow: "0 12px 24px rgba(var(--primary-rgb), 0.35)",
-              },
-
-              transition: "all 0.2s ease",
-            }}
-          >
-          Applications
-          </Button>
         )}
       </Box>
 
       <Grid container spacing={4}>
-        {/* Main Details Column */}
         <Grid size={{ xs: 12, lg: canViewClientInfo || canViewUsers ? 8 : 12 }}>
           <Stack spacing={4}>
-            {/* Core Info Card */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: { xs: 2, md: 4 },
-                borderRadius: 4,
-                border: "1px solid",
-                borderColor: "divider",
-                bgcolor: "background.paper",
-                overflow: "hidden",
-                position: "relative"
-              }}
-            >
-              <Typography variant="h6" fontWeight={800} sx={{ mb: 4, display: "flex", alignItems: "center", gap: 1.5 }}>
-                <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: "rgba(var(--primary-rgb), 0.1)", display: "flex" }}>
-                  <EventIcon sx={{ color: "primary.main" }} />
-                </Box>
-                Event Details
+
+            {/* DATE & SCHEDULE */}
+            <Box>
+              <Typography variant="caption" fontWeight={700} sx={{ color: "text.secondary", textTransform: "uppercase", letterSpacing: "0.1em", mb: 1.5, display: "block" }}>
+                Date & Schedule
               </Typography>
-
-              <Grid container spacing={2} >
-                {[
-                  { label: "Date", value: event.eventDate ? new Date(event.eventDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : "Not Set", icon: <EventIcon fontSize="small" /> },
-                  { 
-                    label: "Schedule", 
-                    isSchedule: true,
-                    icon: <AccessTime fontSize="small" /> 
-                  },
-                  { label: "Event Type", value: event.eventType, icon: <Assignment fontSize="small" /> },
-                  { label: "Status", value: event.status, icon: <InfoOutlined fontSize="small" /> },
-                  { label: "City", value: event.city, icon: <Business fontSize="small" /> },
-                  { label: "District", value: event.district, icon: <LocationOn fontSize="small" /> },
-                  { label: "State", value: event.state, icon: <Public fontSize="small" /> },
-                ].map((item: any, idx) => (
-                  <Grid size={{ sm: 6, md: item.isSchedule ? 4 : 2.66 }} sx={{ width: "100%" }} key={idx}>
-                    <Box sx={{ p: 2, borderRadius: 2, bgcolor: "rgba(var(--primary-rgb), 0.03)", height: "100%", border: "1px solid", borderColor: "rgba(var(--primary-rgb), 0.05)" }}>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "text.secondary", mb: 0.5 }}>
-                        <Box sx={{ color: "primary.main", display: "flex" }}>{item.icon}</Box>
-                        <Typography variant="caption" fontWeight={700} sx={{ textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                          {item.label}
-                        </Typography>
-                      </Box>
-                      
-                      {item.isSchedule ? (
-                        <Box sx={{ display: "flex", gap: 3, alignItems: "center" , mt:1}}>
-                          <Box>
-                            <Typography variant="caption" color="text.secondary" display="block">Reporting</Typography>
-                            <Typography variant="body2" fontWeight={700}>{event.reportingTime || "N/A"}</Typography>
-                          </Box>
-                          <Box sx={{ borderLeft: "1px solid", borderColor: "divider", height: 20 }} />
-                          <Box>
-                            <Typography variant="caption" color="text.secondary" display="block">Starting</Typography>
-                            <Typography variant="body2" fontWeight={700}>{event.startTime || "N/A"}</Typography>
-                          </Box>
-                        </Box>
-                      ) : (
-                        <Typography variant="body2" fontWeight={700} sx={{mt:1, color: item.value ? "text.primary" : "text.disabled" }}>
-                          {item.value || "Not Set"}
-                        </Typography>
-                      )}
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
-
-              {event.description && (
-                <Box sx={{ mt: 3, pt: 3, borderTop: "1px solid", borderColor: "divider" }}>
-                  <Typography variant="subtitle2" fontWeight={800} color="text.secondary" sx={{ mb: 1, display: "flex", alignItems: "center", gap: 1 }}>
-                    <InfoOutlined fontSize="small" /> Description
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: "text.secondary", lineHeight: 1.7 }}>
-                    {event.description}
-                  </Typography>
-                </Box>
-              )}
-            </Paper>
-
-            {/* Client Info (Conditional) */}
-            {canViewClientInfo && (
-              <Paper
-                elevation={0}
-                sx={{
-                  p: { xs: 2, md: 4 },
-                  borderRadius: 4,
-                  border: "1px solid",
-                  borderColor: "divider",
-                  background: "background.paper"
-                }}
-              >
-                <Typography variant="h6" fontWeight={800} sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1.5 }}>
-                  <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: "rgba(var(--primary-rgb), 0.1)", display: "flex" }}>
-                    <Person sx={{ color: "primary.main" }} />
+              <Paper elevation={0} sx={{ p: 2, borderRadius: 4, border: "1px solid", borderColor: "divider", bgcolor: "rgba(255, 255, 255, 0.02)" }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1 }}>
+                  <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: "rgba(37, 99, 235, 0.1)", display: "flex" }}>
+                    <EventIcon sx={{ color: "primary.main", fontSize: 20 }} />
                   </Box>
-                  Client Information
+                  <Typography variant="body2" fontWeight={700} color="text.secondary">Date</Typography>
+                </Box>
+
+                <Typography variant="h5" fontWeight={800} sx={{ mb: 0.5 }}>
+                  {event.eventDate ? new Date(event.eventDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : "Not Set"}
                 </Typography>
-                <Grid container spacing={3}>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <Box>
-                      <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: "uppercase" }}>
-                        Client Name
-                      </Typography>
-                      <Typography variant="body1" fontWeight={700}>{event.clientName || "N/A"}</Typography>
+                <Typography variant="body2" color="text.secondary" fontWeight={600} sx={{ mb: 2 }}>
+                  {event.eventDate ? new Date(event.eventDate).toLocaleDateString('en-US', { weekday: 'long' }) : ""}
+                </Typography>
+
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 6 }}>
+                    <Box sx={{ p: 1.5, borderRadius: 3, bgcolor: "rgba(37, 99, 235, 0.03)", border: "1px solid", borderColor: "rgba(37, 99, 235, 0.1)" }}>
+                      <Typography variant="caption" fontWeight={700} sx={{ color: "text.secondary", textTransform: "uppercase", display: "block", mb: 1 }}>Reporting</Typography>
+                      <Typography variant="h5" fontWeight={800} color="primary.main">{event.reportingTime || "N/A"}</Typography>
                     </Box>
                   </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <Box>
-                      <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: "uppercase" }}>
-                        Contact Number
-                      </Typography>
-                      <Typography variant="body1" fontWeight={700} sx={{ color: "primary.main" }}>
-                        {event.clientPhone || "N/A"}
-                      </Typography>
+                  <Grid size={{ xs: 6 }}>
+                    <Box sx={{ p: 1.5, borderRadius: 3, bgcolor: "rgba(34, 197, 94, 0.03)", border: "1px solid", borderColor: "rgba(34, 197, 94, 0.1)" }}>
+                      <Typography variant="caption" fontWeight={700} sx={{ color: "text.secondary", textTransform: "uppercase", display: "block", mb: 1 }}>Starting</Typography>
+                      <Typography variant="h5" fontWeight={800} sx={{ color: "#22c55e" }}>{event.startTime || "N/A"}</Typography>
                     </Box>
                   </Grid>
                 </Grid>
               </Paper>
+            </Box>
+
+            {/* EVENT INFO */}
+            <Box>
+              <Typography variant="caption" fontWeight={700} sx={{ color: "text.secondary", textTransform: "uppercase", letterSpacing: "0.1em", mb: 1.5, display: "block" }}>
+                Event Info
+              </Typography>
+              <Paper elevation={0} sx={{ p: 0, borderRadius: 4, border: "1px solid", borderColor: "divider", bgcolor: "rgba(255, 255, 255, 0.02)", overflow: "hidden" }}>
+                <List disablePadding>
+                  {[
+                    { label: "Event type", value: event.eventType, icon: <Business fontSize="small" /> },
+                    { label: "Status", value: event.status, icon: <InfoOutlined fontSize="small" />, color: event.status === 'Cancelled' ? '#f87171' : 'primary.main' },
+                    { label: "City", value: event.city, icon: <LocationOn fontSize="small" /> },
+                    { label: "District", value: event.district, icon: <Public fontSize="small" /> },
+                    { label: "State", value: event.state, icon: <Public fontSize="small" /> },
+                  ].map((item, idx) => (
+                    <ListItem key={idx} sx={{ py: 1.8, px: 3, borderBottom: idx === 4 ? "none" : "1px solid", borderColor: "divider" }}>
+                      <ListItemIcon sx={{ minWidth: 36, color: "text.secondary" }}>{item.icon}</ListItemIcon>
+                      <ListItemText
+                        primary={<Typography variant="body2" fontWeight={600} color="text.secondary">{item.label}</Typography>}
+                      />
+                      <Typography variant="body2" fontWeight={800} sx={{ color: item.color || "text.primary" }}>
+                        {item.value || "N/A"}
+                      </Typography>
+                    </ListItem>
+                  ))}
+                </List>
+              </Paper>
+            </Box>
+            {/* Sidebar: Location & Map */}
+            <Grid size={{ xs: 12, lg: canViewClientInfo || canViewUsers ? 4 : 12 }}>
+              <Stack spacing={4}>
+                <Box>
+                  <Typography variant="caption" fontWeight={700} sx={{ color: "text.secondary", textTransform: "uppercase", letterSpacing: "0.1em", mb: 1.5, display: "block" }}>
+                    Location
+                  </Typography>
+                  <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: "1px solid", borderColor: "divider", bgcolor: "rgba(255, 255, 255, 0.02)" }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
+                      <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: "rgba(16, 185, 129, 0.1)", display: "flex" }}>
+                        <LocationOn sx={{ color: "#10b981", fontSize: 20 }} />
+                      </Box>
+                      <Typography variant="subtitle1" fontWeight={800}>Venue location</Typography>
+                    </Box>
+
+                    <Box sx={{ mb: 4, borderRadius: 3, overflow: "hidden", position: "relative", border: "1px solid", borderColor: "divider", height: 240 }}>
+                      {mapQuery ? (
+                        <iframe
+                          width="100%"
+                          height="100%"
+                          style={{ border: 0, filter: "invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%)" }}
+                          loading="lazy"
+                          allowFullScreen
+                          src={`https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`}
+                        />
+                      ) : (
+                        <Box sx={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", bgcolor: "rgba(0,0,0,0.2)" }}>
+                          <Typography variant="body2" color="text.disabled">Map unavailable</Typography>
+                        </Box>
+                      )}
+                      {event.eventVenue && (
+                        <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 10 }}>
+                          <Box sx={{ bgcolor: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", px: 1.5, py: 0.5, borderRadius: 10, border: "1px solid rgba(255,255,255,0.2)", display: "flex", alignItems: "center", gap: 1 }}>
+                            <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "primary.main", boxShadow: "0 0 10px rgba(var(--primary-rgb), 0.8)" }} />
+                            <Typography variant="caption" fontWeight={700} sx={{ color: "white" }}>{event.eventVenue}</Typography>
+                          </Box>
+                        </Box>
+                      )}
+                    </Box>
+
+                    <Box sx={{ mb: 4 }}>
+                      <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: "uppercase", display: "block", mb: 1 }}>
+                        <Box component="span" sx={{ display: "inline-flex", mr: 1, verticalAlign: "middle" }}><Business fontSize="inherit" /></Box>
+                        Venue Address
+                      </Typography>
+                      <Typography variant="body1" fontWeight={800} gutterBottom>
+                        {event.address || event.eventVenue || "Address not provided"}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                        {event.city}{event.city && event.district ? ", " : ""}{event.district}
+                      </Typography>
+                    </Box>
+
+                    <Grid container spacing={2} sx={{ mb: 4 }}>
+                      <Grid size={{ xs: 6 }}>
+                        <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: "rgba(255, 255, 255, 0.03)", border: "1px solid", borderColor: "divider" }}>
+                          <Typography variant="caption" fontWeight={700} color="text.secondary" display="block">LATITUDE</Typography>
+                          <Typography variant="body2" fontWeight={800}>{event.latitude ? `${event.latitude}° N` : "N/A"}</Typography>
+                        </Box>
+                      </Grid>
+                      <Grid size={{ xs: 6 }}>
+                        <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: "rgba(255, 255, 255, 0.03)", border: "1px solid", borderColor: "divider" }}>
+                          <Typography variant="caption" fontWeight={700} color="text.secondary" display="block">LONGITUDE</Typography>
+                          <Typography variant="body2" fontWeight={800}>{event.longitude ? `${event.longitude}° E` : "N/A"}</Typography>
+                        </Box>
+                      </Grid>
+                    </Grid>
+
+                    {event.locationInstructions && (
+                      <Box sx={{ p: 2, borderRadius: 3, bgcolor: "rgba(16, 185, 129, 0.03)", border: "1px solid", borderColor: "rgba(16, 185, 129, 0.1)", mb: 4 }}>
+                        <Typography variant="caption" fontWeight={800} sx={{ color: "#10b981", display: "flex", gap: 1, alignItems: "center", mb: 1, textTransform: "uppercase" }}>
+                          <InfoOutlined fontSize="inherit" /> Arrival Instructions
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: "text.secondary", lineHeight: 1.6 }}>
+                          {event.locationInstructions}
+                        </Typography>
+                      </Box>
+                    )}
+
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<LocationOn />}
+                      onClick={handleOpenGoogleMaps}
+                      sx={{ borderRadius: 3, textTransform: "none", fontWeight: 700, py: 1, borderColor: "divider", color: "text.primary" }}
+                    >
+                      Get directions
+                    </Button>
+                  </Paper>
+                </Box>
+              </Stack>
+            </Grid>
+            {/* CLIENT INFORMATION */}
+            {canViewClientInfo && (
+              <Box>
+                <Typography variant="caption" fontWeight={700} sx={{ color: "text.secondary", textTransform: "uppercase", letterSpacing: "0.1em", mb: 1.5, display: "block" }}>
+                  Client Information
+                </Typography>
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: "1px solid", borderColor: "divider", bgcolor: "rgba(255, 255, 255, 0.02)" }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 4 }}>
+                    <Avatar sx={{ width: 56, height: 56, bgcolor: "rgba(37, 99, 235, 0.1)", color: "primary.main", fontWeight: 800, fontSize: "1.2rem", border: "1px solid", borderColor: "primary.light" }}>
+                      {event.clientName ? event.clientName.split(' ').map((n: string) => n[0]).join('').toUpperCase().substring(0, 2) : "C"}
+                    </Avatar>
+                    <Box>
+                      <Typography variant="h6" fontWeight={800}>{event.clientName || "N/A"}</Typography>
+                      <Typography variant="body2" color="text.secondary" fontWeight={500}>Event client</Typography>
+                    </Box>
+                  </Box>
+
+                  <Divider sx={{ mb: 3, borderStyle: "dashed", opacity: 0.3 }} />
+
+                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "text.secondary" }}>
+                      <Phone fontSize="small" />
+                      <Typography variant="body2" fontWeight={600}>Contact</Typography>
+                    </Box>
+                    <Typography variant="body1" fontWeight={800} color="primary.main">
+                      {event.clientPhone || "N/A"}
+                    </Typography>
+                  </Box>
+                </Paper>
+              </Box>
             )}
 
-            {/* Staffing Section (Conditional) */}
+            {/* REQUIREMENTS & APPLICATIONS */}
             {canViewUsers && (
-              <Grid container spacing={3}>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Paper elevation={0} sx={{ p: 2, borderRadius: 4, border: "1px solid", borderColor: "divider", height: "100%" }}>
-                    <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 2, display: "flex", alignItems: "center", gap: 1 }}>
-                      <Group color="primary" /> Requirements
+              <Box>
+                <Stack spacing={4}>
+                  <Box>
+                    <Typography variant="caption" fontWeight={700} sx={{ color: "text.secondary", textTransform: "uppercase", letterSpacing: "0.1em", mb: 1.5, display: "block" }}>
+                      Requirements
                     </Typography>
-                    <List disablePadding>
-                      {requirementsResponse?.payload?.length > 0 ? (
-                        requirementsResponse.payload.map((req: any) => {
-                          const roleObj = roles.find((r: any) => String(r.roleId) === String(req.roleId));
-                          const roleName = roleObj ? (roleObj.name.charAt(0).toUpperCase() + roleObj.name.slice(1).replace(/_/g, " ")) : `Role ${req.roleId}`;
-                          const confirmedCount = req.confirmedCount || 0;
-                          const progress = Math.min((confirmedCount / req.count) * 100, 100);
+                    <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: "1px solid", borderColor: "divider", bgcolor: "rgba(255, 255, 255, 0.02)" }}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
+                        <Box sx={{ p: 0.8, borderRadius: 1.5, bgcolor: "rgba(245, 158, 11, 0.1)", display: "flex" }}>
+                          <Group sx={{ color: "#f59e0b", fontSize: 20 }} />
+                        </Box>
+                        <Typography variant="subtitle1" fontWeight={800}>Role assignments</Typography>
+                      </Box>
 
-                          return (
-                            <Box key={req.requirementId} sx={{ mb: 2.5 }}>
-                              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                                <Typography variant="body2" fontWeight={700}>{roleName}</Typography>
-                                <Typography variant="caption" fontWeight={700} color="text.secondary">
-                                  {confirmedCount} / {req.count}
-                                </Typography>
-                              </Box>
-                              <Box sx={{ width: "100%", height: 6, bgcolor: "rgba(0,0,0,0.05)", borderRadius: 3, overflow: "hidden" }}>
-                                <Box sx={{
-                                  width: `${progress}%`,
-                                  height: "100%",
-                                  bgcolor: progress === 100 ? "success.main" : "primary.main",
-                                  transition: "width 0.5s ease"
-                                }} />
-                              </Box>
+                      <Stack spacing={2}>
+                        {requirementsResponse?.payload?.length > 0 ? (
+                          requirementsResponse.payload.map((req: any, idx: number) => (
+                            <Box key={idx} sx={{ p: 2, borderRadius: 3, bgcolor: "rgba(255, 255, 255, 0.03)", border: "1px solid", borderColor: "divider", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <Typography variant="body2" fontWeight={800}>{req.roleName || `Role ${req.roleId}`}</Typography>
+                              <Chip
+                                label={`${req.confirmedCount || 0} / ${req.count}`}
+                                size="small"
+                                sx={{ bgcolor: "rgba(255, 255, 255, 0.05)", fontWeight: 800, color: "text.secondary" }}
+                              />
                             </Box>
-                          );
-                        })
-                      ) : (
-                        <Typography variant="body2" color="text.secondary">No requirements.</Typography>
-                      )}
-                    </List>
-                  </Paper>
-                </Grid>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Paper elevation={0} sx={{ p: 2, borderRadius: 4, border: "1px solid", borderColor: "divider", height: "100%" }}>
-                    <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 2, display: "flex", alignItems: "center", gap: 1 }}>
-                      <Assignment color="primary" /> Recent Applications
+                          ))
+                        ) : (
+                          <Typography variant="body2" color="text.secondary">No requirements defined.</Typography>
+                        )}
+                      </Stack>
+                    </Paper>
+                  </Box>
+
+                  <Box>
+                    <Typography variant="caption" fontWeight={700} sx={{ color: "text.secondary", textTransform: "uppercase", letterSpacing: "0.1em", mb: 1.5, display: "block" }}>
+                      Recent Applications
                     </Typography>
-                    <List disablePadding>
-                      {event.eventRequests?.length > 0 ? (
-                        event.eventRequests.slice(0, 3).map((req: any) => (
-                          <ListItem key={req.requestId} sx={{ px: 0, py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
-                            <ListItemText
-                              primary={`${req.user?.firstName || "-"} ${req.user?.lastName || ""}`}
-                              primaryTypographyProps={{ fontWeight: 700, variant: "body2" }}
-                              secondary={roles.find((r: any) => String(r.roleId) === String(req.roleId))?.name?.replace(/_/g, " ")?.toUpperCase() || "No Role"}
-                              secondaryTypographyProps={{ variant: "caption" }}
-                            />
-                            <Chip
-                              label={req.status}
-                              size="small"
-                              color={getStatusColor(req.status) as any}
-                              variant="outlined"
-                              sx={{ fontWeight: 700, fontSize: "0.65rem", height: 20 }}
-                            />
-                          </ListItem>
-                        ))
-                      ) : (
-                        <Typography variant="body2" color="text.secondary">No applications.</Typography>
-                      )}
-                    </List>
-                    {event.totalApplications > 3 && (
-                      <Button
-                        fullWidth
-                        size="small"
-                        sx={{ mt: 2, textTransform: "none", fontWeight: 700 }}
-                        onClick={() => setIsManageModalOpen(true)}
-                      >
-                        View all {event.totalApplications}
-                      </Button>
-                    )}
-                  </Paper>
-                </Grid>
-              </Grid>
+                    <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: "1px solid", borderColor: "divider", bgcolor: "rgba(255, 255, 255, 0.02)" }}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
+                        <Box sx={{ p: 0.8, borderRadius: 1.5, bgcolor: "rgba(34, 197, 94, 0.1)", display: "flex" }}>
+                          <Assignment sx={{ color: "#22c55e", fontSize: 20 }} />
+                        </Box>
+                        <Typography variant="subtitle1" fontWeight={800}>Applications</Typography>
+                      </Box>
+
+                      <Box sx={{ py: 4, textAlign: "center" }}>
+                        <Typography variant="body2" color="text.secondary" fontWeight={500}>No applications yet</Typography>
+                      </Box>
+                    </Paper>
+                  </Box>
+                </Stack>
+              </Box>
             )}
           </Stack>
         </Grid>
 
-        {/* Sidebar: Location & Map */}
-        <Grid size={{ xs: 12, lg: canViewClientInfo || canViewUsers ? 4 : 12 }}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: { xs: 2, md: 4 },
-              borderRadius: 4,
-              border: "1px solid",
-              borderColor: "divider",
-              bgcolor: "background.paper",
-              height: "100%",
-              display: "flex",
-              flexDirection: "column"
-            }}
-          >
-            <Typography variant="h6" fontWeight={800} sx={{ mb: 4, display: "flex", alignItems: "center", gap: 1.5 }}>
-              <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: "rgba(var(--primary-rgb), 0.1)", display: "flex" }}>
-                <LocationOn sx={{ color: "primary.main" }} />
-              </Box>
-              Location
-            </Typography>
 
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: "uppercase", display: "block", mb: 1 }}>
-                Venue Address
-              </Typography>
-              <Typography variant="body1" fontWeight={700} gutterBottom>
-                {event.address || "Address not provided"}
-              </Typography>
-              {(event.city || event.district) && (
-                <Typography variant="body2" color="text.secondary" fontWeight={500}>
-                  {event.city}{event.city && event.district ? ", " : ""}{event.district}
-                </Typography>
-              )}
-            </Box>
-
-            
-
-            <Box sx={{ flexGrow: 1,  borderRadius: 3, overflow: "hidden", position: "relative", border: "1px solid", borderColor: "divider" }}>
-              <Box sx={{ position: "absolute", top: 12, right: 12, zIndex: 10 }}>
-                <Button
-                  size="small"
-                  variant="contained"
-                  onClick={handleOpenGoogleMaps}
-                  sx={{
-                    bgcolor: "background.paper",
-                    color: "text.primary",
-                    "&:hover": { bgcolor: "background.default" },
-                    boxShadow: 3,
-                    borderRadius: 2,
-                    textTransform: "none",
-                    fontWeight: 700
-                  }}
-                >
-                  Open Maps
-                </Button>
-              </Box>
-              {(event.latitude && event.longitude) ? (
-                <EventLocationPickerWrapper
-                  readOnly
-                  location={{ lat: event.latitude, lng: event.longitude, name: event.address }}
-                />
-              ) : (
-                <iframe
-                  title="Event Location Map"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  loading="lazy"
-                  allowFullScreen
-                  src={`https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`}
-                />
-              )}
-              
-            </Box>{event.locationInstructions && (
-              <Box sx={{ mt: 4, p: 2, bgcolor: "rgba(var(--primary-rgb), 0.05)", borderRadius: 3, border: "1px dashed", borderColor: "primary.light" }}>
-                <Typography variant="caption" color="primary.main" fontWeight={800} sx={{ display: "flex", gap: 0.5, alignItems: "center", mb: 1, textTransform: "uppercase" }}>
-                  <InfoOutlined fontSize="inherit" /> Arrival Instructions
-                </Typography>
-                <Typography variant="body2" fontWeight={500} sx={{ color: "text.primary" }}>
-                  {event.locationInstructions}
-                </Typography>
-              </Box>
-            )}
-          </Paper>
-        </Grid>
       </Grid>
 
       <CustomDialog

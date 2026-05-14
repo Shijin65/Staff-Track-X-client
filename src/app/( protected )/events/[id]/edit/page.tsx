@@ -2,7 +2,7 @@
 
 import React, { use } from "react";
 import { Container } from "@mui/material";
-import { EventCreateForm } from "@/components/events/EventCreateForm";
+import { EventForm } from "@/components/events/EventForm";
 
 interface EventEditPageProps {
   params: Promise<{ id: string }>;
@@ -13,7 +13,7 @@ export default function EditEventPage({ params }: EventEditPageProps) {
 
   return (
     <Container maxWidth="xl" sx={{ py: 0 }}>
-      <EventCreateForm eId={id} />
+      <EventForm eId={id} />
     </Container>
   );
 }

@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Grid, Paper, Chip, Skeleton } from "@mui/material";
-import { AccessTime, LocationOn, Group } from "@mui/icons-material";
+import { AccessTime, LocationOn, Group, Event } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
-import { SearchInput } from "@/components/ui";
+import { EmptyState, SearchInput } from "@/components/ui";
 
+interface EventType {
+  eventId: string;
+  staffRequirementCount: number;
+  confirmedStaffCount: number;
+  title: string;
+  reportingTime: string;
+  eventVenue: string;
+  city: string;
+}
 
 export const LiveEventsList = () => {
   const router = useRouter();
@@ -40,13 +49,14 @@ export const LiveEventsList = () => {
           ))}
         </Grid>
       ) : events.length === 0 ? (
-        <Box sx={{ py: 10, textAlign: 'center' }}>
-          <Typography variant="h6" color="text.secondary">No events scheduled for today.</Typography>
-          <Typography variant="body2" color="text.secondary">Check the main event list for upcoming events.</Typography>
-        </Box>
+                <EmptyState
+                  icon={<Event/>}
+                  title="No Events Today."
+                  description="No events scheduled for today.Check the main event list for upcoming events."
+                />
       ) : (
         <Grid container spacing={3}>
-          {events.map((event: any) => {
+          {events.map((event: EventType) => {
             const totalRequired = event.staffRequirementCount || 0;
             const reportedStaff = event.confirmedStaffCount || 0;
             const progress = totalRequired > 0 ? (reportedStaff / totalRequired) * 100 : 0;

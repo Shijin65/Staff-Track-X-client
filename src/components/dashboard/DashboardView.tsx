@@ -14,6 +14,7 @@ import {
   Star as StarIcon,
   EventOutlined,
   DashboardOutlined,
+  Event,
 } from "@mui/icons-material";
 import { EventDetailContent } from "./EventDetailContent";
 import { useAuthContext } from "@/context/auth-provider";
@@ -30,7 +31,7 @@ import {
   Skeleton,
   Divider,
 } from "@mui/material";
-import { CustomDialog, ModuleTitle, SearchInput} from "../ui";
+import { CustomDialog, EmptyState, ModuleTitle, SearchInput } from "../ui";
 import { useAxios } from "@/lib/hooks";
 import { useToast } from "@/lib/store/useToastStore";
 import {
@@ -340,9 +341,10 @@ export function DashboardView() {
                   ))}
                 </div>
               ) : events.length === 0 ? (
-                <Box sx={{ py: 8, textAlign: 'center' }}>
-                  <Typography color="text.secondary">No upcoming events found.</Typography>
-                </Box>
+                <EmptyState
+                  icon={<Event />}
+                  title="No Upcoming Events"
+                />
               ) : (
                 <div className="flex flex-col gap-4">
                   {events.map((event: any) => {

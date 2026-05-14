@@ -29,6 +29,7 @@ export interface EventRow {
   eventDate: string;
   eventVenue: string;
   status: string;
+  eventType?: string;
   staffRequirementCount?: number;
   confirmedStaffCount?: number;
 }

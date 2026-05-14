@@ -91,14 +91,14 @@ export const EventListing = ({
 
   // Desktop Table Data Fetching
   const { data: tableData, error: tableError, isLoading: tableLoading, mutate: tableMutate } = useSWR(
-    !isMobile ? `/api/events?Page=${page}&Limit=${limit}&SortOrder=${order}&SortBy=${orderBy}&Search=${encodeURIComponent(query)}` : null
+    !isMobile ? `/api/events?Page=${page}&Limit=${limit}&SortOrder=${order}&SortBy=${orderBy}&SearchQuery=${encodeURIComponent(query)}` : null
   );
 
   // Mobile Infinite Scrolling Data Fetching
   const getKey = (pageIndex: number, previousPageData: any) => {
     if (!isMobile) return null;
     if (previousPageData && !previousPageData.payload?.length) return null; // Reached the end
-    return `/api/events?Page=${pageIndex + 1}&Limit=${limit}&SortOrder=${order}&SortBy=${orderBy}&Search=${encodeURIComponent(query)}`;
+    return `/api/events?Page=${pageIndex + 1}&Limit=${limit}&SortOrder=${order}&SortBy=${orderBy}&SearchQuery=${encodeURIComponent(query)}`;
   };
   const { data: infiniteData, error: infiniteError, size, setSize, isLoading: infiniteLoading, mutate: infiniteMutate, isValidating } = useSWRInfinite(getKey);
 
@@ -135,6 +135,7 @@ export const EventListing = ({
     eventDate: item.eventDate || "",
     eventVenue: item.eventVenue || "",
     status: item.status || "",
+    eventType: item.eventType,
     staffRequirementCount: item.staffRequirementCount,
     confirmedStaffCount: item.confirmedStaffCount,
   });

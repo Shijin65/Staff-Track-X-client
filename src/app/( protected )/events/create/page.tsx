@@ -1,11 +1,11 @@
 import React from "react";
-import { Box, Container, Typography } from "@mui/material";
-import { EventCreateForm } from "@/components/events/EventCreateForm";
+import { Container } from "@mui/material";
+import { EventForm } from "@/components/events/EventForm";
 
 export default function CreateEventPage() {
   return (
     <Container maxWidth="xl">
-      <EventCreateForm />
+      <EventForm />
     </Container>
   );
 }

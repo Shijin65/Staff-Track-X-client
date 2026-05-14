@@ -123,7 +123,7 @@ const Header = () => {
           {/* Settings Section */}
           <Box sx={{ py: 1 }}>
             {user?.role?.name !== "supervisor" && (
-              <MenuItem sx={{ py: 1.2, px: 2 }} onClick={() => { handleUserMenuClose(); router.push('/my-events'); }}>
+              <MenuItem sx={{ py: 1.2, px: 2 }} onClick={() => { handleUserMenuClose(); router.push('/event-history'); }}>
                 <ListItemIcon><ShoppingCartOutlined fontSize="small" sx={{ color: "text.primary" }} /></ListItemIcon>
                 <Typography variant="body2" sx={{ flexGrow: 1, fontWeight: 500 }}>Events history</Typography>
               </MenuItem>

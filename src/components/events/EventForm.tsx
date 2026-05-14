@@ -113,12 +113,12 @@ const SectionCard = ({ icon: Icon, title, subtitle, children }: any) => {
           {subtitle && <Typography variant="caption" color="text.secondary">{subtitle}</Typography>}
         </Box>
       </Box>
-      <Box sx={{ p: { xs: 3, md: 4 } }}>{children}</Box>
+      <Box sx={{ p: { xs: 1, md: 4 }, py: { xs: 2 } }}>{children}</Box>
     </Paper>
   );
 };
 
-export const EventCreateForm: React.FC<eventFormProps> = ({
+export const EventForm: React.FC<eventFormProps> = ({
   eId,
 }) => {
   const isEdit = !!eId;

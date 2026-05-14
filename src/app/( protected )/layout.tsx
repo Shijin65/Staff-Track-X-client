@@ -46,7 +46,7 @@ export default function ProtectedLayout({
         <Sidebar />
         <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1, minWidth: 0 }}>
           <Header />
-          <Box component="main" sx={{ flexGrow: 1, pt: 2, px: { xs: 0, md: 2 }, pb: { xs: 10, md: 4 } }}>
+          <Box component="main" sx={{ flexGrow: 1, pt: { xs: 1, md: 2 }, px: { xs: 0, md: 2 }, pb: { xs: 10, md: 4 } }}>
             {children}
           </Box>
           <BottomNav />
