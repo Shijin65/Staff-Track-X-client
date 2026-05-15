@@ -12,8 +12,8 @@ export const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const navItems = [
   { label: "Overview", icon: <DashboardOutlined />, path: "/" },
-  { label: "My Events", icon: <EventOutlined />, path: "/my-events" },
-  { label: "Events", icon: <EventOutlined />, path: "/events" },
+  { label: "Event", icon: <EventOutlined />, path: "/events" },
+  { label: "My Event", icon: <EventOutlined />, path: "/my-events" },
   { label: "Attendance", icon: <ClipboardDocumentCheckIcon className="h-6 w-6" />, path: "/mark-attendance" },
   { label: "Users", icon: <PeopleAltOutlined />, path: "/users" },
   { label: "Profile", icon: <PersonOutlined />, path: "/profile" },
