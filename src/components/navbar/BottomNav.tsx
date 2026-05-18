@@ -2,9 +2,8 @@
 
 import {
   Paper,
-  BottomNavigation,
-  BottomNavigationAction,
   Box,
+  ButtonBase,
 } from "@mui/material";
 import { navItems } from "@/lib/utils/constance";
 import { usePathname, useRouter } from "next/navigation";
@@ -80,18 +79,14 @@ export const BottomNav = () => {
         pb: "env(safe-area-inset-bottom)",
       }}
     >
-      <BottomNavigation
-        value={value}
-        onChange={(event, newValue) => {
-          if (newValue < displayItems.length) {
-            router.push(displayItems[newValue].path);
-          } else if (newValue === displayItems.length && drawerItems.length > 1) {
-            setIsDrawerOpen(true);
-          }
-        }}
+      <Box
         sx={{
+          display: "flex",
+          justifyContent: "space-evenly",
+          alignItems: "center",
           height: 70,
           background: "transparent",
+          width: "100%",
         }}
       >
         {displayItems.map((item, index) => {
@@ -101,74 +96,96 @@ export const BottomNav = () => {
               : pathname.startsWith(item.path);
 
           return (
-            <BottomNavigationAction
+            <ButtonBase
               key={item.label}
-              label={item.label}
               disableRipple
-              icon={
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width:  30,
-                    height: 30,
-                    borderRadius: "12px",
-                    color: isSelected ? "var(--primary-gradient)" : "text.secondary",
-                  }}
-                >
-                  {item.icon}
-                </Box>
-              }
+              onClick={() => router.push(item.path)}
               sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
                 minWidth: "auto",
                 color: "text.secondary",
-                height:  50,
-                width: 50,
-                "& .MuiBottomNavigationAction-label": {
-                  fontSize: 11,
-                  transition: "0.3s",
-                  opacity: isSelected ? 1 : 0.6,
-                },
+                height: "100%",
+                flex: 1,
+                maxWidth: 80,
               }}
-            />
-          );
-        })}
-
-        {drawerItems.length > 0 && (
-          <BottomNavigationAction
-            label="More"
-            disableRipple
-            icon={
+            >
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  width: 30,
+                  width:  30,
                   height: 30,
                   borderRadius: "12px",
-                  color: isMoreButton ? "var(--primary-gradient)" : "text.secondary",
+                  color: isSelected ? "var(--primary)" : "inherit",
+                  mb: 0.5,
                 }}
               >
-                <MoreHorizOutlined />
+                {item.icon}
               </Box>
-            }
+              <Box
+                component="span"
+                sx={{
+                  fontSize: 11,
+                  transition: "0.3s",
+                  opacity: isSelected ? 1 : 0.6,
+                  lineHeight: 1,
+                }}
+              >
+                {item.label}
+              </Box>
+            </ButtonBase>
+          );
+        })}
+
+        {drawerItems.length > 0 && (
+          <ButtonBase
+            disableRipple
+            onClick={() => setIsDrawerOpen(true)}
             sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
               minWidth: "auto",
               color: "text.secondary",
-              height:  50,
-              width:  50,
-              "& .MuiBottomNavigationAction-label": {
+              height: "100%",
+              flex: 1,
+              maxWidth: 80,
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 30,
+                height: 30,
+                borderRadius: "12px",
+                color: isMoreButton ? "var(--primary)" : "inherit",
+                mb: 0.5,
+              }}
+            >
+              <MoreHorizOutlined />
+            </Box>
+            <Box
+              component="span"
+              sx={{
                 fontSize: 11,
                 transition: "0.3s",
                 opacity: isMoreButton ? 1 : 0.6,
-              },
-            }}
-          />
+                lineHeight: 1,
+              }}
+            >
+              More
+            </Box>
+          </ButtonBase>
         )}
 
-      </BottomNavigation>
+      </Box>
       {drawerItems.length > 0 && <MoreMenuDrawer
         open={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}

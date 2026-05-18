@@ -7,3 +7,5 @@ export const formatTime = (utcDate: Date | string, format = "hh:mm A") => {
   if (!utcDate) return "";
   return dayjs.utc(utcDate).local().format(format);
 };
+
+

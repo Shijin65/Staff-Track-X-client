@@ -50,7 +50,7 @@ export const Sidebar = () => {
 
       <List sx={{ px: 2, flexGrow: 1, overflowY: "auto" }}>
         {filteredItems.slice(0, -1).map((item) => {
-          const isActive = pathname === item.path;
+          const isActive = pathname === item.path || pathname.startsWith(item.path + "/");
           return (
             <ListItem key={item.label} disablePadding sx={{ mb: 1 }}>
               <ListItemButton

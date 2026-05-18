@@ -30,8 +30,9 @@ import {
   Button,
   Skeleton,
   Divider,
+  Theme,
 } from "@mui/material";
-import { CustomDialog, EmptyState, ModuleTitle, SearchInput } from "../ui";
+import { CustomDialog, EmptyState, ModuleTitle, SearchInput, DateBadge } from "../ui";
 import { useAxios } from "@/lib/hooks";
 import { useToast } from "@/lib/store/useToastStore";
 import {
@@ -40,76 +41,7 @@ import {
 } from "@mui/material";
 import { handleAxiosError } from "@/lib/utils/axiosError";
 
-const renderDateBadge = (dateStr: string) => {
-  if (!dateStr) return null;
-  const date = new Date(dateStr);
-  const day = date.getDate();
-  const month = date.toLocaleString('default', { month: 'short' });
 
-  // Check if event is today or past
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const eventDate = new Date(date);
-  eventDate.setHours(0, 0, 0, 0);
-
-  let isToday = false;
-  let bgcolor = "rgba(var(--primary-rgb), 0.1)";
-  let color = "primary.main";
-  let border = "1px solid rgba(var(--primary-rgb), 0.2)";
-
-  if (eventDate.getTime() === today.getTime()) {
-    isToday = true;
-    bgcolor = "primary.main";
-    color = "primary.contrastText";
-    border = "none";
-  } else if (eventDate.getTime() < today.getTime()) {
-    bgcolor = "rgba(0,0,0,0.05)";
-    color = "text.secondary";
-    border = "1px solid rgba(0,0,0,0.1)";
-  }
-
-  return (
-    <Box sx={{ position: 'relative', flexShrink: 0 }}>
-      <Box sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        bgcolor,
-        color,
-        border,
-        borderRadius: 2,
-        minWidth: 50,
-        height: 56,
-        boxShadow: isToday ? '0 4px 12px rgba(var(--primary-rgb), 0.3)' : 'none',
-      }}>
-        <Typography variant="h6" fontWeight={800} lineHeight={1}>{day}</Typography>
-        <Typography variant="caption" fontWeight={600} sx={{ textTransform: 'uppercase', fontSize: '0.65rem' }}>{month}</Typography>
-      </Box>
-      {isToday && (
-        <Box
-          sx={{
-            position: 'absolute',
-            top: -4,
-            right: -4,
-            width: 14,
-            height: 14,
-            bgcolor: 'error.main',
-            borderRadius: '50%',
-            border: '2px solid',
-            borderColor: 'background.paper',
-            animation: 'pulse 1.5s infinite',
-            '@keyframes pulse': {
-              '0%': { boxShadow: '0 0 0 0 rgba(239, 68, 68, 0.7)' },
-              '70%': { boxShadow: '0 0 0 6px rgba(239, 68, 68, 0)' },
-              '100%': { boxShadow: '0 0 0 0 rgba(239, 68, 68, 0)' },
-            }
-          }}
-        />
-      )}
-    </Box>
-  );
-};
 
 const SummaryCard = ({ title, value, icon, color }: { title: string; value: number | string | undefined; icon: React.ReactNode; color: string }) => {
   return (
@@ -148,14 +80,14 @@ const MajorEventCard = ({ event, onClick }: { event: any; onClick: () => void })
         transition: 'all 0.2s',
         '&:hover': {
           borderColor: 'primary.main',
-          boxShadow: (theme) => theme.palette.mode === 'dark'
+          boxShadow: (theme: Theme) => theme.palette.mode === 'dark'
             ? '0 4px 20px rgba(0,0,0,0.4)'
             : '0 4px 12px rgba(0,0,0,0.05)',
           transform: 'translateY(-2px)'
         }
       }}
     >
-      {renderDateBadge(event.eventDate)}
+      <DateBadge dateStr={event.eventDate} />
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <Typography variant="body2" fontWeight={800} noWrap sx={{ mb: 0.5, color: 'text.primary' }}>
           {event.title}
@@ -380,7 +312,7 @@ export function DashboardView() {
                         onClick={() => handleEventClick(event)}
                       >
                         <div className="flex-1 flex flex-row items-center gap-4">
-                          {renderDateBadge(event.eventDate)}
+                          <DateBadge dateStr={event.eventDate} />
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                               <h3 className="font-bold text-gray-800 dark:text-white text-lg truncate">{event.title}</h3>

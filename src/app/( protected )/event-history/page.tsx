@@ -18,7 +18,7 @@ import {
   EventAvailable,
 } from "@mui/icons-material";
 import useSWR from "swr";
-import { MainLoader, ErrorCard, ModuleHeader, EmptyState } from "@/components/ui";
+import { MainLoader, ErrorCard, ModuleHeader, EmptyState, DateBadge } from "@/components/ui";
 import { useRouter } from "next/navigation";
 export default function EventHistoryPage() {
   const theme = useTheme();
@@ -44,30 +44,7 @@ export default function EventHistoryPage() {
   roleId:number;
   comment:string;
 }
-  const renderDateBadge = (dateStr: string) => {
-    if (!dateStr) return null;
-    const date = new Date(dateStr);
-    const day = date.getDate();
-    const month = date.toLocaleString('default', { month: 'short' });
 
-    return (
-      <Box sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        bgcolor: 'rgba(var(--primary-rgb), 0.1)',
-        color: 'primary.main',
-        borderRadius: 2.5,
-        minWidth: 55,
-        height: 60,
-        border: '1px solid rgba(var(--primary-rgb), 0.2)',
-      }}>
-        <Typography variant="h6" fontWeight={800} lineHeight={1}>{day}</Typography>
-        <Typography variant="caption" fontWeight={700} sx={{ textTransform: 'uppercase', fontSize: '0.65rem' }}>{month}</Typography>
-      </Box>
-    );
-  };
 
   return (
     <Box sx={{ width: "100%", maxWidth: 1536, px: { xs: 2, xl: 4 }, margin: "0 auto", pb: 10 }}>
@@ -116,7 +93,7 @@ export default function EventHistoryPage() {
                 <CardContent sx={{ p: { xs: 3, md: 4 } }}>
                   <Grid container spacing={3} alignItems="center">
                     <Grid size="auto">
-                      {renderDateBadge(work.event?.eventDate)}
+                     <DateBadge dateStr={work.event?.eventDate}/>
                     </Grid>
 
                     <Grid >

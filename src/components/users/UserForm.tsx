@@ -47,7 +47,7 @@ import useSWR, { mutate } from "swr";
 import { useAuthContext } from "@/context/auth-provider";
 import { schema } from "./user-schema";
 import { handleAxiosError } from "@/lib/utils/axiosError";
-import { ModuleHeader, MainLoader } from "@/components/ui";
+import { ModuleHeader, MainLoader, GroupSkeleton } from "@/components/ui";
 
 
 
@@ -347,13 +347,8 @@ export const UserForm: React.FC<UserFormProps> = ({
   }, [uid]);
 
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <MainLoader />
-      </div>
-    );
-  }
+  if (isLoading) return <GroupSkeleton rowsNum={3} />
+
   return (
     <>
       <ModuleHeader
@@ -897,7 +892,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                 fontWeight: 600,
               }}
             >
-              {isSubmitting ? (isEdit ? "Updating..." : "Creating...") : (isEdit ? "Update Account" : "Create Account")}
+              {isSubmitting ? (isEdit ? "Updating..." : "Creating...") : (isEdit ? "Update" : "Create")}
             </Button>
           </Stack>
         </Box>
